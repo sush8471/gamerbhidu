@@ -91,21 +91,21 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
         {cardItems.map((item, i) => {
           const Icon = item.icon;
           return (
             <div
               key={i}
-              className={`group bg-gradient-to-br ${item.color} border border-[#202838] rounded-xl p-6 hover:border-[#3B82F6]/30 hover:shadow-[0_0_30px_rgba(0,0,0,0.2)] transition-all duration-300 ${item.glowColor}`}
+              className={`group bg-gradient-to-br ${item.color} border border-[#202838] rounded-xl p-3 lg:p-6 hover:border-[#3B82F6]/30 hover:shadow-[0_0_30px_rgba(0,0,0,0.2)] transition-all duration-300 ${item.glowColor}`}
             >
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{item.title}</p>
-                  <p className="text-3xl font-black text-white tracking-tight">{item.value}</p>
+              <div className="flex items-center justify-between gap-2">
+                <div className="space-y-1 lg:space-y-2 min-w-0">
+                  <p className="text-[10px] lg:text-xs font-bold text-gray-400 uppercase tracking-wider leading-tight">{item.title}</p>
+                  <p className="text-2xl lg:text-3xl font-black text-white tracking-tight">{item.value}</p>
                 </div>
-                <div className={`p-3 bg-[#080A10]/55 rounded-lg border border-[#202838]/60 ${item.iconColor}`}>
-                  <Icon className="w-6 h-6" />
+                <div className={`p-2 lg:p-3 bg-[#080A10]/55 rounded-lg border border-[#202838]/60 flex-shrink-0 ${item.iconColor}`}>
+                  <Icon className="w-4 h-4 lg:w-6 lg:h-6" />
                 </div>
               </div>
             </div>
@@ -114,7 +114,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Admin Quick Walkthrough Panel */}
-      <div className="bg-[#121622] border border-[#202838] rounded-xl p-8 space-y-6">
+      <div className="bg-[#121622] border border-[#202838] rounded-xl p-4 lg:p-8 space-y-4 lg:space-y-6">
         <div className="space-y-2">
           <h3 className="text-xl font-bold text-white">Welcome, Administrator</h3>
           <p className="text-sm text-gray-400 max-w-2xl leading-relaxed">

@@ -444,27 +444,28 @@ export default function AdminGamesPage() {
   }, [searchQuery, selectedGenre, selectedVisibility]);
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-4 animate-fadeIn">
       {/* Control Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between bg-[#121622] border border-[#202838] p-4 rounded-xl">
-        <div className="flex-1 flex flex-col sm:flex-row gap-3">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by title, series, or slug..."
-              className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10"
-            />
-          </div>
+      <div className="bg-[#121622] border border-[#202838] p-3 lg:p-4 rounded-xl space-y-3">
+        {/* Search — full width */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by title, series, or slug..."
+            className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10"
+          />
+        </div>
 
+        {/* Filters row + Add button */}
+        <div className="flex flex-wrap gap-2">
           {/* Genre Filter */}
           <select
             value={selectedGenre}
             onChange={(e) => setSelectedGenre(e.target.value)}
-            className="bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none cursor-pointer min-w-[140px]"
+            className="flex-1 min-w-[130px] bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
           >
             {allGenres.map((g) => (
               <option key={g} value={g}>
@@ -477,200 +478,238 @@ export default function AdminGamesPage() {
           <select
             value={selectedVisibility}
             onChange={(e) => setSelectedVisibility(e.target.value)}
-            className="bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none cursor-pointer min-w-[140px]"
+            className="flex-1 min-w-[130px] bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
           >
             <option value="All">Visibility: All</option>
             <option value="Visible">Visible Only</option>
             <option value="Hidden">Hidden Only</option>
           </select>
-        </div>
 
-        {/* Create Button */}
-        <button
-          onClick={openAddModal}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-[#080A10] font-black text-sm rounded-lg hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Game</span>
-        </button>
+          {/* Add Game Button */}
+          <button
+            onClick={openAddModal}
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-[#080A10] font-black text-sm rounded-lg hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Game</span>
+          </button>
+        </div>
       </div>
 
-      {/* Main Table Panel */}
+      {/* Main Panel */}
       <div className="bg-[#121622] border border-[#202838] rounded-xl overflow-hidden shadow-xl">
         {loading ? (
-          <div className="h-96 flex flex-col items-center justify-center gap-3">
+          <div className="h-72 flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-[#00D2FF]" />
             <p className="text-sm text-gray-500 font-medium">Loading catalog...</p>
           </div>
         ) : error ? (
-          <div className="h-96 flex flex-col items-center justify-center gap-3 px-6 text-center">
+          <div className="h-72 flex flex-col items-center justify-center gap-3 px-6 text-center">
             <AlertTriangle className="w-10 h-10 text-red-500" />
             <p className="text-sm text-gray-300 font-bold">{error}</p>
-            <button
-              onClick={loadGames}
-              className="mt-2 text-xs font-bold text-[#00D2FF] hover:underline"
-            >
+            <button onClick={loadGames} className="mt-2 text-xs font-bold text-[#00D2FF] hover:underline">
               Retry
             </button>
           </div>
         ) : filteredGames.length === 0 ? (
-          <div className="h-96 flex flex-col items-center justify-center gap-2 text-gray-500">
+          <div className="h-72 flex flex-col items-center justify-center gap-2 text-gray-500">
             <Gamepad2 className="w-12 h-12 stroke-[1.25]" />
             <p className="text-sm font-semibold">No game listings found</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-[#202838] bg-black/10 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                  <th className="py-4 px-6 w-20">Image</th>
-                  <th className="py-4 px-6">Title / Series</th>
-                  <th className="py-4 px-6 w-32">Price</th>
-                  <th className="py-4 px-6 w-24">Discount</th>
-                  <th className="py-4 px-6 w-28 text-center">Visibility</th>
-                  <th className="py-4 px-6 w-28 text-center">Status</th>
-                  <th className="py-4 px-6 w-28 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#202838]/60 text-sm">
-                {paginatedGames.map((game) => (
-                  <tr key={game.id} className="hover:bg-white/[0.02] transition-colors group">
-                    {/* Image */}
-                    <td className="py-3 px-6">
-                      <div className="relative w-10 h-12 bg-black/20 rounded border border-[#202838] overflow-hidden">
-                        <Image
-                          src={game.image_url}
-                          alt={game.title}
-                          fill
-                          sizes="40px"
-                          className="object-cover"
-                        />
-                      </div>
-                    </td>
+          <>
+            {/* ── Mobile Card List (< md) ── */}
+            <div className="md:hidden divide-y divide-[#202838]/60">
+              {paginatedGames.map((game) => (
+                <div key={game.id} className="flex items-center gap-3 p-3">
+                  {/* Poster */}
+                  <div className="relative w-10 h-14 flex-shrink-0 bg-black/20 rounded border border-[#202838] overflow-hidden">
+                    <Image src={game.image_url} alt={game.title} fill sizes="40px" className="object-cover" />
+                  </div>
 
-                    {/* Title */}
-                    <td className="py-3 px-6">
-                      <p className="font-bold text-white max-w-sm truncate" title={game.title}>
-                        {game.title}
-                      </p>
-                      <p className="text-xs text-gray-500 font-mono tracking-tighter truncate max-w-xs" title={game.slug}>
-                        /{game.slug}
-                      </p>
-                    </td>
-
-                    {/* Price */}
-                    <td className="py-3 px-6">
+                  {/* Info */}
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <p className="text-white font-bold text-xs leading-tight truncate">{game.title}</p>
+                    <p className="text-[10px] text-gray-500 font-mono truncate">/{game.slug}</p>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {/* Price */}
                       {game.selling_price !== null ? (
-                        <div>
-                          <p className="font-black text-white">₹{game.selling_price}</p>
-                          {game.original_price && (
-                            <p className="text-xs text-gray-500 line-through">₹{game.original_price}</p>
-                          )}
-                        </div>
+                        <span className="text-xs font-black text-white">₹{game.selling_price}</span>
                       ) : (
-                        <span className="text-xs text-gray-500 font-bold bg-[#202838] px-2 py-0.5 rounded">
-                          N/A
-                        </span>
+                        <span className="text-[10px] text-gray-500 bg-[#202838] px-1.5 py-0.5 rounded">N/A</span>
                       )}
-                    </td>
-
-                    {/* Discount */}
-                    <td className="py-3 px-6">
+                      {/* Discount badge */}
                       {game.discount_percentage ? (
-                        <span className="text-xs font-black bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded border border-blue-500/20">
+                        <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
                           -{game.discount_percentage}%
                         </span>
-                      ) : (
-                        <span className="text-xs text-gray-500">—</span>
-                      )}
-                    </td>
-
-                    {/* Visibility Toggle */}
-                    <td className="py-3 px-6 text-center">
-                      <button
-                        onClick={() => handleToggleVisible(game)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                          game.visible
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                            : "bg-gray-500/10 text-gray-400 border border-gray-500/20 hover:text-white"
-                        }`}
-                      >
-                        {game.visible ? (
-                          <>
-                            <Eye className="w-3.5 h-3.5" />
-                            <span>Visible</span>
-                          </>
-                        ) : (
-                          <>
-                            <EyeOff className="w-3.5 h-3.5" />
-                            <span>Hidden</span>
-                          </>
-                        )}
-                      </button>
-                    </td>
-
-                    {/* Release Status */}
-                    <td className="py-3 px-6 text-center">
-                      <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded border ${
+                      ) : null}
+                      {/* Status badge */}
+                      <span className={`text-[10px] font-black uppercase px-1.5 py-0.5 rounded border ${
                         game.release_status === "released"
                           ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
                           : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"
                       }`}>
                         {game.release_status}
                       </span>
-                    </td>
+                    </div>
+                  </div>
 
-                    {/* Action buttons */}
-                    <td className="py-3 px-6">
-                      <div className="flex items-center justify-center gap-2.5">
-                        <button
-                          onClick={() => openEditModal(game)}
-                          className="p-1.5 text-gray-400 hover:text-[#00D2FF] hover:bg-white/5 rounded transition-all cursor-pointer"
-                          title="Edit game listing"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => openDeleteConfirm(game)}
-                          className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
-                          title="Delete game listing"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+                  {/* Actions column */}
+                  <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                    {/* Visibility toggle */}
+                    <button
+                      onClick={() => handleToggleVisible(game)}
+                      className={`p-1.5 rounded-lg border text-xs transition-all cursor-pointer ${
+                        game.visible
+                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                          : "bg-gray-500/10 text-gray-500 border-gray-500/20"
+                      }`}
+                      title={game.visible ? "Click to hide" : "Click to show"}
+                    >
+                      {game.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                    </button>
+                    {/* Edit */}
+                    <button
+                      onClick={() => openEditModal(game)}
+                      className="p-1.5 text-gray-400 hover:text-[#00D2FF] hover:bg-white/5 rounded transition-all cursor-pointer"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    {/* Delete */}
+                    <button
+                      onClick={() => openDeleteConfirm(game)}
+                      className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Desktop Table (≥ md) ── */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[#202838] bg-black/10 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                    <th className="py-4 px-6 w-20">Image</th>
+                    <th className="py-4 px-6">Title / Series</th>
+                    <th className="py-4 px-6 w-32">Price</th>
+                    <th className="py-4 px-6 w-24">Discount</th>
+                    <th className="py-4 px-6 w-28 text-center">Visibility</th>
+                    <th className="py-4 px-6 w-28 text-center">Status</th>
+                    <th className="py-4 px-6 w-28 text-center">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-[#202838]/60 text-sm">
+                  {paginatedGames.map((game) => (
+                    <tr key={game.id} className="hover:bg-white/[0.02] transition-colors group">
+                      <td className="py-3 px-6">
+                        <div className="relative w-10 h-12 bg-black/20 rounded border border-[#202838] overflow-hidden">
+                          <Image src={game.image_url} alt={game.title} fill sizes="40px" className="object-cover" />
+                        </div>
+                      </td>
+                      <td className="py-3 px-6">
+                        <p className="font-bold text-white max-w-sm truncate" title={game.title}>{game.title}</p>
+                        <p className="text-xs text-gray-500 font-mono tracking-tighter truncate max-w-xs" title={game.slug}>/{game.slug}</p>
+                      </td>
+                      <td className="py-3 px-6">
+                        {game.selling_price !== null ? (
+                          <div>
+                            <p className="font-black text-white">₹{game.selling_price}</p>
+                            {game.original_price && (
+                              <p className="text-xs text-gray-500 line-through">₹{game.original_price}</p>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-gray-500 font-bold bg-[#202838] px-2 py-0.5 rounded">N/A</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-6">
+                        {game.discount_percentage ? (
+                          <span className="text-xs font-black bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded border border-blue-500/20">
+                            -{game.discount_percentage}%
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-500">—</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-6 text-center">
+                        <button
+                          onClick={() => handleToggleVisible(game)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                            game.visible
+                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                              : "bg-gray-500/10 text-gray-400 border border-gray-500/20 hover:text-white"
+                          }`}
+                        >
+                          {game.visible ? (
+                            <><Eye className="w-3.5 h-3.5" /><span>Visible</span></>
+                          ) : (
+                            <><EyeOff className="w-3.5 h-3.5" /><span>Hidden</span></>
+                          )}
+                        </button>
+                      </td>
+                      <td className="py-3 px-6 text-center">
+                        <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded border ${
+                          game.release_status === "released"
+                            ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/20"
+                            : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"
+                        }`}>
+                          {game.release_status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-6">
+                        <div className="flex items-center justify-center gap-2.5">
+                          <button
+                            onClick={() => openEditModal(game)}
+                            className="p-1.5 text-gray-400 hover:text-[#00D2FF] hover:bg-white/5 rounded transition-all cursor-pointer"
+                            title="Edit game listing"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openDeleteConfirm(game)}
+                            className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
+                            title="Delete game listing"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
-        {/* Table Footer / Pagination */}
+        {/* Pagination Footer */}
         {!loading && filteredGames.length > 0 && (
-          <div className="flex items-center justify-between border-t border-[#202838] px-6 py-4 bg-black/5">
-            <p className="text-xs text-gray-400">
-              Showing <span className="font-semibold text-white">{(currentPage - 1) * itemsPerPage + 1}</span> to{" "}
-              <span className="font-semibold text-white">
-                {Math.min(currentPage * itemsPerPage, filteredGames.length)}
-              </span>{" "}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#202838] px-4 py-3 bg-black/5">
+            <p className="text-xs text-gray-400 text-center sm:text-left">
+              Showing{" "}
+              <span className="font-semibold text-white">{(currentPage - 1) * itemsPerPage + 1}</span> –{" "}
+              <span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, filteredGames.length)}</span>{" "}
               of <span className="font-semibold text-white">{filteredGames.length}</span> games
             </p>
             <div className="flex items-center gap-2">
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                className="p-2 border border-[#202838] rounded bg-[#080A10]/50 text-gray-400 hover:text-white hover:border-[#00D2FF] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="p-2 border border-[#202838] rounded-lg bg-[#080A10]/50 text-gray-400 hover:text-white hover:border-[#00D2FF] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-400 min-w-[80px] text-center">
                 Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}
               </span>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                className="p-2 border border-[#202838] rounded bg-[#080A10]/50 text-gray-400 hover:text-white hover:border-[#00D2FF] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="p-2 border border-[#202838] rounded-lg bg-[#080A10]/50 text-gray-400 hover:text-white hover:border-[#00D2FF] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -681,8 +720,8 @@ export default function AdminGamesPage() {
 
       {/* CRUD Add/Edit Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-2xl bg-[#121622] border border-[#202838] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full sm:max-w-2xl bg-[#121622] border border-[#202838] sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh] animate-fadeIn">
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-[#202838] flex items-center justify-between">
               <h3 className="text-lg font-bold text-white">
