@@ -4,7 +4,8 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { 
   Gamepad2, Search, Plus, Edit2, Trash2, Eye, EyeOff, Check, X, 
-  Loader2, ChevronLeft, ChevronRight, AlertTriangle, HelpCircle, Sparkles, Upload, FileImage
+  Loader2, ChevronLeft, ChevronRight, AlertTriangle, HelpCircle, Sparkles, Upload, FileImage,
+  MoreVertical
 } from "lucide-react";
 import Image from "next/image";
 
@@ -55,6 +56,9 @@ export default function AdminGamesPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [gameToDelete, setGameToDelete] = useState<DbGame | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Mobile Bottom Sheet Action State
+  const [mobileActionGame, setMobileActionGame] = useState<DbGame | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -556,32 +560,14 @@ export default function AdminGamesPage() {
                   </div>
 
                   {/* Actions column */}
-                  <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                    {/* Visibility toggle */}
+                  <div className="flex items-center flex-shrink-0">
+                    {/* More actions drawer trigger */}
                     <button
-                      onClick={() => handleToggleVisible(game)}
-                      className={`p-1.5 rounded-lg border text-xs transition-all cursor-pointer ${
-                        game.visible
-                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                          : "bg-gray-500/10 text-gray-500 border-gray-500/20"
-                      }`}
-                      title={game.visible ? "Click to hide" : "Click to show"}
+                      onClick={() => setMobileActionGame(game)}
+                      className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-all cursor-pointer"
+                      title="More actions"
                     >
-                      {game.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                    </button>
-                    {/* Edit */}
-                    <button
-                      onClick={() => openEditModal(game)}
-                      className="p-1.5 text-gray-400 hover:text-[#00D2FF] hover:bg-white/5 rounded transition-all cursor-pointer"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    {/* Delete */}
-                    <button
-                      onClick={() => openDeleteConfirm(game)}
-                      className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <MoreVertical className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
@@ -723,7 +709,7 @@ export default function AdminGamesPage() {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
           <div className="w-full sm:max-w-2xl bg-[#121622] border border-[#202838] sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[90vh] animate-fadeIn">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-[#202838] flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-[#202838] flex items-center justify-between flex-shrink-0">
               <h3 className="text-lg font-bold text-white">
                 {modalMode === "add" ? "Add Game Listing" : "Edit Game Listing"}
               </h3>
@@ -736,13 +722,14 @@ export default function AdminGamesPage() {
             </div>
 
             {/* Modal Form Content */}
-            <form onSubmit={handleFormSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
-              {formError && (
-                <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs px-4 py-3 rounded-lg leading-relaxed">
-                  <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                  <span>{formError}</span>
-                </div>
-              )}
+            <form onSubmit={handleFormSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {formError && (
+                  <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs px-4 py-3 rounded-lg leading-relaxed">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>{formError}</span>
+                  </div>
+                )}
 
               {/* Steam Autofill Control */}
               <div className="bg-[#080A10]/40 border border-[#202838] rounded-xl p-4 space-y-3">
@@ -1067,8 +1054,10 @@ export default function AdminGamesPage() {
                 </div>
               </div>
 
+              </div>
+
               {/* Form Actions Footer */}
-              <div className="border-t border-[#202838] pt-4 flex justify-end gap-3">
+              <div className="border-t border-[#202838] p-4 bg-[#121622] flex justify-end gap-3 flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
@@ -1125,6 +1114,69 @@ export default function AdminGamesPage() {
               >
                 {deleteLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                 <span>Delete permanently</span>
+              </button>
+            </div>
+      {/* Mobile Action Sheet Drawer */}
+      {mobileActionGame && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm md:hidden">
+          {/* Backdrop click closer */}
+          <div className="absolute inset-0" onClick={() => setMobileActionGame(null)} />
+          
+          <div className="w-full bg-[#121622] border-t border-[#202838] rounded-t-2xl shadow-2xl p-6 relative z-10 flex flex-col space-y-4 animate-in slide-in-from-bottom duration-250">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-[#202838] pb-3">
+              <div className="min-w-0">
+                <h4 className="font-bold text-white text-sm truncate">{mobileActionGame.title}</h4>
+                <p className="text-[10px] text-[#6B7BA4] font-mono">/{mobileActionGame.slug}</p>
+              </div>
+              <button 
+                onClick={() => setMobileActionGame(null)}
+                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/5 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-2.5">
+              {/* Toggle visibility */}
+              <button
+                onClick={() => {
+                  handleToggleVisible(mobileActionGame);
+                  setMobileActionGame(null);
+                }}
+                className={`flex items-center gap-3 w-full p-3 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
+                  mobileActionGame.visible
+                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                    : "bg-gray-500/5 text-gray-400 border-gray-500/10"
+                }`}
+              >
+                {mobileActionGame.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                <span>{mobileActionGame.visible ? "Storefront Visibility: Visible" : "Storefront Visibility: Hidden"}</span>
+              </button>
+              
+              {/* Edit Listing */}
+              <button
+                onClick={() => {
+                  openEditModal(mobileActionGame);
+                  setMobileActionGame(null);
+                }}
+                className="flex items-center gap-3 w-full p-3 bg-[#202838]/50 hover:bg-[#202838] border border-[#202838] text-white rounded-xl text-sm font-bold transition-all cursor-pointer"
+              >
+                <Edit2 className="w-4 h-4 text-[#00D2FF]" />
+                <span>Edit Game Details</span>
+              </button>
+              
+              {/* Delete Listing */}
+              <button
+                onClick={() => {
+                  openDeleteConfirm(mobileActionGame);
+                  setMobileActionGame(null);
+                }}
+                className="flex items-center gap-3 w-full p-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-xl text-sm font-bold transition-all cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Delete Game Listing</span>
               </button>
             </div>
           </div>

@@ -258,18 +258,18 @@ export default function AdminHomepageSectionsPage() {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Tab Selectors */}
-      <div className="flex border-b border-[#202838]">
+      {/* Tab Selectors (Segmented Control style) */}
+      <div className="flex p-1 bg-[#080A10]/60 border border-[#202838] rounded-xl overflow-x-auto scrollbar-hide max-w-fit">
         {sections.map((section) => {
           const isActive = activeSectionId === section.id;
           return (
             <button
               key={section.id}
               onClick={() => setActiveSectionId(section.id)}
-              className={`px-6 py-4 text-sm font-bold tracking-wide transition-all border-b-2 cursor-pointer ${
+              className={`px-4 py-2 text-xs lg:text-sm font-bold tracking-wide transition-all rounded-lg cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? "border-[#00D2FF] text-[#00D2FF] bg-white/[0.01]"
-                  : "border-transparent text-gray-400 hover:text-white"
+                  ? "bg-[#00D2FF]/10 text-[#00D2FF] border border-[#00D2FF]/20 shadow-[0_0_12px_rgba(0,210,255,0.05)]"
+                  : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
               }`}
             >
               {section.name}
@@ -301,11 +301,11 @@ export default function AdminHomepageSectionsPage() {
           ) : (
             <div className="divide-y divide-[#202838]/60">
               {mappings.map((mapping, i) => (
-                <div key={mapping.id} className="flex items-center justify-between p-4 hover:bg-white/[0.01] transition-colors group">
+                <div key={mapping.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-4 hover:bg-white/[0.01] transition-colors gap-3 group">
                   {/* Info */}
-                  <div className="flex items-center gap-4">
-                    {/* Index Display */}
-                    <span className="w-6 text-xs text-gray-500 font-mono text-center font-bold">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    {/* Index Display Badge */}
+                    <span className="w-5 h-5 rounded-full bg-[#080A10]/80 border border-[#202838] flex items-center justify-center text-[10px] text-gray-400 font-mono font-bold flex-shrink-0">
                       {i + 1}
                     </span>
 
@@ -321,32 +321,32 @@ export default function AdminHomepageSectionsPage() {
                     </div>
 
                     {/* Title */}
-                    <div>
-                      <p className="font-bold text-white text-sm leading-snug">{mapping.title}</p>
-                      <p className="text-[10px] text-gray-500 font-mono">/{mapping.slug}</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-white text-xs lg:text-sm leading-snug truncate" title={mapping.title}>{mapping.title}</p>
+                      <p className="text-[10px] text-gray-500 font-mono truncate">/{mapping.slug}</p>
                     </div>
                   </div>
 
                   {/* Actions (Reorder/Remove) */}
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center justify-end gap-3.5 flex-shrink-0">
                     {/* Move Controls */}
                     <div className="flex items-center border border-[#202838] bg-[#080A10]/40 rounded-lg p-0.5">
                       <button
                         disabled={i === 0 || actionLoading}
                         onClick={() => handleSwapOrder(i, i - 1)}
-                        className="p-1.5 text-gray-400 hover:text-[#00D2FF] disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
+                        className="p-2 text-gray-400 hover:text-[#00D2FF] disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
                         title="Move Up"
                       >
-                        <ArrowUp className="w-3.5 h-3.5" />
+                        <ArrowUp className="w-4 h-4" />
                       </button>
-                      <div className="w-[1px] h-4 bg-[#202838]" />
+                      <div className="w-[1px] h-5 bg-[#202838]" />
                       <button
                         disabled={i === mappings.length - 1 || actionLoading}
                         onClick={() => handleSwapOrder(i, i + 1)}
-                        className="p-1.5 text-gray-400 hover:text-[#00D2FF] disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
+                        className="p-2 text-gray-400 hover:text-[#00D2FF] disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
                         title="Move Down"
                       >
-                        <ArrowDown className="w-3.5 h-3.5" />
+                        <ArrowDown className="w-4 h-4" />
                       </button>
                     </div>
 
@@ -354,7 +354,7 @@ export default function AdminHomepageSectionsPage() {
                     <button
                       disabled={actionLoading}
                       onClick={() => handleRemoveGame(mapping.id)}
-                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
+                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/5 rounded-lg border border-transparent hover:border-red-500/10 transition-all cursor-pointer"
                       title="Remove from section"
                     >
                       <Trash2 className="w-4 h-4" />

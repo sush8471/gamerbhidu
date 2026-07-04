@@ -256,6 +256,26 @@
   background-color: rgb(15 23 42);
 }
 
+/* Global scrollbars style override */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080A10;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #202838;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}
+
+
 /* ── Global Theme Overrides for Hardcoded Blue & Navy Arbitrary Colors ── */
 [class*="bg-\[\#3B82F6\]"],
 [class*="bg-primary"],
