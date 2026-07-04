@@ -25,7 +25,7 @@ export default function CartPage() {
   }
 
   const handleWhatsAppRedirect = () => {
-    const message = `🎮 *Steam Rush Order ${orderId}*\n\n📦 *Games (${itemCount}):*\n${
+    const message = `🎮 *Gamer Bhidu Order ${orderId}*\n\n📦 *Games (${itemCount}):*\n${
       cart.map((item, i) => `${i + 1}. ${item.name} - ₹${item.price}`).join('\n')
     }\n\n💰 *Total: ₹${totalPrice}*\n\nI'd like to proceed with this order!`
     
@@ -37,7 +37,7 @@ export default function CartPage() {
   }
 
   const handleInstagramRedirect = () => {
-    const message = `🎮 Steam Rush Order ${orderId}\n\n📦 Games (${itemCount}):\n${
+    const message = `🎮 Gamer Bhidu Order ${orderId}\n\n📦 Games (${itemCount}):\n${
       cart.map((item, i) => `${i + 1}. ${item.name} - ₹${item.price}`).join('\n')
     }\n\n💰 Total: ₹${totalPrice}\n\nI'd like to proceed with this order!`
     
@@ -56,7 +56,7 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0E27]">
+    <div className="min-h-screen bg-[#080A10]">
       <SteamRushNavbar />
       
       <div className="py-20 px-4">
@@ -67,7 +67,7 @@ export default function CartPage() {
               <h1 className="text-4xl lg:text-5xl font-bold text-white mb-2">Shopping Cart</h1>
               <p className="text-[#B0B8D0]">{itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart</p>
             </div>
-            <Link href="/games" className="flex items-center gap-2 text-[#0074E4] hover:text-[#0062C4] transition-colors">
+            <Link href="/games" className="flex items-center gap-2 text-[#3B82F6] hover:text-[#2563EB] transition-colors">
               <ArrowLeft className="h-5 w-5" />
               <span className="hidden sm:inline">Continue Shopping</span>
             </Link>
@@ -80,12 +80,12 @@ export default function CartPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-center py-20"
             >
-              <ShoppingBag className="h-24 w-24 text-[#2A2E4D] mx-auto mb-6" />
+              <ShoppingBag className="h-24 w-24 text-[#202838] mx-auto mb-6" />
               <h2 className="text-2xl font-bold text-white mb-4">Your cart is empty</h2>
               <p className="text-[#B0B8D0] mb-8">Add some games to get started!</p>
               <Link
                 href="/games"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#0074E4] text-white rounded-full hover:bg-[#0062C4] transition-colors font-medium"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#3B82F6] text-white rounded-full hover:bg-[#2563EB] transition-colors font-medium"
               >
                 Browse Games
               </Link>
@@ -100,7 +100,7 @@ export default function CartPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-[#1A1F3A] border border-[#2A2E4D] p-4 rounded-lg flex items-center gap-4 hover:border-[#0074E4]/30 transition-all"
+                    className="bg-[#121622] border border-[#202838] p-4 rounded-lg flex items-center gap-4 hover:border-[#3B82F6]/30 transition-all"
                   >
                     <div className="relative w-24 h-32 flex-shrink-0">
                       {item.id === 'gta-v' || item.name.toLowerCase().includes('grand theft auto v') ? (
@@ -125,7 +125,7 @@ export default function CartPage() {
                     <div className="flex-1">
                       <h3 className="text-white font-semibold text-lg mb-1">
                         {item.id === 'gta-v' || item.name.toLowerCase().includes('grand theft auto v') ? (
-                          <Link href="/games/gta-v" className="hover:text-[#0074E4] transition-colors">
+                          <Link href="/games/gta-v" className="hover:text-[#3B82F6] transition-colors">
                             {item.name}
                           </Link>
                         ) : (
@@ -133,7 +133,7 @@ export default function CartPage() {
                         )}
                       </h3>
                       <div className="flex items-center gap-2">
-                        <span className="text-[#0074E4] font-bold text-xl">₹{item.price}</span>
+                        <span className="text-[#3B82F6] font-bold text-xl">₹{item.price}</span>
                         {item.originalPrice && (
                           <span className="text-[#B0B8D0] line-through text-sm">₹{item.originalPrice}</span>
                         )}
@@ -166,7 +166,7 @@ export default function CartPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-[#1A1F3A] border border-[#2A2E4D] p-6 rounded-lg sticky top-24"
+                  className="bg-[#121622] border border-[#202838] p-6 rounded-lg sticky top-24"
                 >
                   <h2 className="text-xl font-bold text-white mb-6">Order Summary</h2>
                   
@@ -179,7 +179,7 @@ export default function CartPage() {
                       <span>Delivery</span>
                       <span className="text-green-500">FREE</span>
                     </div>
-                    <div className="border-t border-[#2A2E4D] pt-3 flex justify-between text-white text-xl font-bold">
+                    <div className="border-t border-[#202838] pt-3 flex justify-between text-white text-xl font-bold">
                       <span>Total</span>
                       <span>₹{totalPrice}</span>
                     </div>
@@ -198,7 +198,7 @@ export default function CartPage() {
                   </p>
 
                   {/* Trust Badges */}
-                  <div className="mt-6 pt-6 border-t border-[#2A2E4D] space-y-2 text-sm text-[#B0B8D0]">
+                  <div className="mt-6 pt-6 border-t border-[#202838] space-y-2 text-sm text-[#B0B8D0]">
                     <div className="flex items-center gap-2">
                       <span className="text-green-500">✓</span>
                       <span>Instant Delivery</span>
@@ -234,7 +234,7 @@ export default function CartPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md bg-[#1A1F3A] border border-[#2A2E4D] rounded-2xl overflow-hidden shadow-2xl"
+              className="w-full max-w-md bg-[#121622] border border-[#202838] rounded-2xl overflow-hidden shadow-2xl"
             >
               {/* Scrollable Content */}
               <div className="max-h-[85vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
@@ -251,7 +251,7 @@ export default function CartPage() {
                   </div>
 
                   {/* Order Details */}
-                  <div className="bg-[#0A0E27]/50 rounded-lg p-4 space-y-3">
+                  <div className="bg-[#080A10]/50 rounded-lg p-4 space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-[#B0B8D0]">Order ID</span>
                       <span className="text-white font-semibold">{orderId}</span>
@@ -260,9 +260,9 @@ export default function CartPage() {
                       <span className="text-[#B0B8D0]">Items</span>
                       <span className="text-white font-semibold">{itemCount}</span>
                     </div>
-                    <div className="flex justify-between items-center pt-3 border-t border-[#2A2E4D]">
+                    <div className="flex justify-between items-center pt-3 border-t border-[#202838]">
                       <span className="text-white font-bold">Total</span>
-                      <span className="text-2xl font-bold text-[#00B4FF]">₹{totalPrice}</span>
+                      <span className="text-2xl font-bold text-[#00D2FF]">₹{totalPrice}</span>
                     </div>
                   </div>
 
@@ -283,7 +283,7 @@ export default function CartPage() {
                       </div>
 
                       {/* UPI ID */}
-                      <div className="mt-4 px-4 py-3 bg-[#0A0E27]/50 rounded-lg">
+                      <div className="mt-4 px-4 py-3 bg-[#080A10]/50 rounded-lg">
                         <p className="text-xs text-[#B0B8D0] mb-1">UPI ID</p>
                         <p className="text-sm text-white font-mono font-semibold">sushantcha00123@okicici</p>
                       </div>
@@ -291,18 +291,18 @@ export default function CartPage() {
                   </div>
 
                   {/* Payment Confirmation Checkbox */}
-                  <div className="bg-[#0A0E27]/30 border border-[#2A2E4D] rounded-lg p-4">
+                  <div className="bg-[#080A10]/30 border border-[#202838] rounded-lg p-4">
                     <label className="flex items-start gap-3 cursor-pointer group">
                       <div className="relative flex items-center">
                         <input
                           type="checkbox"
                           checked={paymentConfirmed}
                           onChange={(e) => setPaymentConfirmed(e.target.checked)}
-                          className="w-5 h-5 rounded border-2 border-[#2A2E4D] bg-transparent checked:bg-[#00B4FF] checked:border-[#00B4FF] cursor-pointer transition-all focus:ring-2 focus:ring-[#00B4FF]/50 focus:ring-offset-2 focus:ring-offset-[#1A1F3A]"
+                          className="w-5 h-5 rounded border-2 border-[#202838] bg-transparent checked:bg-[#00D2FF] checked:border-[#00D2FF] cursor-pointer transition-all focus:ring-2 focus:ring-[#00D2FF]/50 focus:ring-offset-2 focus:ring-offset-[#121622]"
                         />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm text-white font-medium group-hover:text-[#00B4FF] transition-colors">
+                        <p className="text-sm text-white font-medium group-hover:text-[#00D2FF] transition-colors">
                           I have completed the payment
                         </p>
                         <p className="text-xs text-[#B0B8D0] mt-1">
@@ -315,10 +315,10 @@ export default function CartPage() {
                   {/* Divider */}
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-[#2A2E4D]"></div>
+                      <div className="w-full border-t border-[#202838]"></div>
                     </div>
                     <div className="relative flex justify-center">
-                      <span className="px-4 text-xs text-[#B0B8D0] bg-[#1A1F3A]">THEN</span>
+                      <span className="px-4 text-xs text-[#B0B8D0] bg-[#121622]">THEN</span>
                     </div>
                   </div>
 
@@ -329,7 +329,7 @@ export default function CartPage() {
                     className={`w-full py-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
                       paymentConfirmed
                         ? 'bg-[#25D366] text-white hover:bg-[#20BA5A] cursor-pointer'
-                        : 'bg-[#2A2E4D] text-[#4A5568] cursor-not-allowed opacity-50'
+                        : 'bg-[#202838] text-[#4A5568] cursor-not-allowed opacity-50'
                     }`}
                   >
                     <FaWhatsapp className="h-5 w-5" />
@@ -343,7 +343,7 @@ export default function CartPage() {
                     className={`w-full py-4 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
                       paymentConfirmed
                         ? 'bg-gradient-to-r from-[#833AB4] via-[#C13584] to-[#E1306C] text-white hover:opacity-90 cursor-pointer'
-                        : 'bg-[#2A2E4D] text-[#4A5568] cursor-not-allowed opacity-50'
+                        : 'bg-[#202838] text-[#4A5568] cursor-not-allowed opacity-50'
                     }`}
                   >
                     <FaInstagram className="h-5 w-5" />

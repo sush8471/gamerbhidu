@@ -68,7 +68,7 @@ export default function FAQ() {
   };
 
     return (
-      <section className="w-full bg-[#0A0E27] py-8 md:py-12 lg:py-20">
+      <section className="w-full bg-[#080A10] py-8 md:py-12 lg:py-20">
         <div className="mx-auto max-w-[900px] px-4 md:px-6 lg:px-8">
           
           <div className="text-center mb-6 md:mb-10 lg:mb-14">
@@ -88,7 +88,7 @@ export default function FAQ() {
                 className={`px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all duration-300 ${
                   selectedCategory === category
                     ? "bg-gradient-to-r from-[#FF6B2C] to-[#FF8C42] text-white shadow-lg shadow-orange-500/20"
-                    : "bg-[#1A1F3A] text-[#B0B8D0] hover:bg-[#2A2E4D] border border-[#2A2E4D]"
+                    : "bg-[#121622] text-[#B0B8D0] hover:bg-[#202838] border border-[#202838]"
                 }`}
               >
                 {category}
@@ -100,7 +100,7 @@ export default function FAQ() {
             {filteredFaqs.map((faq, index) => (
               <div 
                 key={index}
-                className="bg-gradient-to-b from-[#1A1F3A] to-[#0F1535] rounded-lg md:rounded-xl border border-[#2A2E4D] overflow-hidden transition-all duration-300 hover:border-[#2A2E4D]/80"
+                className="bg-gradient-to-b from-[#121622] to-[#141416] rounded-lg md:rounded-xl border border-[#202838] overflow-hidden transition-all duration-300 hover:border-[#202838]/80"
               >
                 <button
                   onClick={() => toggleFAQ(index)}

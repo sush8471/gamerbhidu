@@ -168,9 +168,9 @@ function GameListDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl max-h-[85vh] bg-[#1A1F3A] rounded-xl border border-[#2A2E4D] shadow-[0_0_50px_rgba(0,116,228,0.3)] overflow-hidden animate-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-2xl max-h-[85vh] bg-[#121622] rounded-xl border border-[#202838] shadow-[0_0_50px_rgba(59,130,246,0.3)] overflow-hidden animate-in zoom-in-95 duration-300">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-b from-[#1A1F3A] to-[#1A1F3A]/95 backdrop-blur-sm border-b border-[#2A2E4D] p-6">
+        <div className="sticky top-0 z-10 bg-gradient-to-b from-[#121622] to-[#121622]/95 backdrop-blur-sm border-b border-[#202838] p-6">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-2xl font-black text-white mb-2">
@@ -179,14 +179,14 @@ function GameListDialog({
               <p className="text-[#B0B8D0] text-sm">
                 {gameCount} {getBundleSubtitle(bundle.id)}
               </p>
-              <div className="mt-3 inline-flex items-center gap-2 bg-[#0074E4]/10 border border-[#0074E4]/30 rounded-lg px-3 py-1.5">
+              <div className="mt-3 inline-flex items-center gap-2 bg-[#3B82F6]/10 border border-[#3B82F6]/30 rounded-lg px-3 py-1.5">
                 <span className="text-white font-black text-lg">{bundle.price.discounted}</span>
                 <span className="text-[#B0B8D0] text-xs">Only</span>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg bg-[#0A0E27] border border-[#2A2E4D] hover:border-[#0074E4]/50 transition-colors"
+              className="p-2 rounded-lg bg-[#080A10] border border-[#202838] hover:border-[#3B82F6]/50 transition-colors"
             >
               <X className="w-5 h-5 text-[#B0B8D0]" />
             </button>
@@ -200,11 +200,11 @@ function GameListDialog({
               const isGTAV = game === "Grand Theft Auto V";
               const Content = (
                 <>
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#0074E4]/20 border border-[#0074E4]/40 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#3B82F6]/20 border border-[#3B82F6]/40 flex items-center justify-center">
                     {isGTAV ? (
-                      <ExternalLink className="w-3 h-3 text-[#0074E4]" />
+                      <ExternalLink className="w-3 h-3 text-[#3B82F6]" />
                     ) : (
-                      <Check className="w-3 h-3 text-[#0074E4]" />
+                      <Check className="w-3 h-3 text-[#3B82F6]" />
                     )}
                   </div>
                   <span className="text-[#E0E0E0] text-sm group-hover:text-white transition-colors">
@@ -219,7 +219,7 @@ function GameListDialog({
                     key={index}
                     href="/games/gta-v"
                     onClick={onClose}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-[#0A0E27]/50 border border-[#2A2E4D]/50 hover:border-[#0074E4]/30 hover:bg-[#1A1F3A] transition-all duration-200 group cursor-pointer"
+                    className="flex items-center gap-3 p-3 rounded-lg bg-[#080A10]/50 border border-[#202838]/50 hover:border-[#3B82F6]/30 hover:bg-[#121622] transition-all duration-200 group cursor-pointer"
                   >
                     {Content}
                   </Link>
@@ -229,7 +229,7 @@ function GameListDialog({
               return (
                 <div
                   key={index}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-[#0A0E27]/50 border border-[#2A2E4D]/50 transition-all duration-200 group"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-[#080A10]/50 border border-[#202838]/50 transition-all duration-200 group"
                 >
                   {Content}
                 </div>
@@ -239,7 +239,7 @@ function GameListDialog({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-gradient-to-t from-[#1A1F3A] to-[#1A1F3A]/95 backdrop-blur-sm border-t border-[#2A2E4D] p-6">
+        <div className="sticky bottom-0 bg-gradient-to-t from-[#121622] to-[#121622]/95 backdrop-blur-sm border-t border-[#202838] p-6">
           <button
             onClick={() => {
               window.parent.postMessage(
@@ -286,7 +286,7 @@ export default function ComboDealSection() {
 
   return (
     <>
-      <section className="w-full bg-[#0A0E27] py-12 lg:py-16">
+      <section className="w-full bg-[#080A10] py-12 lg:py-16">
         <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4 mb-4 lg:mb-6">
             <div>
@@ -301,7 +301,7 @@ export default function ComboDealSection() {
               <button
                 key={combo.id}
                 onClick={() => handleComboClick(combo)}
-                className="group relative bg-[#1A1F3A] rounded-lg overflow-hidden border border-[#2A2E4D] hover:border-[#0074E4]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,116,228,0.15)] text-left flex-shrink-0 w-[85vw] max-w-[380px] lg:w-full snap-start"
+                className="group relative bg-[#121622] rounded-lg overflow-hidden border border-[#202838] hover:border-[#3B82F6]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] text-left flex-shrink-0 w-[85vw] max-w-[380px] lg:w-full snap-start"
               >
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
                   <Image
@@ -311,10 +311,10 @@ export default function ComboDealSection() {
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                     sizes="(max-width: 1024px) 85vw, 33vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E27] via-transparent to-transparent opacity-90" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#080A10] via-transparent to-transparent opacity-90" />
 
                   {combo.price.discountDetails && (
-                    <div className="absolute top-2 right-2 bg-[#0074E4] text-white text-xs font-bold px-2.5 py-1 rounded-md">
+                    <div className="absolute top-2 right-2 bg-[#3B82F6] text-white text-xs font-bold px-2.5 py-1 rounded-md">
                       {combo.price.discountDetails}
                     </div>
                   )}

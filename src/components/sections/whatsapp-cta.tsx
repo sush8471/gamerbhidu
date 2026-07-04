@@ -15,10 +15,10 @@ export default function WhatsAppCTA({
 }: WhatsAppCTAProps) {
   if (variant === "secondary") {
       return (
-        <section className="w-full bg-[#0A0E27] py-4 md:py-8">
+        <section className="w-full bg-[#080A10] py-4 md:py-8">
           <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-8">
-            <div className="relative bg-gradient-to-r from-[#1A1F3A] via-[#2A2E4D] to-[#1A1F3A] rounded-lg md:rounded-2xl p-3 md:p-6 lg:p-8 border border-[#2A2E4D] overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#25D366]/5 to-[#0074E4]/5 opacity-50" />
+            <div className="relative bg-gradient-to-r from-[#121622] via-[#202838] to-[#121622] rounded-lg md:rounded-2xl p-3 md:p-6 lg:p-8 border border-[#202838] overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#25D366]/5 to-[#3B82F6]/5 opacity-50" />
 
               <div className="relative flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6">
                 <div className="text-center md:text-left">
@@ -44,12 +44,12 @@ export default function WhatsAppCTA({
   }
 
   return (
-    <section className="w-full bg-[#0A0E27] py-16 lg:py-20">
+    <section className="w-full bg-[#080A10] py-16 lg:py-20">
       <div className="mx-auto max-w-[1200px] px-4 md:px-6 lg:px-8">
-        <div className="relative bg-gradient-to-br from-[#1A1F3A] via-[#1E2847] to-[#1A1F3A] rounded-2xl p-8 lg:p-14 overflow-hidden border border-[#2A2E4D]/50 shadow-xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#25D366]/5 via-transparent to-[#0074E4]/5 opacity-40" />
+        <div className="relative bg-gradient-to-br from-[#121622] via-[#202838] to-[#121622] rounded-2xl p-8 lg:p-14 overflow-hidden border border-[#202838]/50 shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#25D366]/5 via-transparent to-[#3B82F6]/5 opacity-40" />
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#25D366]/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#0074E4]/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#3B82F6]/5 rounded-full blur-3xl" />
 
           <div className="relative text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-[#25D366]/10 border border-[#25D366]/20 backdrop-blur-sm mb-6">

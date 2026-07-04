@@ -1,6 +1,6 @@
 /**
  * Local Game Database Queries
- * Replaces Supabase with local in-memory data
+ * Uses local in-memory data
  */
 
 import { GAMES_DATABASE } from "@/data/games";

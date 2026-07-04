@@ -178,7 +178,7 @@ export default function ThumbnailCarousel({ images, className }: ThumbnailCarous
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 1200px"
                 />
                  {/* Cinematic Vignette Overlay */}
-                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0E27] via-transparent to-transparent opacity-60" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-[#080A10] via-transparent to-transparent opacity-60" />
               </div>
             ))}
           </motion.div>
@@ -191,7 +191,7 @@ export default function ThumbnailCarousel({ images, className }: ThumbnailCarous
               ${
                 index === 0
                   ? 'opacity-0 cursor-not-allowed hidden'
-                  : 'bg-black/50 text-white hover:bg-[#00B4FF] hover:scale-110 opacity-0 group-hover:opacity-100'
+                  : 'bg-black/50 text-white hover:bg-[#00D2FF] hover:scale-110 opacity-0 group-hover:opacity-100'
               }`}
           >
             <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -207,7 +207,7 @@ export default function ThumbnailCarousel({ images, className }: ThumbnailCarous
               ${
                 index === items.length - 1
                   ? 'opacity-0 cursor-not-allowed hidden'
-                  : 'bg-black/50 text-white hover:bg-[#00B4FF] hover:scale-110 opacity-0 group-hover:opacity-100'
+                  : 'bg-black/50 text-white hover:bg-[#00D2FF] hover:scale-110 opacity-0 group-hover:opacity-100'
               }`}
           >
             <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -234,7 +234,7 @@ export default function ThumbnailCarousel({ images, className }: ThumbnailCarous
               onClick={() => setIndex(i)}
               className={cn(
                 "h-1.5 rounded-full transition-all duration-300",
-                i === index ? "w-6 bg-[#00B4FF]" : "w-1.5 bg-white/20 hover:bg-white/40"
+                i === index ? "w-6 bg-[#00D2FF]" : "w-1.5 bg-white/20 hover:bg-white/40"
               )}
               aria-label={`Go to slide ${i + 1}`}
             />

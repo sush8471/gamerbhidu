@@ -22,39 +22,40 @@
 /* Updated: 2025-12-14T05:56:52.287Z */
 @import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;700;900&family=Recursive+Mono:wght@400;700&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-background: #0a0e27;
+  --color-background: #080a10;
   --color-foreground: #ffffff;
 
-  --color-card: #1a1f3a;
+  --color-card: #121622;
   --color-card-foreground: #ffffff;
 
-  --color-popover: #1a1f3a;
+  --color-popover: #121622;
   --color-popover-foreground: #ffffff;
 
-  --color-primary: #00b4ff;
+  --color-primary: #00d2ff;
   --color-primary-foreground: #ffffff;
 
   --color-secondary: #4a5568;
   --color-secondary-foreground: #ffffff;
 
-  --color-muted: #b0b8d0;
-  --color-muted-foreground: #b0b8d0;
+  --color-muted: #94a3b8;
+  --color-muted-foreground: #94a3b8;
 
-  --color-accent: #00d9ff;
+  --color-accent: #38bdf8;
   --color-accent-foreground: #ffffff;
 
-  --color-destructive: #ef4444; /* Default red, adjust if needed */
+  --color-destructive: #00d2ff; /* Default red, adjust if needed */
   --color-destructive-foreground: #fafafa;
 
-  --color-border: #2d3748;
-  --color-input: #2d3748;
-  --color-ring: #00b4ff;
+  --color-border: #202838;
+  --color-input: #202838;
+  --color-ring: #00d2ff;
 
   --color-chart-1: #e67e22;
   --color-chart-2: #2d8659;
@@ -62,13 +63,13 @@
   --color-chart-4: #f1c40f;
   --color-chart-5: #e74c3c;
 
-  --color-background-secondary: #1a1f3a;
-  --color-text-secondary: #b0b8d0;
-  --color-discount-badge: #00b4ff;
+  --color-background-secondary: #121622;
+  --color-text-secondary: #94a3b8;
+  --color-discount-badge: #00d2ff;
   --color-shadow-overlay: #000000;
 
-  --font-display: "Inter Tight", sans-serif;
-  --font-body: "Inter Tight", sans-serif;
+  --font-display: "Rajdhani", sans-serif;
+  --font-body: "Outfit", sans-serif;
   --font-mono: "Recursive Mono", monospace;
 
   --animate-accordion-down: accordion-down 0.2s ease-out;

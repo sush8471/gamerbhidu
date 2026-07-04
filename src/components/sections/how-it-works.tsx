@@ -9,7 +9,7 @@ export default function HowItWorks() {
       number: "1",
       title: "Browse & Add to Cart",
       description: "Select games and add them to your cart",
-      iconColor: "text-[#0074E4]",
+      iconColor: "text-[#3B82F6]",
     },
     {
       icon: MessageCircle,
@@ -28,7 +28,7 @@ export default function HowItWorks() {
   ];
 
     return (
-      <section className="w-full bg-[#0A0E27] py-12 md:py-16">
+      <section className="w-full bg-[#080A10] py-12 md:py-16">
         <div className="mx-auto max-w-[1200px] px-4 md:px-6">
         
         <div className="text-center md:text-center mb-4 md:mb-8">
@@ -44,7 +44,7 @@ export default function HowItWorks() {
             return (
               <div key={index} className="flex items-start gap-3 relative">
                 <div className="flex-shrink-0 flex flex-col items-center">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#0074E4] to-[#0056B3] flex items-center justify-center text-white font-bold text-xs">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#0056B3] flex items-center justify-center text-white font-bold text-xs">
                     {step.number}
                   </div>
                   {!isLast && (
@@ -74,14 +74,14 @@ export default function HowItWorks() {
             return (
               <div 
                 key={index}
-                className="bg-[#1A1F3A]/50 rounded-lg p-4 border border-[#2A2E4D]"
+                className="bg-[#121622]/50 rounded-lg p-4 border border-[#202838]"
               >
                 <div className="flex flex-col items-center text-center gap-3">
                   <div className="relative">
-                    <div className={`w-12 h-12 rounded-lg bg-[#1A1F3A] flex items-center justify-center border border-white/5`}>
+                    <div className={`w-12 h-12 rounded-lg bg-[#121622] flex items-center justify-center border border-white/5`}>
                       <Icon className={`w-6 h-6 ${step.iconColor}`} strokeWidth={2} />
                     </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-br from-[#0074E4] to-[#0056B3] flex items-center justify-center text-white font-bold text-xs shadow-lg">
+                    <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#0056B3] flex items-center justify-center text-white font-bold text-xs shadow-lg">
                       {step.number}
                     </div>
                   </div>

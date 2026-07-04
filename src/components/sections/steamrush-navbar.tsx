@@ -51,7 +51,7 @@ export default function SteamRushNavbar() {
   const [isGamesOpen, setIsGamesOpen] = React.useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0A0E27]/95 backdrop-blur-md supports-[backdrop-filter]:bg-[#0A0E27]/90">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#080A10]/95 backdrop-blur-md supports-[backdrop-filter]:bg-[#080A10]/90">
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
         {/* Left Side: Menu + Logo */}
         <div className="flex items-center gap-3">
@@ -62,12 +62,12 @@ export default function SteamRushNavbar() {
                 <Menu className="h-5 w-5 text-white" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[240px] bg-[#0A0E27] border-[#2A2E4D]">
+            <SheetContent side="left" className="w-[240px] bg-[#080A10] border-[#202838]">
               <SheetHeader>
                 <SheetTitle className="flex items-center">
                   <Image
                     src="/new-logo.png"
-                    alt="Steam Rush"
+                    alt="Gamer Bhidu"
                     width={140}
                     height={44}
                     className="h-8 w-auto"
@@ -116,7 +116,7 @@ export default function SteamRushNavbar() {
                     </CollapsibleTrigger>
                   </div>
 
-                  <CollapsibleContent className="ml-7 mt-1 space-y-1 border-l-2 border-[#0074E4] pl-4">
+                  <CollapsibleContent className="ml-7 mt-1 space-y-1 border-l-2 border-[#3B82F6] pl-4">
                     {gameCategories.map((cat) => (
                       <Link
                         key={cat.href}
@@ -130,7 +130,7 @@ export default function SteamRushNavbar() {
                     <Link
                       href="/games"
                       onClick={() => setIsOpen(false)}
-                      className="block rounded-md px-3 py-2 text-sm font-semibold text-[#0074E4] transition-colors hover:bg-white/5"
+                      className="block rounded-md px-3 py-2 text-sm font-semibold text-[#3B82F6] transition-colors hover:bg-white/5"
                     >
                       View All →
                     </Link>
@@ -167,7 +167,7 @@ export default function SteamRushNavbar() {
           <Link href="/" className="flex items-center hover:opacity-90 transition-opacity flex-shrink-0">
             <Image
               src="/new-logo.png"
-              alt="Steam Rush - Affordable Gaming, Instant Rush"
+              alt="Gamer Bhidu - Affordable Gaming"
               width={200}
               height={60}
               className="h-10 sm:h-12 w-auto"
@@ -200,7 +200,7 @@ export default function SteamRushNavbar() {
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 bg-[#1A1F3A] border-[#2A2E4D]">
+            <DropdownMenuContent align="start" className="w-56 bg-[#121622] border-[#202838]">
               <DropdownMenuLabel className="text-white">Game Categories</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-white/10" />
               {gameCategories.map((cat) => (
@@ -215,7 +215,7 @@ export default function SteamRushNavbar() {
               ))}
               <DropdownMenuSeparator className="bg-white/10" />
               <DropdownMenuItem asChild className="focus:bg-white/5 focus:text-white">
-                <Link href="/games" className="cursor-pointer font-semibold text-[#0074E4]">
+                <Link href="/games" className="cursor-pointer font-semibold text-[#3B82F6]">
                   View All Games →
                 </Link>
               </DropdownMenuItem>

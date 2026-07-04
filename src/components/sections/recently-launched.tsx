@@ -33,13 +33,13 @@ export default function RecentlyLaunched() {
     }
 
     return (
-        <section className="w-full bg-[#0A0E27] py-8 lg:py-12">
+        <section className="w-full bg-[#080A10] py-8 lg:py-12">
             <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-8">
 
                 <div className="flex items-center justify-between gap-4 mb-4 lg:mb-6">
                     <div>
                         <h2 className="text-2xl lg:text-4xl font-black text-white mb-1 flex items-center gap-2">
-                            <Rocket className="w-6 h-6 lg:w-8 lg:h-8 text-[#00FF88]" />
+                            <Rocket className="w-6 h-6 lg:w-8 lg:h-8 text-[#00D2FF]" />
                             Recently Launched
                         </h2>
                         <p className="text-[#B0B8D0] text-sm lg:text-base">
@@ -52,14 +52,14 @@ export default function RecentlyLaunched() {
                         <div className="hidden lg:flex items-center gap-2">
                             <button
                                 onClick={() => scroll('left')}
-                                className="p-2 rounded-lg bg-[#1A1F3A] hover:bg-[#2A2E4D] border border-[#2A2E4D] hover:border-[#00FF88]/30 text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(0,255,136,0.2)]"
+                                className="p-2 rounded-lg bg-[#121622] hover:bg-[#202838] border border-[#202838] hover:border-[#00D2FF]/30 text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(0,210,255,0.2)]"
                                 aria-label="Scroll left"
                             >
                                 <ChevronLeft className="w-5 h-5" />
                             </button>
                             <button
                                 onClick={() => scroll('right')}
-                                className="p-2 rounded-lg bg-[#1A1F3A] hover:bg-[#2A2E4D] border border-[#2A2E4D] hover:border-[#00FF88]/30 text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(0,255,136,0.2)]"
+                                className="p-2 rounded-lg bg-[#121622] hover:bg-[#202838] border border-[#202838] hover:border-[#00D2FF]/30 text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(0,210,255,0.2)]"
                                 aria-label="Scroll right"
                             >
                                 <ChevronRight className="w-5 h-5" />
@@ -81,7 +81,7 @@ export default function RecentlyLaunched() {
                                 href={`/games/${game.id}`}
                                 className="flex-shrink-0 snap-start"
                             >
-                                <div className="group relative bg-[#1A1F3A] rounded-lg overflow-hidden border border-[#2A2E4D] hover:border-[#00FF88]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,255,136,0.15)] flex-shrink-0 w-[60vw] max-w-[240px] h-full cursor-pointer">
+                                <div className="group relative bg-[#121622] rounded-lg overflow-hidden border border-[#202838] hover:border-[#00D2FF]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,210,255,0.15)] flex-shrink-0 w-[60vw] max-w-[240px] h-full cursor-pointer">
                                     <div className="relative aspect-[3/4] w-full overflow-hidden">
                                         <Image
                                             src={game.image}
@@ -92,7 +92,7 @@ export default function RecentlyLaunched() {
                                         />
 
                                         {/* NEW Badge */}
-                                        <div className="absolute top-2 left-2 bg-gradient-to-r from-[#00FF88] to-[#00CC6E] text-[#0A0E27] text-xs font-bold px-2.5 py-1 rounded-md shadow-lg flex items-center gap-1">
+                                        <div className="absolute top-2 left-2 bg-gradient-to-r from-[#00D2FF] to-[#00CC6E] text-[#080A10] text-xs font-bold px-2.5 py-1 rounded-md shadow-lg flex items-center gap-1">
                                             <Rocket className="w-3 h-3" />
                                             NEW
                                         </div>

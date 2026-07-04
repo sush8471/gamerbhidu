@@ -29,7 +29,7 @@ const GAME_POSTERS = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0A0E27]">
+    <main className="min-h-screen bg-[#080A10]">
       <SteamRushNavbar />
       <AnimatedMarqueeHero
         tagline={
@@ -61,23 +61,23 @@ export default function Home() {
       <div id="hot-deals">
         <GameCardsGridDiscover />
       </div>
-      <Suspense fallback={<div className="h-96 bg-[#0A0E27]" />}>
+      <Suspense fallback={<div className="h-96 bg-[#080A10]" />}>
         <ComboDealSection />
       </Suspense>
       <SocialProof />
 
-      <Suspense fallback={<div className="h-96 bg-[#0A0E27]" />}>
+      <Suspense fallback={<div className="h-96 bg-[#080A10]" />}>
         <RecentlyLaunched />
       </Suspense>
-      <Suspense fallback={<div className="h-96 bg-[#0A0E27]" />}>
+      <Suspense fallback={<div className="h-96 bg-[#080A10]" />}>
         <UpcomingGames />
       </Suspense>
       <div id="faq">
-        <Suspense fallback={<div className="h-64 bg-[#0A0E27]" />}>
+        <Suspense fallback={<div className="h-64 bg-[#080A10]" />}>
           <FAQ />
         </Suspense>
       </div>
-      <Suspense fallback={<div className="h-32 bg-[#0A0E27]" />}>
+      <Suspense fallback={<div className="h-32 bg-[#080A10]" />}>
         <Footer />
       </Suspense>
     </main>

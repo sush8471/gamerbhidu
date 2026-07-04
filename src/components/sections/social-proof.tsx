@@ -175,7 +175,7 @@ export default function SocialProof() {
 
   return (
     <>
-      <section className="w-full bg-gradient-to-b from-[#0A0E27] to-[#0E1330] py-16 lg:py-20">
+      <section className="w-full bg-gradient-to-b from-[#080A10] to-[#0E111C] py-16 lg:py-20">
         <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-8">
           <div className="text-center mb-10 lg:mb-14">
             <h2 className="text-3xl lg:text-4xl font-black text-white mb-3 lg:mb-4">
@@ -210,8 +210,8 @@ export default function SocialProof() {
               ))}
             </div>
 
-            <div className="absolute top-0 left-0 bottom-0 w-16 bg-gradient-to-r from-[#0E1330] to-transparent pointer-events-none"></div>
-            <div className="absolute top-0 right-0 bottom-0 w-16 bg-gradient-to-l from-[#0E1330] to-transparent pointer-events-none"></div>
+            <div className="absolute top-0 left-0 bottom-0 w-16 bg-gradient-to-r from-[#0E111C] to-transparent pointer-events-none"></div>
+            <div className="absolute top-0 right-0 bottom-0 w-16 bg-gradient-to-l from-[#0E111C] to-transparent pointer-events-none"></div>
           </div>
 
           <style jsx>{`

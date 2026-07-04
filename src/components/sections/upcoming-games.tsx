@@ -24,7 +24,7 @@ export default function UpcomingGames() {
   };
 
   return (
-    <section className="w-full bg-[#0A0E27] py-8 lg:py-12">
+    <section className="w-full bg-[#080A10] py-8 lg:py-12">
       <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-8">
 
         <div className="flex items-center justify-between gap-4 mb-4 lg:mb-6">
@@ -42,14 +42,14 @@ export default function UpcomingGames() {
           <div className="hidden lg:flex items-center gap-2">
             <button
               onClick={() => scroll('left')}
-              className="p-2 rounded-lg bg-[#1A1F3A] hover:bg-[#2A2E4D] border border-[#2A2E4D] hover:border-[#FFD700]/30 text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(255,215,0,0.2)]"
+              className="p-2 rounded-lg bg-[#121622] hover:bg-[#202838] border border-[#202838] hover:border-[#FFD700]/30 text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(255,215,0,0.2)]"
               aria-label="Scroll left"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => scroll('right')}
-              className="p-2 rounded-lg bg-[#1A1F3A] hover:bg-[#2A2E4D] border border-[#2A2E4D] hover:border-[#FFD700]/30 text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(255,215,0,0.2)]"
+              className="p-2 rounded-lg bg-[#121622] hover:bg-[#202838] border border-[#202838] hover:border-[#FFD700]/30 text-white transition-all duration-200 hover:shadow-[0_0_15px_rgba(255,215,0,0.2)]"
               aria-label="Scroll right"
             >
               <ChevronRight className="w-5 h-5" />
@@ -68,7 +68,7 @@ export default function UpcomingGames() {
             upcomingGames.map((game) => {
               const CardContent = (
                 <div
-                  className="group relative bg-[#1A1F3A]/40 rounded-lg overflow-hidden border border-[#2A2E4D]/50 transition-all duration-300 hover:border-[#FFD700]/30 hover:shadow-[0_0_20px_rgba(255,215,0,0.1)] cursor-pointer flex-shrink-0 w-[60vw] max-w-[240px] snap-start h-full"
+                  className="group relative bg-[#121622]/40 rounded-lg overflow-hidden border border-[#202838]/50 transition-all duration-300 hover:border-[#FFD700]/30 hover:shadow-[0_0_20px_rgba(255,215,0,0.1)] cursor-pointer flex-shrink-0 w-[60vw] max-w-[240px] snap-start h-full"
                 >
                   <div className="relative aspect-[3/4] w-full overflow-hidden">
                     <Image
@@ -79,7 +79,7 @@ export default function UpcomingGames() {
                       sizes="(max-width: 768px) 60vw, 16vw"
                     />
 
-                    <div className="absolute top-2 right-2 bg-[#FFD700]/90 text-[#0A0E27] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                    <div className="absolute top-2 right-2 bg-[#FFD700]/90 text-[#080A10] text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
                       <Sparkles className="w-3 h-3" />
                       Coming Soon
                     </div>

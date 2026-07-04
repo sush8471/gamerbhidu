@@ -73,9 +73,17 @@ export async function getSteamGameDetails(
   }
 
   try {
-    const url = `/api/steam?appId=${appId}`;
+    const isServer = typeof window === 'undefined';
+    const url = isServer
+      ? `https://store.steampowered.com/api/appdetails?appids=${appId}&cc=in&l=english`
+      : `/api/steam?appId=${appId}`;
+
+    const headers: HeadersInit = isServer
+      ? { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+      : {};
 
     const response = await fetch(url, {
+      headers,
       next: { revalidate: 300 }
     });
 

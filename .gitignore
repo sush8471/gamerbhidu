@@ -58,3 +58,9 @@ find-*.js
 
 # unused scripts
 /scripts/
+
+# Agent internal folder
+.agent/
+__pycache__/
+*.pyc
+

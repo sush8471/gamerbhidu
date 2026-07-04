@@ -23,7 +23,6 @@ const nextConfig: NextConfig = {
 
   reactStrictMode: true,
   compress: true,
-  swcMinify: true,
 
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],

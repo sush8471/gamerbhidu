@@ -26,8 +26,8 @@ const FAQItem = ({ question, answer, isOpen, onClick }: { question: string; answ
       className="w-full py-5 flex items-center justify-between text-left group"
     >
       <span className="text-white font-bold text-[13px] lg:text-sm pr-4 tracking-tight leading-snug">{question}</span>
-      <div className={`p-1 rounded-full transition-colors ${isOpen ? 'bg-[#00B4FF]/10' : 'bg-white/5 group-hover:bg-white/10'}`}>
-        <ChevronDown className={`w-3.5 h-3.5 text-[#00B4FF] flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+      <div className={`p-1 rounded-full transition-colors ${isOpen ? 'bg-[#00D2FF]/10' : 'bg-white/5 group-hover:bg-white/10'}`}>
+        <ChevronDown className={`w-3.5 h-3.5 text-[#00D2FF] flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </div>
     </button>
     <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[400px] pb-6' : 'max-h-0'}`}>
@@ -81,7 +81,7 @@ export default function GameDetailPage() {
     }
   };
 
-  // Fetch game from Supabase
+  // Fetch game from local database
   useEffect(() => {
     async function fetchGame() {
       console.log('🔍 Fetching game with slug:', slug);
@@ -150,9 +150,9 @@ export default function GameDetailPage() {
   // Show loading state while fetching
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#0A0E27] flex items-center justify-center text-white">
+      <main className="min-h-screen bg-[#080A10] flex items-center justify-center text-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00B4FF] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#00D2FF] mx-auto mb-4"></div>
           <p className="text-[#8F98A0]">Loading game details...</p>
         </div>
       </main>
@@ -162,10 +162,10 @@ export default function GameDetailPage() {
   // Show "not found" only after loading completes and game is still null
   if (!loading && !game) {
     return (
-      <main className="min-h-screen bg-[#0A0E27] flex items-center justify-center text-white">
+      <main className="min-h-screen bg-[#080A10] flex items-center justify-center text-white">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Game Not Found</h1>
-          <Link href="/games" className="text-[#00B4FF] hover:underline">Back to Store</Link>
+          <Link href="/games" className="text-[#00D2FF] hover:underline">Back to Store</Link>
         </div>
       </main>
     );
@@ -206,7 +206,7 @@ export default function GameDetailPage() {
       try {
         await navigator.share({
           title: game.title,
-          text: `Check out ${game.title} on SteamRush!`,
+          text: `Check out ${game.title} on Gamer Bhidu!`,
           url: window.location.href,
         });
       } catch (err) {
@@ -219,13 +219,13 @@ export default function GameDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0A0E27] text-white selection:bg-[#00B4FF] selection:text-white pb-12 lg:pb-0">
+    <main className="min-h-screen bg-[#080A10] text-white selection:bg-[#00D2FF] selection:text-white pb-12 lg:pb-0">
       <SteamRushNavbar />
 
       {/* IMMERSIVE BACKGROUND */}
       <div className="fixed inset-0 h-screen -z-10 pointer-events-none overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0E27]/20 via-[#0A0E27]/80 to-[#0A0E27] z-10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0E27]/50 via-transparent to-[#0A0E27]/50 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#080A10]/20 via-[#080A10]/80 to-[#080A10] z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080A10]/50 via-transparent to-[#080A10]/50 z-10" />
         <Image
           src={headerImage}
           alt=""
@@ -241,7 +241,7 @@ export default function GameDetailPage() {
           {/* Breadcrumbs - Desktop */}
           <div className="hidden lg:flex items-center justify-between mb-6 px-4 lg:px-0">
             <Link href="/games" className="inline-flex items-center gap-2 text-sm font-medium text-[#8F98A0] hover:text-white transition-colors group">
-              <div className="p-1 rounded-full bg-white/5 group-hover:bg-[#00B4FF] transition-colors">
+              <div className="p-1 rounded-full bg-white/5 group-hover:bg-[#00D2FF] transition-colors">
                 <ArrowLeft className="w-4 h-4 text-white" />
               </div>
               <span>Back to Store</span>
@@ -257,18 +257,18 @@ export default function GameDetailPage() {
             <div className="w-full min-w-0 flex flex-col gap-0 lg:gap-8">
 
               {/* HEADER (Title & Reviews Above Gallery) */}
-              <div className="px-6 pt-8 pb-4 lg:px-0 lg:pt-0 lg:pb-0 lg:bg-transparent bg-[#0A0E27]">
+              <div className="px-6 pt-8 pb-4 lg:px-0 lg:pt-0 lg:pb-0 lg:bg-transparent bg-[#080A10]">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 rounded-md bg-[#00B4FF]/10 border border-[#00B4FF]/20 text-[#00B4FF] text-[10px] font-bold uppercase tracking-wider">
+                  <span className="px-2 py-0.5 rounded-md bg-[#00D2FF]/10 border border-[#00D2FF]/20 text-[#00D2FF] text-[10px] font-bold uppercase tracking-wider">
                     Base Game
                   </span>
                 </div>
                 <h1 className="text-3xl lg:text-5xl font-black text-white leading-none mb-3 tracking-tight">{game.title}</h1>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#00B4FF]/10 rounded-md border border-[#00B4FF]/10">
-                    <ThumbsUp className="w-3.5 h-3.5 text-[#00B4FF] fill-[#00B4FF]" />
-                    <span className="text-[10px] font-bold text-[#00B4FF] uppercase tracking-wide">Overwhelmingly Positive</span>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#00D2FF]/10 rounded-md border border-[#00D2FF]/10">
+                    <ThumbsUp className="w-3.5 h-3.5 text-[#00D2FF] fill-[#00D2FF]" />
+                    <span className="text-[10px] font-bold text-[#00D2FF] uppercase tracking-wide">Overwhelmingly Positive</span>
                   </div>
                   <span className="text-[#8F98A0] text-[11px] font-medium tracking-tight">(2.4M+ Reviews)</span>
                 </div>
@@ -277,7 +277,7 @@ export default function GameDetailPage() {
               {/* SWIPEABLE GALLERY */}
               <div className="relative w-full group">
                 {/* Cinematic Glow (Desktop) */}
-                <div className="hidden lg:block absolute -inset-10 bg-gradient-to-r from-[#00B4FF]/20 to-[#A4D007]/20 blur-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                <div className="hidden lg:block absolute -inset-10 bg-gradient-to-r from-[#00D2FF]/20 to-[#A4D007]/20 blur-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                 {loading ? (
                   <Skeleton className="w-full aspect-video rounded-xl" />
@@ -287,7 +287,7 @@ export default function GameDetailPage() {
               </div>
 
               {/* MOBILE: COMPACT INFO CARD (Rest of Content Below Gallery) */}
-              <div className="lg:hidden px-6 py-10 bg-gradient-to-b from-[#0A0E27] to-transparent">
+              <div className="lg:hidden px-6 py-10 bg-gradient-to-b from-[#080A10] to-transparent">
 
                 {/* Short About & Metadata */}
                 <div className="space-y-8">
@@ -297,7 +297,7 @@ export default function GameDetailPage() {
 
                   <div className="flex flex-wrap gap-2 pt-2">
                     {[...game.genre, ...(game.tags || [])].slice(0, 5).map(tag => (
-                      <span key={tag} className="px-3 py-1 bg-[#17202d] border border-[#2a3749] text-[#00B4FF] text-[11px] rounded-md font-medium">
+                      <span key={tag} className="px-3 py-1 bg-[#17202d] border border-[#2a3749] text-[#00D2FF] text-[11px] rounded-md font-medium">
                         {tag}
                       </span>
                     ))}
@@ -306,11 +306,11 @@ export default function GameDetailPage() {
                   <div className="grid grid-cols-2 gap-8 pt-8 border-t border-white/5">
                     <div className="flex flex-col gap-1.5">
                       <span className="text-[#566270] text-[10px] uppercase font-black tracking-[0.15em] opacity-60">Developer</span>
-                      <span className="text-[#00B4FF] text-sm font-bold tracking-tight">{steamData?.developers?.[0] || "Unknown"}</span>
+                      <span className="text-[#00D2FF] text-sm font-bold tracking-tight">{steamData?.developers?.[0] || "Unknown"}</span>
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <span className="text-[#566270] text-[10px] uppercase font-black tracking-[0.15em] opacity-60">Publisher</span>
-                      <span className="text-[#00B4FF] text-sm font-bold tracking-tight">{steamData?.publishers?.[0] || "Unknown"}</span>
+                      <span className="text-[#00D2FF] text-sm font-bold tracking-tight">{steamData?.publishers?.[0] || "Unknown"}</span>
                     </div>
                   </div>
                 </div>
@@ -328,7 +328,7 @@ export default function GameDetailPage() {
                   className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16"
                 >
                   <div className="flex items-center gap-3 mb-5">
-                    <Monitor className="w-5 h-5 text-[#00B4FF]" />
+                    <Monitor className="w-5 h-5 text-[#00D2FF]" />
                     <h2 className="text-lg lg:text-xl font-bold text-white tracking-wide">SYSTEM REQUIREMENTS</h2>
                   </div>
 
@@ -344,7 +344,7 @@ export default function GameDetailPage() {
                         <div className="flex p-1 bg-white/5 backdrop-blur-md rounded-xl border border-white/10 mb-8">
                           <button
                             onClick={() => setShowRecommended(false)}
-                            className={`flex-1 py-2.5 text-[10px] font-black uppercase tracking-[0.1em] rounded-lg transition-all duration-300 ${!showRecommended ? 'bg-[#00B4FF] text-white shadow-[0_0_15px_rgba(0,180,255,0.3)]' : 'text-[#8F98A0] hover:text-white'}`}
+                            className={`flex-1 py-2.5 text-[10px] font-black uppercase tracking-[0.1em] rounded-lg transition-all duration-300 ${!showRecommended ? 'bg-[#00D2FF] text-white shadow-[0_0_15px_rgba(0,210,255,0.3)]' : 'text-[#8F98A0] hover:text-white'}`}
                           >
                             Minimum
                           </button>
@@ -388,7 +388,7 @@ export default function GameDetailPage() {
                       <div className="hidden lg:block">
                         <div className="grid grid-cols-2 gap-12 divide-x divide-white/5">
                           <div className="space-y-6">
-                            <div className="text-[#00B4FF] text-[11px] font-black uppercase tracking-[0.2em] bg-[#00B4FF]/10 w-fit px-4 py-2 rounded-full border border-[#00B4FF]/20 shadow-[0_0_20px_rgba(0,180,255,0.1)]">Minimum</div>
+                            <div className="text-[#00D2FF] text-[11px] font-black uppercase tracking-[0.2em] bg-[#00D2FF]/10 w-fit px-4 py-2 rounded-full border border-[#00D2FF]/20 shadow-[0_0_20px_rgba(0,210,255,0.1)]">Minimum</div>
                             <div className="space-y-3 text-sm">
                               {Object.entries(minRequirements || {}).filter(([key]) => key.toLowerCase() !== 'additional').map(([key, val]) => (
                                 <div key={key}>
@@ -443,7 +443,7 @@ export default function GameDetailPage() {
                 className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16"
               >
                 <div className="flex items-center gap-3 mb-5">
-                  <HelpCircle className="w-5 h-5 text-[#00B4FF]" />
+                  <HelpCircle className="w-5 h-5 text-[#00D2FF]" />
                   <h2 className="text-lg lg:text-xl font-bold text-white tracking-wide">FREQUENTLY ASKED</h2>
                 </div>
 
@@ -470,7 +470,7 @@ export default function GameDetailPage() {
                   className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16"
                 >
                   <div className="flex items-center gap-3 mb-4">
-                    <Gamepad2 className="w-5 h-5 text-[#00B4FF]" />
+                    <Gamepad2 className="w-5 h-5 text-[#00D2FF]" />
                     <h2 className="text-lg lg:text-xl font-bold text-white tracking-wide">YOU MAY ALSO LIKE</h2>
                   </div>
 
@@ -481,7 +481,7 @@ export default function GameDetailPage() {
                         href={`/games/${sg.slug}`}
                         className="relative flex-shrink-0 w-[180px] lg:w-[200px] group snap-start"
                       >
-                        <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-3 ring-1 ring-white/10 group-hover:ring-2 group-hover:ring-[#00B4FF] group-hover:shadow-[0_0_20px_rgba(0,180,255,0.3)] transition-all duration-300">
+                        <div className="relative aspect-[3/4] rounded-xl overflow-hidden mb-3 ring-1 ring-white/10 group-hover:ring-2 group-hover:ring-[#00D2FF] group-hover:shadow-[0_0_20px_rgba(0,210,255,0.3)] transition-all duration-300">
                           <Image src={sg.image_url} alt={sg.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
                           {sg.discount_percentage && (
@@ -490,7 +490,7 @@ export default function GameDetailPage() {
                             </div>
                           )}
                         </div>
-                        <h3 className="text-white text-sm font-semibold line-clamp-2 group-hover:text-[#00B4FF] transition-colors mb-1">{sg.title}</h3>
+                        <h3 className="text-white text-sm font-semibold line-clamp-2 group-hover:text-[#00D2FF] transition-colors mb-1">{sg.title}</h3>
                         <div className="flex items-center gap-2">
                           {sg.original_price && <span className="text-[#8F98A0] text-xs line-through">₹{sg.original_price}</span>}
                           <span className="text-white text-sm font-bold">₹{sg.price}</span>
@@ -531,7 +531,7 @@ export default function GameDetailPage() {
                         </div>
                         <div className="flex flex-col leading-none">
                           <span className="text-[#566270] text-[11px] line-through decoration-[1px]">₹{game.original_price}</span>
-                          <span className="text-[#00B4FF] text-lg font-bold">₹{game.price}</span>
+                          <span className="text-[#00D2FF] text-lg font-bold">₹{game.price}</span>
                         </div>
                       </div>
 
@@ -556,7 +556,7 @@ export default function GameDetailPage() {
                             </>
                           ) : (
                             <>
-                              <ShoppingCart className="w-4 h-4 text-[#00B4FF]" />
+                              <ShoppingCart className="w-4 h-4 text-[#00D2FF]" />
                               Add to Cart
                             </>
                           )}
@@ -578,11 +578,11 @@ export default function GameDetailPage() {
                     </div>
                     <div className="flex text-[13px]">
                       <span className="w-28 text-[#566270] uppercase font-bold tracking-wide text-[10px] pt-0.5">Developer</span>
-                      <span className="text-[#00B4FF] hover:text-white transition-colors cursor-pointer">{steamData?.developers?.[0] || "Unknown"}</span>
+                      <span className="text-[#00D2FF] hover:text-white transition-colors cursor-pointer">{steamData?.developers?.[0] || "Unknown"}</span>
                     </div>
                     <div className="flex text-[13px]">
                       <span className="w-28 text-[#566270] uppercase font-bold tracking-wide text-[10px] pt-0.5">Publisher</span>
-                      <span className="text-[#00B4FF] hover:text-white transition-colors cursor-pointer">{steamData?.publishers?.[0] || "Unknown"}</span>
+                      <span className="text-[#00D2FF] hover:text-white transition-colors cursor-pointer">{steamData?.publishers?.[0] || "Unknown"}</span>
                     </div>
                   </div>
 
@@ -591,7 +591,7 @@ export default function GameDetailPage() {
                     <span className="text-[10px] font-bold text-[#566270] uppercase tracking-wide block mb-2">Popular User Tags</span>
                     <div className="flex flex-wrap gap-1.5">
                       {[...game.genre, ...(game.tags || [])].slice(0, 8).map(tag => (
-                        <span key={tag} className="px-2 py-0.5 bg-[#17202d] border border-[#2a3749] hover:bg-[#00B4FF] hover:border-[#00B4FF] hover:text-white text-[#00B4FF] text-[11px] rounded transition-all cursor-pointer">
+                        <span key={tag} className="px-2 py-0.5 bg-[#17202d] border border-[#2a3749] hover:bg-[#00D2FF] hover:border-[#00D2FF] hover:text-white text-[#00D2FF] text-[11px] rounded transition-all cursor-pointer">
                           {tag}
                         </span>
                       ))}
@@ -612,7 +612,7 @@ export default function GameDetailPage() {
       </div>
 
       {/* MOBILE STICKY BUY BAR - Modern Glassmorphism */}
-      <div className={`fixed bottom-0 left-0 right-0 bg-[#0A0E27]/80 backdrop-blur-xl border-t border-white/10 lg:hidden transform transition-all duration-300 z-40 pb-safe ${showStickyNav ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
+      <div className={`fixed bottom-0 left-0 right-0 bg-[#080A10]/80 backdrop-blur-xl border-t border-white/10 lg:hidden transform transition-all duration-300 z-40 pb-safe ${showStickyNav ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
         {/* Safe area padding for iPhones without home button */}
         <div className="px-4 py-3 pb-6 flex items-center justify-between gap-4">
 
@@ -636,7 +636,7 @@ export default function GameDetailPage() {
               {isAdded ? (
                 <Check className="w-5 h-5 text-[#A4D007]" />
               ) : (
-                <ShoppingCart className="w-5 h-5 text-[#00B4FF]" />
+                <ShoppingCart className="w-5 h-5 text-[#00D2FF]" />
               )}
               <span className="hidden sm:inline text-xs font-bold">{isAdded ? "Added" : "Cart"}</span>
             </button>

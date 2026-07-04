@@ -5,7 +5,7 @@ import { SearchProvider } from "@/context/SearchContext";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: "SteamRush | Premium PC Games at Unbeatable Prices",
+  title: "Gamer Bhidu | Premium PC Games at Unbeatable Prices",
   description: "Your ultimate destination for PC gaming deals",
 };
 

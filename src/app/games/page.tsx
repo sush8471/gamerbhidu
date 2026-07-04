@@ -2623,7 +2623,7 @@ export default function GamesPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#0A0E27]">
+    <main className="min-h-screen bg-[#080A10]">
       <SteamRushNavbar />
       <div className="pt-8 lg:pt-12 pb-12">
         <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-8">
@@ -2644,7 +2644,7 @@ export default function GamesPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-4 py-3 bg-[#1A1F3A] border border-[#2A2E4D] rounded-lg text-white hover:border-[#0074E4] transition-colors sm:min-w-[140px] justify-center"
+                className="flex items-center gap-2 px-4 py-3 bg-[#121622] border border-[#202838] rounded-lg text-white hover:border-[#3B82F6] transition-colors sm:min-w-[140px] justify-center"
               >
                 <SlidersHorizontal className="w-5 h-5" />
                 <span>Filters</span>
@@ -2662,7 +2662,7 @@ export default function GamesPage() {
                 </span>
 
                 {selectedGenre !== "All" && (
-                  <div className="flex items-center gap-1.5 bg-[#1A1F3A] border border-[#2A2E4D] rounded-full px-3 py-1.5">
+                  <div className="flex items-center gap-1.5 bg-[#121622] border border-[#202838] rounded-full px-3 py-1.5">
                     <span className="text-white text-sm">
                       Genre: {selectedGenre}
                     </span>
@@ -2676,7 +2676,7 @@ export default function GamesPage() {
                 )}
 
                 {selectedPriceRange !== "all" && (
-                  <div className="flex items-center gap-1.5 bg-[#1A1F3A] border border-[#2A2E4D] rounded-full px-3 py-1.5">
+                  <div className="flex items-center gap-1.5 bg-[#121622] border border-[#202838] rounded-full px-3 py-1.5">
                     <span className="text-white text-sm">
                       Price:{" "}
                       {
@@ -2694,7 +2694,7 @@ export default function GamesPage() {
                 )}
 
                 {sortBy !== "popular" && (
-                  <div className="flex items-center gap-1.5 bg-[#1A1F3A] border border-[#2A2E4D] rounded-full px-3 py-1.5">
+                  <div className="flex items-center gap-1.5 bg-[#121622] border border-[#202838] rounded-full px-3 py-1.5">
                     <span className="text-white text-sm">
                       Sort:{" "}
                       {SORT_OPTIONS.find((s) => s.value === sortBy)?.label}
@@ -2714,7 +2714,7 @@ export default function GamesPage() {
                     setSelectedPriceRange("all");
                     setSortBy("popular");
                   }}
-                  className="text-[#0074E4] hover:text-[#0084F4] text-sm font-medium transition-colors"
+                  className="text-[#3B82F6] hover:text-[#00D2FF] text-sm font-medium transition-colors"
                 >
                   Clear all
                 </button>
@@ -2722,7 +2722,7 @@ export default function GamesPage() {
             )}
 
             {showFilters && (
-              <div className="bg-[#1A1F3A] border border-[#2A2E4D] rounded-lg p-4 space-y-4">
+              <div className="bg-[#121622] border border-[#202838] rounded-lg p-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-white font-bold text-lg">Filter Games</h3>
                   <button
@@ -2741,7 +2741,7 @@ export default function GamesPage() {
                     <select
                       value={selectedGenre}
                       onChange={(e) => setSelectedGenre(e.target.value)}
-                      className="w-full bg-[#0A0E27] border border-[#2A2E4D] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#0074E4] transition-colors"
+                      className="w-full bg-[#080A10] border border-[#202838] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#3B82F6] transition-colors"
                     >
                       {GENRES.map((genre) => (
                         <option key={genre} value={genre}>
@@ -2758,7 +2758,7 @@ export default function GamesPage() {
                     <select
                       value={selectedPriceRange}
                       onChange={(e) => setSelectedPriceRange(e.target.value)}
-                      className="w-full bg-[#0A0E27] border border-[#2A2E4D] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#0074E4] transition-colors"
+                      className="w-full bg-[#080A10] border border-[#202838] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#3B82F6] transition-colors"
                     >
                       {PRICE_RANGES.map((range) => (
                         <option key={range.value} value={range.value}>
@@ -2775,7 +2775,7 @@ export default function GamesPage() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="w-full bg-[#0A0E27] border border-[#2A2E4D] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#0074E4] transition-colors"
+                      className="w-full bg-[#080A10] border border-[#202838] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#3B82F6] transition-colors"
                     >
                       {SORT_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -2794,7 +2794,7 @@ export default function GamesPage() {
                       setSortBy("popular");
 
                     }}
-                    className="px-4 py-2 bg-[#2A2E4D] text-white rounded-lg hover:bg-[#363B5E] transition-colors text-sm"
+                    className="px-4 py-2 bg-[#202838] text-white rounded-lg hover:bg-[#363B5E] transition-colors text-sm"
                   >
                     Clear All
                   </button>
@@ -2913,7 +2913,7 @@ export default function GamesPage() {
                       <div
                         key={game.id}
                         onClick={() => router.push(`/games/${linkId}`)}
-                        className="group relative bg-[#1A1F3A] rounded-lg overflow-hidden border border-[#2A2E4D] hover:border-[#0074E4]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(0,116,228,0.15)] flex-shrink-0 w-[60vw] max-w-[240px] lg:w-full snap-start cursor-pointer"
+                        className="group relative bg-[#121622] rounded-lg overflow-hidden border border-[#202838] hover:border-[#3B82F6]/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)] flex-shrink-0 w-[60vw] max-w-[240px] lg:w-full snap-start cursor-pointer"
                       >
                         <div className="relative aspect-[3/4] w-full overflow-hidden">
                           <Image
@@ -2926,14 +2926,14 @@ export default function GamesPage() {
                           />
 
                           {game.discount && (
-                            <div className="absolute top-2 right-2 bg-[#0074E4] text-white text-xs font-bold px-2.5 py-1 rounded-md">
+                            <div className="absolute top-2 right-2 bg-[#3B82F6] text-white text-xs font-bold px-2.5 py-1 rounded-md">
                               {game.discount}
                             </div>
                           )}
                         </div>
 
                         <div className="p-2">
-                          <h3 className="text-white font-bold text-sm mb-1 truncate group-hover:text-[#0074E4] transition-colors">
+                          <h3 className="text-white font-bold text-sm mb-1 truncate group-hover:text-[#3B82F6] transition-colors">
                             {game.title}
                           </h3>
                           <div className="flex items-center gap-1.5 mb-2">
@@ -2950,7 +2950,7 @@ export default function GamesPage() {
                             className={`w-full py-2 rounded-md text-xs font-semibold transition-all ${
                               inCart
                                 ? 'bg-green-500 text-white hover:bg-green-600'
-                                : 'bg-[#0074E4] text-white hover:bg-[#0062C4]'
+                                : 'bg-[#3B82F6] text-white hover:bg-[#2563EB]'
                             }`}
                           >
                             {inCart ? (

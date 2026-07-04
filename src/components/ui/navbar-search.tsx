@@ -111,7 +111,7 @@ export function NavbarSearch() {
             onFocus={() => localQuery && setShowSuggestions(true)}
             onKeyDown={handleKeyDown}
             placeholder="Search games..."
-            className="w-full h-10 pl-10 pr-10 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder:text-[#B0B8D0] focus:outline-none focus:ring-2 focus:ring-[#0074E4] focus:border-transparent transition-all"
+            className="w-full h-10 pl-10 pr-10 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder:text-[#B0B8D0] focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent transition-all"
           />
           {localQuery && (
             <button
@@ -125,7 +125,7 @@ export function NavbarSearch() {
 
         {/* Desktop Dropdown */}
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute top-full mt-2 w-full bg-[#1A1F3A] border border-[#2A2E4D] rounded-lg shadow-2xl overflow-hidden z-50 max-h-[70vh] overflow-y-auto">
+          <div className="absolute top-full mt-2 w-full bg-[#121622] border border-[#202838] rounded-lg shadow-2xl overflow-hidden z-50 max-h-[70vh] overflow-y-auto">
             {suggestions.map((game) => (
               <button
                 key={game.id}
@@ -139,7 +139,7 @@ export function NavbarSearch() {
                 <div className="relative w-12 h-16 flex-shrink-0 rounded overflow-hidden">
                   <Image src={game.image_url} alt={game.title} fill className="object-cover" sizes="48px" />
                   {game.discount_percentage && (
-                    <div className="absolute top-0 right-0 bg-[#0074E4] text-white text-[8px] font-bold px-1 py-0.5">
+                    <div className="absolute top-0 right-0 bg-[#3B82F6] text-white text-[8px] font-bold px-1 py-0.5">
                       {formatDiscount(game.discount_percentage)}
                     </div>
                   )}
@@ -151,7 +151,7 @@ export function NavbarSearch() {
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <div className="text-[#0074E4] font-bold text-sm">₹{game.price}</div>
+                  <div className="text-[#3B82F6] font-bold text-sm">₹{game.price}</div>
                   {game.original_price && (
                     <div className="text-[#B0B8D0] text-xs line-through">₹{game.original_price}</div>
                   )}
@@ -173,9 +173,9 @@ export function NavbarSearch() {
 
       {/* Mobile: Full-Screen Search Modal */}
       {isExpanded && (
-        <div className="fixed inset-0 bg-[#0A0E27] z-[100] lg:hidden min-h-screen flex flex-col">
+        <div className="fixed inset-0 bg-[#080A10] z-[100] lg:hidden min-h-screen flex flex-col">
           {/* Search Header */}
-          <div className="flex-shrink-0 flex items-center gap-3 p-4 border-b border-white/10 bg-[#0A0E27]">
+          <div className="flex-shrink-0 flex items-center gap-3 p-4 border-b border-white/10 bg-[#080A10]">
             <Search className="h-5 w-5 text-[#B0B8D0] flex-shrink-0" />
             <input
               ref={inputRef}
@@ -207,12 +207,12 @@ export function NavbarSearch() {
                         router.push(`/games/${game.slug}`);
                         handleClose();
                       }}
-                      className="w-full flex items-start gap-4 p-4 bg-[#1A1F3A]/50 rounded-xl hover:bg-[#1A1F3A] transition-all border border-white/5 hover:border-[#0074E4]/30"
+                      className="w-full flex items-start gap-4 p-4 bg-[#121622]/50 rounded-xl hover:bg-[#121622] transition-all border border-white/5 hover:border-[#3B82F6]/30"
                     >
                       <div className="relative w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden">
                         <Image src={game.image_url} alt={game.title} fill className="object-cover" sizes="80px" />
                         {game.discount_percentage && (
-                          <div className="absolute top-1 right-1 bg-[#0074E4] text-white text-xs font-bold px-2 py-1 rounded">
+                          <div className="absolute top-1 right-1 bg-[#3B82F6] text-white text-xs font-bold px-2 py-1 rounded">
                             {formatDiscount(game.discount_percentage)}
                           </div>
                         )}
@@ -225,7 +225,7 @@ export function NavbarSearch() {
                           {game.genre.slice(0, 2).join(" • ")}
                         </p>
                         <div className="flex items-baseline gap-2">
-                          <span className="text-[#0074E4] font-bold text-lg">₹{game.price}</span>
+                          <span className="text-[#3B82F6] font-bold text-lg">₹{game.price}</span>
                           {game.original_price && (
                             <span className="text-[#B0B8D0] text-sm line-through">₹{game.original_price}</span>
                           )}
@@ -236,7 +236,7 @@ export function NavbarSearch() {
                   {localQuery && (
                     <button
                       onClick={() => handleSearch(localQuery)}
-                      className="w-full p-4 text-center text-[#0074E4] font-semibold hover:bg-white/5 rounded-xl transition-colors mt-4"
+                      className="w-full p-4 text-center text-[#3B82F6] font-semibold hover:bg-white/5 rounded-xl transition-colors mt-4"
                     >
                       View all results for "{localQuery}" →
                     </button>

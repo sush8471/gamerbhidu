@@ -15,14 +15,14 @@ import Image from "next/image"
 
 function FooterSection() {
   return (
-    <footer className="relative border-t border-[#2A2E4D] bg-[#0A0E27] text-white transition-colors duration-300">
+    <footer className="relative border-t border-[#202838] bg-[#080A10] text-white transition-colors duration-300">
       <div className="container mx-auto px-4 py-10 md:py-16 md:px-6 lg:px-8">
         <div className="grid gap-8 md:gap-12 md:grid-cols-2 lg:grid-cols-3">
           {/* Logo and Description */}
           <div className="relative">
             <Image
               src="/logo.png"
-              alt="Steam Rush Logo"
+              alt="Gamer Bhidu Logo"
               width={200}
               height={55}
               className="mb-4 h-10 md:h-12 w-auto"
@@ -31,7 +31,7 @@ function FooterSection() {
               Your trusted destination for affordable Steam games. Instant delivery, unbeatable prices, and 24/7 support.
             </p>
             <p className="text-xs md:text-sm text-[#B0B8D0]">
-              © 2026 Steam Rush. All rights reserved.
+              © 2026 Gamer Bhidu. All rights reserved.
             </p>
           </div>
 
@@ -39,19 +39,19 @@ function FooterSection() {
           <div>
             <h3 className="mb-4 text-lg font-semibold">Quick Links</h3>
             <nav className="space-y-2 text-sm">
-              <Link href="/" className="block text-[#B0B8D0] transition-colors hover:text-[#0074E4]">
+              <Link href="/" className="block text-[#B0B8D0] transition-colors hover:text-[#3B82F6]">
                 Home
               </Link>
-              <Link href="/games" className="block text-[#B0B8D0] transition-colors hover:text-[#0074E4]">
+              <Link href="/games" className="block text-[#B0B8D0] transition-colors hover:text-[#3B82F6]">
                 Browse Games
               </Link>
-              <Link href="/#hot-deals" className="block text-[#B0B8D0] transition-colors hover:text-[#0074E4]">
+              <Link href="/#hot-deals" className="block text-[#B0B8D0] transition-colors hover:text-[#3B82F6]">
                 Hot Deals
               </Link>
-              <Link href="/#combo-deals" className="block text-[#B0B8D0] transition-colors hover:text-[#0074E4]">
+              <Link href="/#combo-deals" className="block text-[#B0B8D0] transition-colors hover:text-[#3B82F6]">
                 Combo Deals
               </Link>
-              <Link href="/#faq" className="block text-[#B0B8D0] transition-colors hover:text-[#0074E4]">
+              <Link href="/#faq" className="block text-[#B0B8D0] transition-colors hover:text-[#3B82F6]">
                 FAQ
               </Link>
             </nav>
@@ -70,7 +70,7 @@ function FooterSection() {
                     <Button 
                       variant="outline" 
                       size="icon" 
-                      className="rounded-full border-[#2A2E4D] bg-[#1A1F3A] hover:bg-[#0074E4] hover:border-[#0074E4] transition-all"
+                      className="rounded-full border-[#202838] bg-[#121622] hover:bg-[#3B82F6] hover:border-[#3B82F6] transition-all"
                       asChild
                     >
                       <a 
@@ -95,7 +95,7 @@ function FooterSection() {
                     <Button 
                       variant="outline" 
                       size="icon" 
-                      className="rounded-full border-[#2A2E4D] bg-[#1A1F3A] hover:bg-[#25D366] hover:border-[#25D366] transition-all"
+                      className="rounded-full border-[#202838] bg-[#121622] hover:bg-[#25D366] hover:border-[#25D366] transition-all"
                       asChild
                     >
                       <a 
@@ -120,7 +120,7 @@ function FooterSection() {
                     <Button 
                       variant="outline" 
                       size="icon" 
-                      className="rounded-full border-[#2A2E4D] bg-[#1A1F3A] hover:bg-[#1877F2] hover:border-[#1877F2] transition-all"
+                      className="rounded-full border-[#202838] bg-[#121622] hover:bg-[#1877F2] hover:border-[#1877F2] transition-all"
                       asChild
                     >
                       <a 
@@ -143,7 +143,7 @@ function FooterSection() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 flex flex-col items-center justify-center gap-4 border-t border-[#2A2E4D] pt-6 text-center">
+        <div className="mt-8 flex flex-col items-center justify-center gap-4 border-t border-[#202838] pt-6 text-center">
           <p className="text-sm text-[#B0B8D0]">
             Made with ❤️ for Indian Gamers
           </p>
