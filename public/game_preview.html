@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Critical for mobile-first -->
+    <title>Game Store - Cyberpunk 2077</title>
+    <style>
+      /* 
+         * CORE VARIABLES & RESET
+         * Steam-inspired dark palette with modern touches
+         */
+      :root {
+        --bg-dark: #1b2838;
+        --bg-darker: #171a21;
+        --bg-card: #151922; /* Slightly lighter for contrast */
+        --accent-blue: #66c0f4;
+        --accent-green: #a4d007;
+        --accent-green-hover: #8ed009;
+        --text-main: #c6d4df;
+        --text-highlight: #ffffff;
+        --text-secondary: #8f98a0;
+        --gap-md: 16px;
+        --radius: 4px;
+        --font-main:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+          Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        --header-gradient: linear-gradient(
+          180deg,
+          rgba(23, 26, 33, 0) 0%,
+          rgba(23, 26, 33, 1) 100%
+        );
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family: var(--font-main);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      button {
+        border: none;
+        background: none;
+        font-family: inherit;
+        cursor: pointer;
+      }
+
+      /* 
+         * LAYOUT CONTAINER 
+         */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0;
+      }
+
+      /* 
+         * MOBILE-FIRST GRID
+         * Stacked by default
+         */
+      .game-page-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      /* 
+         * 1. IMAGE GALLERY (MOBILE)
+         * Horizontal scroll, snap behavior, immersive
+         */
+      .gallery-section {
+        width: 100%;
+        position: relative;
+        background: #000;
+      }
+
+      /* The Desktop "Main Stage" - Hidden on Mobile to save space/logic */
+      .gallery-main-stage {
+        display: none;
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: #000;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+
+      .gallery-main-stage img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Steam style: contain usually better for screenshots to avoid cropping UI */
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .gallery-main-stage img.loaded {
+        opacity: 1;
+      }
+
+      /* The Scroll Strip - Acts as Main Gallery on Mobile */
+      .gallery-scroll-strip {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 0; /* No gap for full swipe immersion */
+        scrollbar-width: none; /* Hide scrollbar Firefox */
+        -ms-overflow-style: none;
+        width: 100%;
+        height: 56.25vw; /* 16:9 aspect ratio based on viewport width */
+        max-height: 500px;
+      }
+
+      .gallery-scroll-strip::-webkit-scrollbar {
+        display: none;
+      }
+
+      .gallery-item {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* Mobile Pagination dots */
+      .gallery-ind {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        pointer-events: none;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transition: background 0.2s;
+      }
+      .dot.active {
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      /* 
+         * 2. GAME INFO PANEL
+         */
+      .game-info {
+        padding: 0 20px;
+      }
+
+      .game-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-highlight);
+        margin-bottom: 8px;
+        letter-spacing: -0.5px;
+      }
+
+      .game-meta {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px 16px;
+      }
+
+      .meta-label {
+        text-transform: uppercase;
+        font-size: 10px;
+        color: #556772;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        align-self: center;
+      }
+      .meta-value {
+        color: var(--accent-blue);
+      }
+
+      /* Tags */
+      .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 24px;
+      }
+
+      .tag-pill {
+        background: rgba(103, 193, 245, 0.1);
+        color: var(--accent-blue);
+        padding: 4px 10px;
+        border-radius: 4px; /* Standard rounded, not fully pill for Steam vibe */
+        font-size: 12px;
+        transition: all 0.2s;
+      }
+      .tag-pill:hover {
+        background: var(--accent-blue);
+        color: #fff;
+      }
+
+      /* Description */
+      .description-box {
+        position: relative;
+        margin-bottom: 24px;
+      }
+
+      .desc-text {
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--text-main);
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 4; /* Show 4 lines initially */
+        -webkit-box-orient: vertical;
+        transition: max-height 0.3s ease;
+      }
+
+      .desc-text.expanded {
+        -webkit-line-clamp: unset;
+      }
+
+      .show-more-btn {
+        color: var(--text-highlight);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 8px;
+        display: inline-flex;
+        align-items: center;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+      }
+      .show-more-btn:hover {
+        opacity: 1;
+        text-decoration: underline;
+      }
+      .show-more-btn svg {
+        width: 12px;
+        height: 12px;
+        margin-left: 4px;
+        transition: transform 0.2s;
+      }
+      .show-more-btn.expanded svg {
+        transform: rotate(180deg);
+      }
+
+      /* Actions / Buy Card */
+      .action-card {
+        background: linear-gradient(
+          135deg,
+          rgba(0, 0, 0, 0.2),
+          rgba(0, 0, 0, 0.1)
+        );
+        padding: 16px;
+        border-radius: var(--radius);
+        margin-bottom: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .price-tag {
+        font-size: 24px;
+        color: var(--text-highlight);
+        font-weight: 500;
+      }
+
+      .main-btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: var(--radius);
+        font-size: 16px;
+        font-weight: 600;
+        color: white; /* Steam uses black interaction on green, but white is cleaner */
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition:
+          filter 0.2s,
+          transform 0.1s;
+      }
+
+      .btn-green {
+        background: linear-gradient(to right, #75b022 5%, #588a1b 95%);
+        background-color: #75b022;
+      }
+
+      .btn-green:hover {
+        filter: brightness(1.1);
+      }
+      .btn-green:active {
+        transform: scale(0.98);
+      }
+
+      .wishlist-btn {
+        background: rgba(255, 255, 255, 0.1);
+        margin-top: 8px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: var(--text-secondary);
+      }
+      .wishlist-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--text-highlight);
+      }
+
+      /* 
+         * DESKTOP BREAKPOINT (> 768px)
+         * Switch to Two-Column Layout
+         */
+      @media (min-width: 768px) {
+        .container {
+          padding: 40px 20px;
+        }
+
+        .game-page-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr; /* 66% Gallery, 33% Info */
+          gap: 40px;
+          align-items: start;
+        }
+
+        /* Gallery Desktop Transformation */
+        .gallery-section {
+          background: transparent;
+        }
+
+        .gallery-main-stage {
+          display: block; /* Show main stage */
+          border-radius: var(--radius);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-scroll-strip {
+          height: auto;
+          max-height: none;
+          justify-content: flex-start;
+          gap: 10px;
+          margin-top: 10px;
+          overflow: visible; /* Show all thumbs rows or scroll? Usually standard steam is a strip */
+          scroll-snap-type: none;
+        }
+
+        .gallery-item {
+          flex: 0 0 120px; /* Thumbnail size */
+          height: 68px;
+          width: 120px;
+          cursor: pointer;
+          opacity: 0.6;
+          transition: all 0.2s;
+          border: 2px solid transparent;
+        }
+        .gallery-item:hover {
+          opacity: 1;
+        }
+        .gallery-item.active {
+          opacity: 1;
+          border-color: var(--text-highlight);
+        }
+
+        .gallery-ind {
+          display: none;
+        } /* Hide dots on desktop */
+
+        /* Typography Scaling */
+        .game-title {
+          font-size: 42px;
+        }
+        .desc-text {
+          font-size: 16px;
+          -webkit-line-clamp: 10; /* Show more by default on desktop */
+        }
+
+        /* Sticky Info Panel */
+        .game-info {
+          padding: 0;
+          position: sticky;
+          top: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="game-page-grid">
+        <!-- 1. LEFT COLUMN (Desktop) / TOP (Mobile): GALLERY -->
+        <div class="gallery-section" id="galleryScope">
+          <!-- Desktop Only: Main Stage -->
+          <div class="gallery-main-stage">
+            <img
+              src="https://picsum.photos/id/122/1200/675"
+              alt="Main Game Image"
+              id="mainStageImg"
+            />
+          </div>
+
+          <!-- Scrollable Strip (Main Gallery on Mobile, Thumbs on Desktop) -->
+          <div class="gallery-scroll-strip" id="scrollStrip">
+            <!-- Image 1 -->
+            <div
+              class="gallery-item active"
+              onclick="
+                setMainImage(this, 'https://picsum.photos/id/122/1200/675')
+              "
+            >
+              <img
+                src="https://picsum.photos/id/122/600/338"
+                alt="Screenshot 1"
+              />
+            </div>
+            <!-- Image 2 -->
+            <div
+              class="gallery-item"
+              onclick="
+                setMainImage(this, 'https://picsum.photos/id/133/1200/675')
+              "
+            >
+              <img
+                src="https://picsum.photos/id/133/600/338"
+                alt="Screenshot 2"
+              />
+            </div>
+            <!-- Image 3 -->
+            <div
+              class="gallery-item"
+              onclick="
+                setMainImage(this, 'https://picsum.photos/id/142/1200/675')
+              "
+            >
+              <img
+                src="https://picsum.photos/id/142/600/338"
+                alt="Screenshot 3"
+              />
+            </div>
+            <!-- Image 4 -->
+            <div
+              class="gallery-item"
+              onclick="
+                setMainImage(this, 'https://picsum.photos/id/155/1200/675')
+              "
+            >
+              <img
+                src="https://picsum.photos/id/155/600/338"
+                alt="Screenshot 4"
+              />
+            </div>
+            <!-- Image 5 -->
+            <div
+              class="gallery-item"
+              onclick="
+                setMainImage(this, 'https://picsum.photos/id/166/1200/675')
+              "
+            >
+              <img
+                src="https://picsum.photos/id/166/600/338"
+                alt="Screenshot 5"
+              />
+            </div>
+          </div>
+
+          <!-- Mobile Indicators -->
+          <div class="gallery-ind" id="galleryDots">
+            <!-- JS will populate -->
+          </div>
+        </div>
+
+        <!-- 2. RIGHT COLUMN (Desktop) / BOTTOM (Mobile): INFO -->
+        <div class="game-info">
+          <h1 class="game-title">Cyber City: Neon Shadows</h1>
+
+          <!-- Tags -->
+          <div class="tags-container">
+            <span class="tag-pill">Cyberpunk</span>
+            <span class="tag-pill">Open World</span>
+            <span class="tag-pill">RPG</span>
+            <span class="tag-pill">Action</span>
+            <span class="tag-pill">+</span>
+          </div>
+
+          <!-- Purchase Card -->
+          <div class="action-card">
+            <div class="price-row">
+              <span
+                style="
+                  font-size: 12px;
+                  background: #4c6b22;
+                  color: #a4d007;
+                  padding: 0 4px;
+                  border-radius: 2px;
+                "
+                >-50%</span
+              >
+              <div style="text-align: right">
+                <span
+                  style="
+                    text-decoration: line-through;
+                    color: #738895;
+                    font-size: 14px;
+                  "
+                  >$59.99</span
+                >
+                <span class="price-tag">$29.99</span>
+              </div>
+            </div>
+            <button class="main-btn btn-green">Add to Cart</button>
+            <button class="main-btn wishlist-btn">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                ></path>
+              </svg>
+              Add to Wishlist
+            </button>
+          </div>
+
+          <!-- Metadata -->
+          <div class="game-meta">
+            <span class="meta-label">Developer</span>
+            <span class="meta-value">Neon Forge Games</span>
+
+            <span class="meta-label">Publisher</span>
+            <span class="meta-value">Digital Frontier</span>
+
+            <span class="meta-label">Released</span>
+            <span class="meta-value">Nov 10, 2024</span>
+          </div>
+
+          <!-- About Section -->
+          <div class="description-box">
+            <div class="desc-text" id="descText">
+              Enter a dystopian future where corporations rule the skyline and
+              the streets are paved with neon. In Cyber City, you play as a
+              rogue netrunner trying to clear your name after a heist goes
+              wrong.
+              <br /><br />
+              Explore a dense, vertical open world filled with unique factions,
+              dynamic events, and hidden secrets. Customize your cyberware,
+              master tactical combat, and make choices that reshape the city's
+              fate.
+              <br /><br />
+              Will you burn the city down, or become its ruler? The choice is
+              yours in this immersive RPG experience.
+            </div>
+            <button
+              class="show-more-btn"
+              id="showMoreBtn"
+              onclick="toggleDescription()"
+            >
+              Show more
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /*
+       * 3. MINIMAL VANILLA JS
+       */
+
+      // --- Description Toggle ---
+      function toggleDescription() {
+        const text = document.getElementById("descText");
+        const btn = document.getElementById("showMoreBtn");
+        const isExpanded = text.classList.contains("expanded");
+
+        if (isExpanded) {
+          text.classList.remove("expanded");
+          btn.classList.remove("expanded");
+          btn.innerHTML =
+            'Show more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+        } else {
+          text.classList.add("expanded");
+          btn.classList.add("expanded");
+          btn.innerHTML =
+            'Show less <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+        }
+      }
+
+      // --- Gallery Logic ---
+      const mainStageImg = document.getElementById("mainStageImg");
+      const scrollStrip = document.getElementById("scrollStrip");
+      const items = document.querySelectorAll(".gallery-item");
+      const dotsContainer = document.getElementById("galleryDots");
+
+      // Initialize Dots for Mobile
+      items.forEach((_, index) => {
+        const dot = document.createElement("div");
+        dot.className = index === 0 ? "dot active" : "dot";
+        dotsContainer.appendChild(dot);
+      });
+
+      // Update main image on Desktop click
+      function setMainImage(el, src) {
+        // Remove active class from all
+        items.forEach((i) => i.classList.remove("active"));
+        // Add to clicked
+        el.classList.add("active");
+
+        // Update Main Stage with fade
+        mainStageImg.style.opacity = 0;
+        setTimeout(() => {
+          mainStageImg.src = src;
+          mainStageImg.onload = () => {
+            mainStageImg.style.opacity = 1;
+          };
+        }, 200);
+      }
+
+      // Mobile Scroll Listener for Dots
+      scrollStrip.addEventListener("scroll", () => {
+        const scrollLeft = scrollStrip.scrollLeft;
+        const width = scrollStrip.offsetWidth;
+        const activeIndex = Math.round(scrollLeft / width);
+
+        const dots = document.querySelectorAll(".dot");
+        dots.forEach((dot, idx) => {
+          if (idx === activeIndex) dot.classList.add("active");
+          else dot.classList.remove("active");
+        });
+      });
+
+      // Initial Fade In
+      window.addEventListener("load", () => {
+        if (mainStageImg) mainStageImg.classList.add("loaded");
+      });
+    </script>
+  </body>
+</html>

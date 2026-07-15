@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0A0E27;
+            color: white;
+            padding: 20px;
+        }
+        #result {
+            background: #151922;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        pre {
+            background: #0A0E27;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #00B4FF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0090CC;
+        }
+        .error {
+            color: #ff5555;
+        }
+        .success {
+            color: #50fa7b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Steam API Test</h1>
+    <button onclick="testSteamAPI()">Test Steam API (GTA V - App ID: 271590)</button>
+    
+    <div id="result"></div>
+
+    <script>
+        async function testSteamAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                console.log('Fetching Steam API data...');
+                const response = await fetch('/api/steam?appId=271590');
+                
+                console.log('Response status:', response.status);
+                console.log('Response OK:', response.ok);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.error) {
+                    resultDiv.innerHTML = `
+                        <h2 class="error">❌ Error from proxy:</h2>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    return;
+                }
+                
+                const gameData = data['271590'];
+                
+                if (!gameData) {
+                    resultDiv.innerHTML = `
+                        <h2 class="error">❌ No data for App ID 271590</h2>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    return;
+                }
+                
+                if (!gameData.success) {
+                    resultDiv.innerHTML = `
+                        <h2 class="error">❌ Steam API returned success: false</h2>
+                        <pre>${JSON.stringify(gameData, null, 2)}</pre>
+                    `;
+                    return;
+                }
+                
+                resultDiv.innerHTML = `
+                    <h2 class="success">✅ Success!</h2>
+                    <h3>Game Name: ${gameData.data.name}</h3>
+                    <h3>Developers: ${gameData.data.developers?.join(', ') || 'N/A'}</h3>
+                    <h3>Publishers: ${gameData.data.publishers?.join(', ') || 'N/A'}</h3>
+                    <h3>Screenshots: ${gameData.data.screenshots?.length || 0}</h3>
+                    <h3>Release Date: ${gameData.data.release_date?.date || 'N/A'}</h3>
+                    
+                    <h3>Full Response:</h3>
+                    <pre>${JSON.stringify(gameData, null, 2).substring(0, 5000)}...</pre>
+                `;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerHTML = `
+                    <h2 class="error">❌ Error:</h2>
+                    <pre>${error.message}\n\n${error.stack}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

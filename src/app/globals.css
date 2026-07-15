@@ -1,0 +1,304 @@
+/* ─────────────────────────────────────────────
+   Gamer Bhidu — Global Styles & Design Tokens
+   Tailwind v4 Theme + Custom Utilities
+   ───────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;700;900&family=Recursive+Mono:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: #0c0a09;
+  --color-foreground: #f5f5f4;
+
+  --color-card: #1c1917;
+  --color-card-foreground: #f5f5f4;
+
+  --color-popover: #1c1917;
+  --color-popover-foreground: #f5f5f4;
+
+  --color-primary: #d9a75d;
+  --color-primary-foreground: #1c1917;
+
+  --color-secondary: #44403c;
+  --color-secondary-foreground: #ffffff;
+
+  --color-muted: #78716c;
+  --color-muted-foreground: #a8a29e;
+
+  --color-accent: #e6b773;
+  --color-accent-foreground: #1c1917;
+
+  --color-destructive: #d9a75d;
+  --color-destructive-foreground: #fafafa;
+
+  --color-border: #2e2a28;
+  --color-input: #2e2a28;
+  --color-ring: #d9a75d;
+
+  --color-chart-1: #d97706;
+  --color-chart-2: #15803d;
+  --color-chart-3: #1e3a5f;
+  --color-chart-4: #eab308;
+  --color-chart-5: #b91c1c;
+
+  --color-background-secondary: #1c1917;
+  --color-text-secondary: #a8a29e;
+  --color-discount-badge: #d9a75d;
+  --color-shadow-overlay: #000000;
+
+  /* Activision-Style Cinematic Tokens */
+  --color-spotlight: #121622;
+  --color-surface-elevated: #161412;
+
+  --shadow-glow-sm: 0 0 12px rgba(255, 255, 255, 0.10);
+  --shadow-glow-md: 0 0 24px rgba(255, 255, 255, 0.15);
+  --shadow-glow-lg: 0 8px 32px rgba(255, 255, 255, 0.15);
+
+  --font-display: "Rajdhani", sans-serif;
+  --font-body: "Outfit", sans-serif;
+  --font-mono: "Recursive Mono", monospace;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border);
+  }
+
+  :root {
+    --background: var(--color-background);
+    --foreground: var(--color-foreground);
+    --card: var(--color-card);
+    --card-foreground: var(--color-card-foreground);
+    --popover: var(--color-popover);
+    --popover-foreground: var(--color-popover-foreground);
+    --primary: var(--color-primary);
+    --primary-foreground: var(--color-primary-foreground);
+    --secondary: var(--color-secondary);
+    --secondary-foreground: var(--color-secondary-foreground);
+    --muted: var(--color-muted);
+    --muted-foreground: var(--color-muted-foreground);
+    --accent: var(--color-accent);
+    --accent-foreground: var(--color-accent-foreground);
+    --destructive: var(--color-destructive);
+    --destructive-foreground: var(--color-destructive-foreground);
+    --border: var(--color-border);
+    --input: var(--color-input);
+    --ring: var(--color-ring);
+    --chart-1: var(--color-chart-1);
+    --chart-2: var(--color-chart-2);
+    --chart-3: var(--color-chart-3);
+    --chart-4: var(--color-chart-4);
+    --chart-5: var(--color-chart-5);
+    --radius: 0.75rem; /* Base radius for Shadcn components, equivalent to 12px */
+  }
+
+  body {
+    font-family: var(--font-body);
+    @apply bg-background text-foreground;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    color: var(--color-foreground);
+  }
+
+  h1 {
+    font-size: 3rem; /* 48px */
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    font-size: 2.25rem; /* 36px */
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: 1.75rem; /* 28px */
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  h4 {
+    font-size: 1.25rem; /* 20px */
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  h5 {
+    font-size: 1rem; /* 16px */
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  p {
+    font-size: 1rem; /* 16px */
+    line-height: 1.6;
+    color: var(--color-foreground);
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  /* Responsive typography for mobile */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2rem; /* 32px */
+    }
+    h2 {
+      font-size: 1.5rem; /* 24px */
+    }
+    h3 {
+      font-size: 1.25rem; /* 20px */
+    }
+    h4 {
+      font-size: 1.125rem; /* 18px */
+    }
+    h5 {
+      font-size: 0.875rem; /* 14px */
+    }
+    p {
+      font-size: 0.875rem; /* 14px */
+    }
+  }
+}
+
+/* ── Tailwind v4 Custom Utilities ── */
+
+@utility spotlight-bg {
+  background-image: radial-gradient(ellipse 80% 60% at 50% 0%, var(--color-spotlight) 0%, #000000 60%);
+}
+
+@utility spotlight-card {
+  background-image: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(28, 25, 23, 0.6) 0%, transparent 70%);
+}
+
+@utility shadow-glow-sm {
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.10);
+}
+
+@utility shadow-glow-md {
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.15);
+}
+
+@utility shadow-glow-lg {
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.15);
+}
+
+@utility section-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-foreground);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom Scrollbar Styling */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thumb-slate-700::-webkit-scrollbar-thumb {
+  background-color: rgb(51 65 85);
+  border-radius: 3px;
+}
+
+.scrollbar-thumb-slate-700::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(71 85 105);
+}
+
+.scrollbar-track-slate-900::-webkit-scrollbar-track {
+  background-color: rgb(15 23 42);
+}
+
+/* Global scrollbars style override */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+
+/* Disable hover underline for navbar elements */
+header a:hover,
+header button:hover {
+  text-decoration: none !important;
+}
+
