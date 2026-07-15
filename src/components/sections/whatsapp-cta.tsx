@@ -34,7 +34,7 @@ export default function WhatsAppCTA({
                     Chat Now
                     <ArrowRight className="w-3.5 h-3.5 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
                   </button>
-                  <p className="text-muted-foreground text-[10px] md:text-xs">We usually reply in minutes</p>
+                  <p className="text-muted-foreground text-xs md:text-xs">We usually reply in minutes</p>
                 </div>
               </div>
             </div>

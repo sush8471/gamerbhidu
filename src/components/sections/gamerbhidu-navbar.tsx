@@ -94,7 +94,7 @@ export default function GamerBhiduNavbar() {
               {itemCount > 0 && (
                 <Badge
                   variant="destructive"
-                  className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-[10px] font-bold"
+                  className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs font-bold"
                 >
                   {itemCount}
                 </Badge>

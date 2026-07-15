@@ -139,7 +139,7 @@ export function NavbarSearch() {
                 <div className="relative w-12 h-16 flex-shrink-0 rounded overflow-hidden">
                   <Image src={game.image_url} alt={game.title} fill className="object-cover" sizes="48px" />
                   {game.discount_percentage && (
-                    <div className="absolute top-0 right-0 bg-white/15 text-white text-[8px] font-bold px-1 py-0.5">
+                    <div className="absolute top-0 right-0 bg-white/15 text-white text-[10px] font-bold px-1 py-0.5">
                       {formatDiscount(game.discount_percentage)}
                     </div>
                   )}

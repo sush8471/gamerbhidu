@@ -79,10 +79,9 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
           animate="visible"
           aria-live="polite"
           className={cn(
-            "w-full max-w-md rounded-2xl border border-slate-700/50 bg-gradient-to-b from-slate-900 to-slate-950 shadow-2xl overflow-hidden",
+            "w-full max-w-md rounded-2xl border border-border bg-gradient-to-b from-card to-black shadow-2xl overflow-hidden [font-family:var(--font-body)]",
             className
           )}
-          style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
         >
           {/* Scrollable Content */}
           <div className="max-h-[85vh] overflow-y-auto p-8 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
@@ -96,7 +95,6 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
               <motion.h2 
                 variants={itemVariants} 
                 className="text-2xl font-bold text-white tracking-tight"
-                style={{ letterSpacing: '-0.02em' }}
               >
                 {title}
               </motion.h2>
@@ -108,21 +106,21 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
                     key={item.label}
                     className="flex items-start justify-between text-left"
                   >
-                    <span className="text-sm font-medium text-slate-400 tracking-wide uppercase" style={{ fontSize: '11px', letterSpacing: '0.05em' }}>
+                    <span className="text-xs font-medium text-muted-foreground tracking-wider uppercase">
                       {item.label}
                     </span>
-                    <span className="text-[15px] font-semibold text-slate-100 text-right max-w-[60%]" style={{ lineHeight: '1.4', letterSpacing: '0.01em' }}>
+                    <span className="text-sm font-semibold text-foreground text-right max-w-[60%] leading-snug">
                       {item.value}
                     </span>
                   </div>
                 ))}
 
                 {/* Total - Prominent Display */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
-                  <span className="text-base font-bold text-white tracking-wide">
-                    Total
-                  </span>
-                  <span className="text-3xl font-bold text-white" style={{ letterSpacing: '-0.02em' }}>
+                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <span className="text-base font-bold text-white tracking-wide">
+                      Total
+                    </span>
+                    <span className="text-3xl font-bold text-white tracking-tight">
                     {totalAmount}
                   </span>
                 </div>
@@ -131,17 +129,17 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
               {/* QR Code Payment Section */}
               <motion.div variants={itemVariants} className="w-full pt-4 space-y-3">
                 <div className="text-center">
-                  <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-3">
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-3">
                     Scan QR to Pay via UPI
                   </p>
                   
                   {/* QR Code with Click to Enlarge */}
                   <button
                     onClick={() => setShowQREnlarged(true)}
-                    className="relative mx-auto w-52 h-52 rounded-2xl overflow-hidden border-2 border-slate-700/50 bg-white/5 backdrop-blur-sm p-2 group hover:border-blue-500/50 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                    className="relative mx-auto w-52 h-52 rounded-2xl overflow-hidden border-2 border-border/50 bg-white/5 backdrop-blur-sm p-2 group hover:border-primary/50 transition-all hover:scale-105 active:scale-95 cursor-pointer"
                     aria-label="Click to enlarge QR code"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <Image
                       src="/payment-qr.png"
                       alt="UPI QR Code"
@@ -159,8 +157,8 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
                   </button>
 
                   {/* UPI ID Display */}
-                  <div className="mt-3 px-4 py-2 bg-slate-800/50 rounded-lg border border-slate-700/50">
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">UPI ID</p>
+                  <div className="mt-3 px-4 py-2 bg-card/50 rounded-lg border border-border/50">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">UPI ID</p>
                     <p className="text-sm text-white font-mono font-semibold">sushantcha00123@okicici</p>
                   </div>
                 </div>
@@ -168,10 +166,10 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
                 {/* OR Divider */}
                 <div className="relative py-3">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-slate-700/50"></div>
+                    <div className="w-full border-t border-border/50"></div>
                   </div>
                   <div className="relative flex justify-center">
-                    <span className="px-4 text-xs text-slate-400 bg-gradient-to-b from-slate-900 to-slate-950 font-medium">OR</span>
+                    <span className="px-4 text-xs text-muted-foreground bg-gradient-to-b from-card to-black font-medium">OR</span>
                   </div>
                 </div>
               </motion.div>
@@ -180,7 +178,7 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
               <motion.div variants={itemVariants} className="w-full">
                 <Button
                   onClick={onGoToAccount}
-                  className="w-full h-12 text-[15px] font-semibold bg-blue-600 hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 active:scale-[0.98]"
+                  className="w-full h-12 text-sm font-semibold bg-primary hover:bg-accent text-primary-foreground transition-all shadow-lg hover:shadow-primary/30 active:scale-[0.98]"
                   size="lg"
                 >
                   {buttonText}
@@ -207,12 +205,12 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-2xl w-full bg-gradient-to-b from-slate-900 to-slate-950 rounded-3xl p-8 border border-slate-700/50 shadow-2xl"
+              className="relative max-w-2xl w-full bg-gradient-to-b from-card to-black rounded-3xl p-8 border border-border/50 shadow-2xl"
             >
               {/* Close Button */}
               <button
                 onClick={() => setShowQREnlarged(false)}
-                className="absolute top-4 right-4 p-2 rounded-full bg-slate-800/50 hover:bg-slate-700/50 text-white transition-all hover:scale-110 active:scale-95"
+                className="absolute top-4 right-4 p-2 rounded-full bg-card/50 hover:bg-border/50 text-white transition-all hover:scale-110 active:scale-95"
                 aria-label="Close"
               >
                 <X className="w-6 h-6" />
@@ -234,22 +232,22 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
                 </div>
 
                 {/* UPI ID */}
-                <div className="w-full max-w-md px-6 py-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
-                  <p className="text-xs text-slate-400 uppercase tracking-wider mb-1 text-center">UPI ID</p>
+                <div className="w-full max-w-md px-6 py-4 bg-card/50 rounded-xl border border-border/50">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1 text-center">UPI ID</p>
                   <p className="text-lg text-white font-mono font-semibold text-center">sushantcha00123@okicici</p>
                 </div>
 
                 {/* Download Button */}
                 <Button
                   onClick={handleDownloadQR}
-                  className="w-full max-w-md h-12 bg-green-600 hover:bg-green-700 text-white font-semibold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-green-500/30"
+                  className="w-full max-w-md h-12 bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-[#25D366]/30"
                   size="lg"
                 >
                   <Download className="w-5 h-5" />
                   Download QR Code (HD)
                 </Button>
 
-                <p className="text-sm text-slate-400 text-center">
+                <p className="text-sm text-muted-foreground text-center">
                   Scan with any UPI app: Google Pay, PhonePe, Paytm, etc.
                 </p>
               </div>

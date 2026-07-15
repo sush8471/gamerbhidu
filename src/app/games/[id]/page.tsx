@@ -26,13 +26,13 @@ const FAQItem = ({ question, answer, isOpen, onClick }: { question: string; answ
       onClick={onClick}
       className="w-full py-5 flex items-center justify-between text-left group"
     >
-      <span className="text-white font-bold text-[13px] lg:text-sm pr-4 tracking-tight leading-snug">{question}</span>
+      <span className="text-white font-bold text-sm pr-4 tracking-tight leading-snug">{question}</span>
       <div className={`p-1 rounded-full transition-colors ${isOpen ? 'bg-white/10' : 'bg-white/5 group-hover:bg-white/10'}`}>
         <ChevronDown className={`w-3.5 h-3.5 text-white/60 flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </div>
     </button>
     <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[400px] pb-6' : 'max-h-0'}`}>
-      <p className="text-muted-foreground text-[13px] leading-[1.8] font-light">{answer}</p>
+      <p className="text-muted-foreground text-sm leading-relaxed font-light">{answer}</p>
     </div>
   </div>
 );
@@ -272,7 +272,7 @@ export default function GameDetailPage() {
                     <ThumbsUp className="w-3.5 h-3.5 text-white fill-white" />
                     <span className="text-[10px] font-bold text-white uppercase tracking-wide">Overwhelmingly Positive</span>
                   </div>
-                  <span className="text-muted-foreground text-[11px] font-medium tracking-tight">(2.4M+ Reviews)</span>
+                  <span className="text-muted-foreground text-xs font-medium tracking-tight">(2.4M+ Reviews)</span>
                 </div>
               </div>
 
@@ -293,13 +293,13 @@ export default function GameDetailPage() {
 
                 {/* Short About & Metadata */}
                 <div className="space-y-8">
-                  <p className="text-muted-foreground text-[14px] leading-[1.8] font-light opacity-90">
+                  <p className="text-muted-foreground text-sm leading-relaxed font-light opacity-90">
                     {steamData?.shortDescription || description}
                   </p>
 
                   <div className="flex flex-wrap gap-2 pt-2">
                     {[...game.genre, ...(game.tags || [])].slice(0, 5).map(tag => (
-                      <span key={tag} className="px-3 py-1 bg-card border border-white/10 text-white text-[11px] rounded-md font-medium">
+                      <span key={tag} className="px-3 py-1 bg-card border border-white/10 text-white text-xs rounded-md font-medium">
                         {tag}
                       </span>
                     ))}
@@ -557,7 +557,7 @@ export default function GameDetailPage() {
                       <div className="grid gap-2">
                         <button
                           onClick={() => window.open(`https://wa.me/917752805529?text=I want to buy ${game.title}`, '_blank')}
-                          className="w-full bg-white/10 hover:bg-white/20 text-white text-[13px] font-medium py-2.5 rounded-sm flex items-center justify-center gap-2 transition-all border border-white/20"
+                          className="w-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium py-2.5 rounded-sm flex items-center justify-center gap-2 transition-all border border-white/20"
                         >
                           <MessageCircle className="w-4 h-4 fill-white/20" />
                           Buy Now
@@ -566,7 +566,7 @@ export default function GameDetailPage() {
                         <button
                           onClick={handleAddToCart}
                           disabled={isAdded}
-                          className={`w-full text-white text-[13px] font-medium py-2.5 rounded-sm flex items-center justify-center gap-2 transition-all border ${isAdded ? 'bg-card border-white/10 cursor-default opacity-70' : 'bg-card hover:bg-card border-white/10'}`}
+                          className={`w-full text-white text-sm font-medium py-2.5 rounded-sm flex items-center justify-center gap-2 transition-all border ${isAdded ? 'bg-card border-white/10 cursor-default opacity-70' : 'bg-card hover:bg-card border-white/10'}`}
                         >
                           {isAdded ? (
                             <>
@@ -585,21 +585,21 @@ export default function GameDetailPage() {
                   </div>
 
                   {/* Short About */}
-                  <p className="text-muted-foreground text-[13px] leading-6 line-clamp-4 font-light">
+                  <p className="text-muted-foreground text-sm leading-6 line-clamp-4 font-light">
                     {steamData?.shortDescription || description}
                   </p>
 
                   {/* Release Date & Meta */}
                   <div className="space-y-2 pt-2">
-                    <div className="flex text-[13px]">
+                    <div className="flex text-sm">
                       <span className="w-28 text-muted-foreground uppercase font-bold tracking-wide text-[10px] pt-0.5">Release Date</span>
                       <span className="text-muted-foreground">{steamData?.releaseDate?.date || "Coming Soon"}</span>
                     </div>
-                    <div className="flex text-[13px]">
+                    <div className="flex text-sm">
                       <span className="w-28 text-muted-foreground uppercase font-bold tracking-wide text-[10px] pt-0.5">Developer</span>
                       <span className="text-white hover:text-white transition-colors cursor-pointer">{steamData?.developers?.[0] || "Unknown"}</span>
                     </div>
-                    <div className="flex text-[13px]">
+                    <div className="flex text-sm">
                       <span className="w-28 text-muted-foreground uppercase font-bold tracking-wide text-[10px] pt-0.5">Publisher</span>
                       <span className="text-white hover:text-white transition-colors cursor-pointer">{steamData?.publishers?.[0] || "Unknown"}</span>
                     </div>
@@ -610,11 +610,11 @@ export default function GameDetailPage() {
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide block mb-2">Popular User Tags</span>
                     <div className="flex flex-wrap gap-1.5">
                       {[...game.genre, ...(game.tags || [])].slice(0, 8).map(tag => (
-                        <span key={tag} className="px-2 py-0.5 bg-card border border-white/10 hover:bg-white/20 hover:border-white/20 text-white text-[11px] rounded transition-all cursor-pointer">
+                        <span key={tag} className="px-2 py-0.5 bg-card border border-white/10 hover:bg-white/20 hover:border-white/20 text-white text-xs rounded transition-all cursor-pointer">
                           {tag}
                         </span>
                       ))}
-                      <span className="px-2 py-0.5 text-muted-foreground hover:text-muted-foreground text-[15px] cursor-pointer">+</span>
+                      <span className="px-2 py-0.5 text-muted-foreground hover:text-muted-foreground text-base cursor-pointer">+</span>
                     </div>
                   </div>
                 </div>
@@ -663,7 +663,7 @@ export default function GameDetailPage() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => window.open(`https://wa.me/917752805529?text=I want to buy ${game.title}`, '_blank')}
-              className="flex-1 h-10 bg-white/15 hover:bg-white/25 text-white px-4 rounded-lg font-bold text-[13px] flex items-center justify-center gap-2 border border-white/20 whitespace-nowrap"
+              className="flex-1 h-10 bg-white/15 hover:bg-white/25 text-white px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 border border-white/20 whitespace-nowrap"
             >
               <MessageCircle className="w-4 h-4 fill-white/20" />
               Buy Now

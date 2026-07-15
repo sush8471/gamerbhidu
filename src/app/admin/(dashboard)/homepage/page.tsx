@@ -241,8 +241,8 @@ export default function AdminHomepageSectionsPage() {
   if (loading) {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-[#00D2FF]" />
-        <p className="text-sm text-gray-500 font-medium">Loading Sections...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground font-medium">Loading Sections...</p>
       </div>
     );
   }
@@ -268,8 +268,8 @@ export default function AdminHomepageSectionsPage() {
               onClick={() => setActiveSectionId(section.id)}
               className={`px-4 py-2 text-xs lg:text-sm font-bold tracking-wide transition-all rounded-lg cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? "bg-[#00D2FF]/10 text-[#00D2FF] border border-[#00D2FF]/20 shadow-[0_0_12px_rgba(0,210,255,0.05)]"
-                  : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+                  ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_12px_rgba(0,210,255,0.05)]"
+                  : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
               }`}
             >
               {section.name}
@@ -283,18 +283,18 @@ export default function AdminHomepageSectionsPage() {
         <div className="lg:col-span-2 bg-[#121622] border border-[#202838] rounded-xl overflow-hidden shadow-xl">
           <div className="px-6 py-4 border-b border-[#202838] flex items-center justify-between">
             <h3 className="font-bold text-white">Active Section Listings</h3>
-            <span className="text-xs font-bold text-gray-400 bg-[#202838] px-2.5 py-1 rounded-full">
+            <span className="text-xs font-bold text-muted-foreground bg-[#202838] px-2.5 py-1 rounded-full">
               {mappings.length} {mappings.length === 1 ? "game" : "games"}
             </span>
           </div>
 
           {mappingsLoading ? (
             <div className="h-64 flex flex-col items-center justify-center gap-2">
-              <Loader2 className="w-6 h-6 animate-spin text-[#00D2FF]" />
-              <p className="text-xs text-gray-500 font-medium">Updating section games...</p>
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              <p className="text-xs text-muted-foreground font-medium">Updating section games...</p>
             </div>
           ) : mappings.length === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center gap-2 text-gray-500">
+            <div className="h-64 flex flex-col items-center justify-center gap-2 text-muted-foreground">
               <Home className="w-10 h-10 stroke-[1.25]" />
               <p className="text-xs font-semibold">No games assigned to this section</p>
             </div>
@@ -305,7 +305,7 @@ export default function AdminHomepageSectionsPage() {
                   {/* Info */}
                   <div className="flex items-center gap-3.5 min-w-0">
                     {/* Index Display Badge */}
-                    <span className="w-5 h-5 rounded-full bg-[#080A10]/80 border border-[#202838] flex items-center justify-center text-[10px] text-gray-400 font-mono font-bold flex-shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-[#080A10]/80 border border-[#202838] flex items-center justify-center text-[10px] text-muted-foreground font-mono font-bold flex-shrink-0">
                       {i + 1}
                     </span>
 
@@ -323,7 +323,7 @@ export default function AdminHomepageSectionsPage() {
                     {/* Title */}
                     <div className="min-w-0">
                       <p className="font-bold text-white text-xs lg:text-sm leading-snug truncate" title={mapping.title}>{mapping.title}</p>
-                      <p className="text-[10px] text-gray-500 font-mono truncate">/{mapping.slug}</p>
+                      <p className="text-[10px] text-muted-foreground font-mono truncate">/{mapping.slug}</p>
                     </div>
                   </div>
 
@@ -334,7 +334,7 @@ export default function AdminHomepageSectionsPage() {
                       <button
                         disabled={i === 0 || actionLoading}
                         onClick={() => handleSwapOrder(i, i - 1)}
-                        className="p-2 text-gray-400 hover:text-[#00D2FF] disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
+                        className="p-2 text-muted-foreground hover:text-primary disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
                         title="Move Up"
                       >
                         <ArrowUp className="w-4 h-4" />
@@ -343,7 +343,7 @@ export default function AdminHomepageSectionsPage() {
                       <button
                         disabled={i === mappings.length - 1 || actionLoading}
                         onClick={() => handleSwapOrder(i, i + 1)}
-                        className="p-2 text-gray-400 hover:text-[#00D2FF] disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
+                        className="p-2 text-muted-foreground hover:text-primary disabled:opacity-20 disabled:pointer-events-none transition-colors cursor-pointer"
                         title="Move Down"
                       >
                         <ArrowDown className="w-4 h-4" />
@@ -354,7 +354,7 @@ export default function AdminHomepageSectionsPage() {
                     <button
                       disabled={actionLoading}
                       onClick={() => handleRemoveGame(mapping.id)}
-                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/5 rounded-lg border border-transparent hover:border-red-500/10 transition-all cursor-pointer"
+                      className="p-2 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded-lg border border-transparent hover:border-red-500/10 transition-all cursor-pointer"
                       title="Remove from section"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -370,21 +370,21 @@ export default function AdminHomepageSectionsPage() {
         <div className="bg-[#121622] border border-[#202838] rounded-xl p-6 space-y-4 shadow-xl">
           <div className="space-y-1">
             <h3 className="font-bold text-white">Add Game to Section</h3>
-            <p className="text-xs text-gray-500 leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Assign a visible catalog game to the currently selected homepage section. New games are appended to the bottom.
             </p>
           </div>
 
           <form onSubmit={handleAddGame} className="space-y-4 pt-2">
             <div className="space-y-1.5">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+              <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                 Select Game
               </label>
               <select
                 disabled={actionLoading || unmappedGames.length === 0}
                 value={selectedGameId}
                 onChange={(e) => setSelectedGameId(e.target.value)}
-                className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 disabled:opacity-50 cursor-pointer"
+                className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 disabled:opacity-50 cursor-pointer"
               >
                 <option value="">-- Choose a game to add --</option>
                 {unmappedGames.map((game) => (
@@ -398,7 +398,7 @@ export default function AdminHomepageSectionsPage() {
             <button
               type="submit"
               disabled={actionLoading || !selectedGameId}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-[#080A10] font-black text-sm py-3 rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-primary-foreground font-black text-sm py-3 rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Assign to Section</span>

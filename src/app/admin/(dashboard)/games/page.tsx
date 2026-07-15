@@ -453,13 +453,13 @@ export default function AdminGamesPage() {
       <div className="bg-[#121622] border border-[#202838] p-3 lg:p-4 rounded-xl space-y-3">
         {/* Search — full width */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by title, series, or slug..."
-            className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10"
+            className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10"
           />
         </div>
 
@@ -469,7 +469,7 @@ export default function AdminGamesPage() {
           <select
             value={selectedGenre}
             onChange={(e) => setSelectedGenre(e.target.value)}
-            className="flex-1 min-w-[130px] bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
+            className="flex-1 min-w-[130px] bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
           >
             {allGenres.map((g) => (
               <option key={g} value={g}>
@@ -482,7 +482,7 @@ export default function AdminGamesPage() {
           <select
             value={selectedVisibility}
             onChange={(e) => setSelectedVisibility(e.target.value)}
-            className="flex-1 min-w-[130px] bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
+            className="flex-1 min-w-[130px] bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
           >
             <option value="All">Visibility: All</option>
             <option value="Visible">Visible Only</option>
@@ -492,7 +492,7 @@ export default function AdminGamesPage() {
           {/* Add Game Button */}
           <button
             onClick={openAddModal}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-[#080A10] font-black text-sm rounded-lg hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-primary-foreground font-black text-sm rounded-lg hover:brightness-110 transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
             <span>Add Game</span>
@@ -504,19 +504,19 @@ export default function AdminGamesPage() {
       <div className="bg-[#121622] border border-[#202838] rounded-xl overflow-hidden shadow-xl">
         {loading ? (
           <div className="h-72 flex flex-col items-center justify-center gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-[#00D2FF]" />
-            <p className="text-sm text-gray-500 font-medium">Loading catalog...</p>
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground font-medium">Loading catalog...</p>
           </div>
         ) : error ? (
           <div className="h-72 flex flex-col items-center justify-center gap-3 px-6 text-center">
             <AlertTriangle className="w-10 h-10 text-red-500" />
             <p className="text-sm text-gray-300 font-bold">{error}</p>
-            <button onClick={loadGames} className="mt-2 text-xs font-bold text-[#00D2FF] hover:underline">
+            <button onClick={loadGames} className="mt-2 text-xs font-bold text-primary hover:underline">
               Retry
             </button>
           </div>
         ) : filteredGames.length === 0 ? (
-          <div className="h-72 flex flex-col items-center justify-center gap-2 text-gray-500">
+          <div className="h-72 flex flex-col items-center justify-center gap-2 text-muted-foreground">
             <Gamepad2 className="w-12 h-12 stroke-[1.25]" />
             <p className="text-sm font-semibold">No game listings found</p>
           </div>
@@ -534,13 +534,13 @@ export default function AdminGamesPage() {
                   {/* Info */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <p className="text-white font-bold text-xs leading-tight truncate">{game.title}</p>
-                    <p className="text-[10px] text-gray-500 font-mono truncate">/{game.slug}</p>
+                    <p className="text-[10px] text-muted-foreground font-mono truncate">/{game.slug}</p>
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {/* Price */}
                       {game.selling_price !== null ? (
                         <span className="text-xs font-black text-white">₹{game.selling_price}</span>
                       ) : (
-                        <span className="text-[10px] text-gray-500 bg-[#202838] px-1.5 py-0.5 rounded">N/A</span>
+                        <span className="text-[10px] text-muted-foreground bg-[#202838] px-1.5 py-0.5 rounded">N/A</span>
                       )}
                       {/* Discount badge */}
                       {game.discount_percentage ? (
@@ -564,7 +564,7 @@ export default function AdminGamesPage() {
                     {/* More actions drawer trigger */}
                     <button
                       onClick={() => setMobileActionGame(game)}
-                      className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-all cursor-pointer"
+                      className="p-2 text-muted-foreground hover:text-white rounded-lg hover:bg-white/5 transition-all cursor-pointer"
                       title="More actions"
                     >
                       <MoreVertical className="w-5 h-5" />
@@ -578,7 +578,7 @@ export default function AdminGamesPage() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[#202838] bg-black/10 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <tr className="border-b border-[#202838] bg-black/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     <th className="py-4 px-6 w-20">Image</th>
                     <th className="py-4 px-6">Title / Series</th>
                     <th className="py-4 px-6 w-32">Price</th>
@@ -598,18 +598,18 @@ export default function AdminGamesPage() {
                       </td>
                       <td className="py-3 px-6">
                         <p className="font-bold text-white max-w-sm truncate" title={game.title}>{game.title}</p>
-                        <p className="text-xs text-gray-500 font-mono tracking-tighter truncate max-w-xs" title={game.slug}>/{game.slug}</p>
+                        <p className="text-xs text-muted-foreground font-mono tracking-tighter truncate max-w-xs" title={game.slug}>/{game.slug}</p>
                       </td>
                       <td className="py-3 px-6">
                         {game.selling_price !== null ? (
                           <div>
                             <p className="font-black text-white">₹{game.selling_price}</p>
                             {game.original_price && (
-                              <p className="text-xs text-gray-500 line-through">₹{game.original_price}</p>
+                              <p className="text-xs text-muted-foreground line-through">₹{game.original_price}</p>
                             )}
                           </div>
                         ) : (
-                          <span className="text-xs text-gray-500 font-bold bg-[#202838] px-2 py-0.5 rounded">N/A</span>
+                          <span className="text-xs text-muted-foreground font-bold bg-[#202838] px-2 py-0.5 rounded">N/A</span>
                         )}
                       </td>
                       <td className="py-3 px-6">
@@ -618,7 +618,7 @@ export default function AdminGamesPage() {
                             -{game.discount_percentage}%
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-500">—</span>
+                          <span className="text-xs text-muted-foreground">—</span>
                         )}
                       </td>
                       <td className="py-3 px-6 text-center">
@@ -627,7 +627,7 @@ export default function AdminGamesPage() {
                           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                             game.visible
                               ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                              : "bg-gray-500/10 text-gray-400 border border-gray-500/20 hover:text-white"
+                              : "bg-gray-500/10 text-muted-foreground border border-gray-500/20 hover:text-white"
                           }`}
                         >
                           {game.visible ? (
@@ -650,14 +650,14 @@ export default function AdminGamesPage() {
                         <div className="flex items-center justify-center gap-2.5">
                           <button
                             onClick={() => openEditModal(game)}
-                            className="p-1.5 text-gray-400 hover:text-[#00D2FF] hover:bg-white/5 rounded transition-all cursor-pointer"
+                            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer"
                             title="Edit game listing"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => openDeleteConfirm(game)}
-                            className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
+                            className="p-1.5 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
                             title="Delete game listing"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -675,7 +675,7 @@ export default function AdminGamesPage() {
         {/* Pagination Footer */}
         {!loading && filteredGames.length > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#202838] px-4 py-3 bg-black/5">
-            <p className="text-xs text-gray-400 text-center sm:text-left">
+            <p className="text-xs text-muted-foreground text-center sm:text-left">
               Showing{" "}
               <span className="font-semibold text-white">{(currentPage - 1) * itemsPerPage + 1}</span> –{" "}
               <span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, filteredGames.length)}</span>{" "}
@@ -685,17 +685,17 @@ export default function AdminGamesPage() {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                className="p-2 border border-[#202838] rounded-lg bg-[#080A10]/50 text-gray-400 hover:text-white hover:border-[#00D2FF] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="p-2 border border-[#202838] rounded-lg bg-[#080A10]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-xs text-gray-400 min-w-[80px] text-center">
+              <span className="text-xs text-muted-foreground min-w-[80px] text-center">
                 Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}
               </span>
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                className="p-2 border border-[#202838] rounded-lg bg-[#080A10]/50 text-gray-400 hover:text-white hover:border-[#00D2FF] disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="p-2 border border-[#202838] rounded-lg bg-[#080A10]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -715,7 +715,7 @@ export default function AdminGamesPage() {
               </h3>
               <button
                 onClick={() => setModalOpen(false)}
-                className="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                className="text-muted-foreground hover:text-white transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -733,7 +733,7 @@ export default function AdminGamesPage() {
 
               {/* Steam Autofill Control */}
               <div className="bg-[#080A10]/40 border border-[#202838] rounded-xl p-4 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#00D2FF] uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider">
                   <Sparkles className="w-4 h-4" />
                   <span>Autofill from Steam Store</span>
                 </div>
@@ -744,14 +744,14 @@ export default function AdminGamesPage() {
                       value={formData.steam_app_id}
                       onChange={(e) => setFormData(prev => ({ ...prev, steam_app_id: e.target.value }))}
                       placeholder="Enter Steam App ID (e.g. 3768760)"
-                      className="w-full bg-[#080A10]/80 border border-[#202838] focus:border-[#00D2FF] focus:ring-1 focus:ring-[#00D2FF]/20 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-mono"
+                      className="w-full bg-[#080A10]/80 border border-[#202838] focus:border-primary focus:ring-1 focus:ring-primary/20 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-mono"
                     />
                   </div>
                   <button
                     type="button"
                     disabled={fetchingSteam || !formData.steam_app_id}
                     onClick={handleFetchSteam}
-                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-[#080A10] disabled:opacity-40 disabled:cursor-not-allowed font-black text-xs rounded-lg hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                    className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed font-black text-xs rounded-lg hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
                   >
                     {fetchingSteam ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -763,14 +763,14 @@ export default function AdminGamesPage() {
                     )}
                   </button>
                 </div>
-                <p className="text-[10px] text-gray-500 leading-normal">
+                <p className="text-[10px] text-muted-foreground leading-normal">
                   If entered, clicking autofill will fetch title, genres, search keywords, and poster cover directly from the official Steam repository.
                 </p>
               </div>
 
               {/* Poster Thumbnail Drag & Drop Area */}
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   Game Poster Cover Thumbnail <span className="text-red-500">*</span>
                 </label>
                 
@@ -781,7 +781,7 @@ export default function AdminGamesPage() {
                   onDrop={handleDrop}
                   onClick={() => document.getElementById("file-upload")?.click()}
                   className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center gap-3 transition-all cursor-pointer relative overflow-hidden h-48 bg-[#080A10]/20 ${
-                    dragActive ? "border-[#00D2FF] bg-[#00D2FF]/5" : "border-[#202838] hover:border-[#00D2FF]/50"
+                    dragActive ? "border-primary bg-primary/5" : "border-[#202838] hover:border-primary/50"
                   }`}
                 >
                   <input
@@ -794,8 +794,8 @@ export default function AdminGamesPage() {
                   
                   {uploadingImage ? (
                     <div className="flex flex-col items-center gap-2">
-                      <Loader2 className="w-8 h-8 animate-spin text-[#00D2FF]" />
-                      <p className="text-xs text-gray-400">Uploading poster image...</p>
+                      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                      <p className="text-xs text-muted-foreground">Uploading poster image...</p>
                     </div>
                   ) : formData.image_url ? (
                     <>
@@ -808,7 +808,7 @@ export default function AdminGamesPage() {
                         />
                       </div>
                       <div className="relative z-10 flex flex-col items-center gap-2">
-                        <FileImage className="w-8 h-8 text-[#00D2FF] filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]" />
+                        <FileImage className="w-8 h-8 text-primary filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]" />
                         <p className="text-xs text-white font-bold bg-black/60 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md">
                           Change dropped poster or select file
                         </p>
@@ -816,10 +816,10 @@ export default function AdminGamesPage() {
                     </>
                   ) : (
                     <>
-                      <Upload className="w-8 h-8 text-gray-500" />
+                      <Upload className="w-8 h-8 text-muted-foreground" />
                       <div className="text-center space-y-1">
                         <p className="text-xs text-gray-300 font-bold">Drag & drop game poster image here</p>
-                        <p className="text-[10px] text-gray-500">or click to browse local files (PNG, JPG, WebP)</p>
+                        <p className="text-[10px] text-muted-foreground">or click to browse local files (PNG, JPG, WebP)</p>
                       </div>
                     </>
                   )}
@@ -832,14 +832,14 @@ export default function AdminGamesPage() {
                   value={formData.image_url}
                   onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
                   placeholder="Or enter poster URL manually (e.g. /gta-v.jpg)"
-                  className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-xs text-white focus:outline-none placeholder:text-gray-600 font-mono"
+                  className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-xs text-white focus:outline-none placeholder:text-gray-600 font-mono"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Title */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Game Title <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -848,13 +848,13 @@ export default function AdminGamesPage() {
                     value={formData.title}
                     onChange={handleTitleChange}
                     placeholder="Enter Title Name"
-                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 placeholder:text-gray-600"
+                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600"
                   />
                 </div>
 
                 {/* Slug */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Slug <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -863,13 +863,13 @@ export default function AdminGamesPage() {
                     value={formData.slug}
                     onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
                     placeholder="Auto-generated slug name"
-                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 placeholder:text-gray-600"
+                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600"
                   />
                 </div>
 
                 {/* Original Price */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Original Price (INR)
                   </label>
                   <input
@@ -877,13 +877,13 @@ export default function AdminGamesPage() {
                     value={formData.original_price}
                     onChange={(e) => setFormData(prev => ({ ...prev, original_price: e.target.value }))}
                     placeholder="Original Price"
-                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 placeholder:text-gray-600"
+                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600"
                   />
                 </div>
 
                 {/* Selling Price */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Selling Price (INR)
                   </label>
                   <input
@@ -891,26 +891,26 @@ export default function AdminGamesPage() {
                     value={formData.selling_price}
                     onChange={(e) => setFormData(prev => ({ ...prev, selling_price: e.target.value }))}
                     placeholder="Selling/Discounted Price"
-                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 placeholder:text-gray-600"
+                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600"
                   />
                 </div>
 
                 {/* Discount Percentage (Calculated automatically) */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Calculated Discount (%)
                   </label>
                   <input
                     type="text"
                     disabled
                     value={formData.discount_percentage ? `${formData.discount_percentage}%` : "0% (Auto-Calculated)"}
-                    className="w-full bg-[#121622] border border-[#202838] rounded-lg px-3 py-2 text-sm text-gray-400 focus:outline-none font-bold"
+                    className="w-full bg-[#121622] border border-[#202838] rounded-lg px-3 py-2 text-sm text-muted-foreground focus:outline-none font-bold"
                   />
                 </div>
 
                 {/* Series */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Series Name (Optional)
                   </label>
                   <input
@@ -918,14 +918,14 @@ export default function AdminGamesPage() {
                     value={formData.series}
                     onChange={(e) => setFormData(prev => ({ ...prev, series: e.target.value }))}
                     placeholder="Series Name"
-                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 placeholder:text-gray-600"
+                    className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600"
                   />
                 </div>
               </div>
 
               {/* Genre (Pill checkboxes format) */}
               <div className="space-y-2.5">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   Allot Genres / Categories <span className="text-red-500">*</span>
                 </label>
                 <div className="flex flex-wrap gap-2 pt-1">
@@ -952,8 +952,8 @@ export default function AdminGamesPage() {
                         key={g}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer select-none active:scale-[0.97] ${
                           isChecked
-                            ? "bg-[#00D2FF]/10 border-[#00D2FF] text-[#00D2FF] shadow-[0_0_12px_rgba(0,210,255,0.1)]"
-                            : "bg-[#080A10]/30 border-[#202838] text-gray-400 hover:border-gray-500 hover:text-white"
+                            ? "bg-primary/10 border-primary text-primary shadow-[0_0_12px_rgba(0,210,255,0.1)]"
+                            : "bg-[#080A10]/30 border-[#202838] text-muted-foreground hover:border-gray-500 hover:text-white"
                         }`}
                       >
                         <input
@@ -973,13 +973,13 @@ export default function AdminGamesPage() {
                   value={formData.genre}
                   onChange={(e) => setFormData(prev => ({ ...prev, genre: e.target.value }))}
                   placeholder="Or enter custom genres manually (comma-separated, e.g. Platformer, VR)"
-                  className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 placeholder:text-gray-600 font-mono"
+                  className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600 font-mono"
                 />
               </div>
 
               {/* Tags */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   Search Aliases / Tags (Comma separated list)
                 </label>
                 <input
@@ -987,13 +987,13 @@ export default function AdminGamesPage() {
                   value={formData.tags}
                   onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
                   placeholder="mario, nintendo, platforms"
-                  className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 placeholder:text-gray-600"
+                  className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   Description / Blurb (Optional - Fetched from Steam on detail page)
                 </label>
                 <textarea
@@ -1001,14 +1001,14 @@ export default function AdminGamesPage() {
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="No need to fill this in if you have Steam App ID. It will be fetched automatically."
-                  className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-[#00D2FF] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#00D2FF]/10 placeholder:text-gray-600 resize-none"
+                  className="w-full bg-[#080A10]/50 border border-[#202838] focus:border-primary rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600 resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-[#202838] pt-6">
                 {/* Release Status */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider font-bold">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider font-bold">
                     Release Status
                   </label>
                   <div className="flex gap-4">
@@ -1039,7 +1039,7 @@ export default function AdminGamesPage() {
 
                 {/* Visible Toggle */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Storefront Visibility
                   </label>
                   <label className="flex items-center gap-2 text-sm text-white cursor-pointer select-none">
@@ -1068,7 +1068,7 @@ export default function AdminGamesPage() {
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-[#080A10] font-black text-sm rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#00D2FF] to-[#00B8E6] text-primary-foreground font-black text-sm rounded-lg hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
                 >
                   {formLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                   <span>{modalMode === "add" ? "Save Game" : "Update Game"}</span>
@@ -1089,7 +1089,7 @@ export default function AdminGamesPage() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-lg font-bold text-white">Delete Listing?</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Are you sure you want to delete <span className="text-white font-semibold">"{gameToDelete?.title}"</span>? This will permanently remove the record and any storefront homepage section mappings. This action cannot be undone.
                 </p>
               </div>
@@ -1130,11 +1130,11 @@ export default function AdminGamesPage() {
             <div className="flex items-center justify-between border-b border-[#202838] pb-3">
               <div className="min-w-0">
                 <h4 className="font-bold text-white text-sm truncate">{mobileActionGame.title}</h4>
-                <p className="text-[10px] text-[#6B7BA4] font-mono">/{mobileActionGame.slug}</p>
+                <p className="text-[10px] text-muted-foreground font-mono">/{mobileActionGame.slug}</p>
               </div>
               <button 
                 onClick={() => setMobileActionGame(null)}
-                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-white/5 cursor-pointer"
+                className="text-muted-foreground hover:text-white p-1 rounded-lg hover:bg-white/5 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1151,7 +1151,7 @@ export default function AdminGamesPage() {
                 className={`flex items-center gap-3 w-full p-3 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
                   mobileActionGame.visible
                     ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                    : "bg-gray-500/5 text-gray-400 border-gray-500/10"
+                    : "bg-gray-500/5 text-muted-foreground border-gray-500/10"
                 }`}
               >
                 {mobileActionGame.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -1166,7 +1166,7 @@ export default function AdminGamesPage() {
                 }}
                 className="flex items-center gap-3 w-full p-3 bg-[#202838]/50 hover:bg-[#202838] border border-[#202838] text-white rounded-xl text-sm font-bold transition-all cursor-pointer"
               >
-                <Edit2 className="w-4 h-4 text-[#00D2FF]" />
+                <Edit2 className="w-4 h-4 text-primary" />
                 <span>Edit Game Details</span>
               </button>
               

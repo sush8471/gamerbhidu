@@ -80,8 +80,8 @@ export default function AdminDashboardLayout({
   if (loading) {
     return (
       <div className="min-h-screen bg-[#080A10] flex flex-col items-center justify-center text-white gap-3">
-        <Loader2 className="w-10 h-10 animate-spin text-[#00D2FF]" />
-        <p className="text-sm font-medium tracking-wide text-gray-400">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <p className="text-sm font-medium tracking-wide text-muted-foreground">
           Verifying session...
         </p>
       </div>
@@ -115,14 +115,14 @@ export default function AdminDashboardLayout({
             <span className="text-base font-black tracking-wider uppercase bg-gradient-to-r from-[#00D2FF] to-[#00F0FF] bg-clip-text text-transparent">
               Gamer Bhidu
             </span>
-            <span className="text-[10px] font-bold bg-[#00D2FF]/10 text-[#00D2FF] px-2 py-0.5 rounded-full border border-[#00D2FF]/20">
+            <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20">
               Admin
             </span>
           </Link>
           {/* Close button — mobile only */}
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+            className="lg:hidden p-1.5 text-muted-foreground hover:text-white rounded-lg hover:bg-white/5 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -139,8 +139,8 @@ export default function AdminDashboardLayout({
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-[#00D2FF]/10 text-[#00D2FF] border border-[#00D2FF]/20 shadow-[0_0_15px_rgba(0,210,255,0.05)]"
-                    : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+                    ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(0,210,255,0.05)]"
+                    : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
                 }`}
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
@@ -154,7 +154,7 @@ export default function AdminDashboardLayout({
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-[#202838] space-y-3">
           <div className="px-4 py-2.5 bg-black/25 rounded-xl border border-[#202838]/50">
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-0.5">
               Logged in as
             </p>
             <p

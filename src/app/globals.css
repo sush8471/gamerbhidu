@@ -4,7 +4,7 @@
    ───────────────────────────────────────────── */
 @import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;700;900&family=Recursive+Mono:wght@400;700&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -147,33 +147,36 @@
   h1 {
     font-size: 3rem; /* 48px */
     font-weight: 900;
-    line-height: 1.1;
+    line-height: 1.05;
     letter-spacing: -0.02em;
   }
 
   h2 {
     font-size: 2.25rem; /* 36px */
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
   }
 
   h3 {
     font-size: 1.75rem; /* 28px */
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.15;
+    letter-spacing: 0.04em;
   }
 
   h4 {
     font-size: 1.25rem; /* 20px */
     font-weight: 700;
-    line-height: 1.4;
+    line-height: 1.2;
+    letter-spacing: 0.06em;
   }
 
   h5 {
     font-size: 1rem; /* 16px */
     font-weight: 700;
-    line-height: 1.5;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
   }
 
   p {
@@ -213,6 +216,16 @@
       font-size: 0.875rem; /* 14px */
     }
   }
+
+  /* Utility: Hitmarker-style section label (small uppercase, wide tracking) */
+  .section-label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-muted-foreground);
+  }
 }
 
 /* ── Tailwind v4 Custom Utilities ── */
@@ -239,10 +252,27 @@
 
 @utility section-heading {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--color-foreground);
+  line-height: 1.1;
+}
+
+@utility heading-xl {
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+@utility heading-lg {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
 }
 
 .scrollbar-hide {
