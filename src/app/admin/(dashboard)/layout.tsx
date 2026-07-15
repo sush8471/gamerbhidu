@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import {
@@ -22,7 +22,6 @@ export default function AdminDashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const mainRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -59,10 +58,9 @@ export default function AdminDashboardLayout({
     };
   }, [router]);
 
-  // Close sidebar and scroll to top on route change (mobile)
+  // Close sidebar on route change (mobile)
   useEffect(() => {
     setSidebarOpen(false);
-    mainRef.current?.scrollTo({ top: 0, behavior: "auto" });
   }, [pathname]);
 
   const handleLogout = async () => {
@@ -177,7 +175,7 @@ export default function AdminDashboardLayout({
       </aside>
 
       {/* ── Main Content Pane ── */}
-      <div ref={mainRef} className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         {/* Top Header */}
         <header className="h-14 lg:h-16 border-b border-[#262626] bg-[#111111]/80 backdrop-blur-md flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30 gap-3">
           {/* Left: Hamburger + Page title */}

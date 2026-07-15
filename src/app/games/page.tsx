@@ -480,7 +480,7 @@ function BrowsePageInner() {
     if (page < 1 || page > totalPages) return;
     updateFilters({ page });
     setTimeout(() => {
-      gridTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }, 50);
   };
 
