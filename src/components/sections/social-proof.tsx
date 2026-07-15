@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { X } from "lucide-react";
 import { GlareCard } from "@/components/ui/glare-card";
 import { SectionHeader } from "@/components/ui/section-header";
+import { CarouselNav } from "@/components/ui/carousel-nav";
 
 export default function SocialProof() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const proofImages = [
@@ -178,15 +180,20 @@ export default function SocialProof() {
     <>
       <section className="w-full bg-gradient-to-b from-background to-card py-16 lg:py-20">
         <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-8">
-          <SectionHeader
-            title="Trusted by Indian Gamers"
-            subtitle="Real payment proofs from customers who bought Steam games via WhatsApp & UPI."
-            align="center"
-            className="mb-10 lg:mb-14"
-          />
+          <div className="flex items-center justify-between gap-4 mb-6 lg:mb-10">
+            <div className="flex-1" />
+            <SectionHeader
+              title="Trusted by Indian Gamers"
+              subtitle="Real payment proofs from customers who bought Steam games via WhatsApp & UPI."
+              align="center"
+            />
+            <div className="flex-1 flex justify-end">
+              <CarouselNav scrollRef={scrollContainerRef} itemCount={proofImages.length} show={proofImages.length > 1} />
+            </div>
+          </div>
 
           <div className="relative overflow-hidden">
-            <div className="flex gap-4 lg:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+            <div ref={scrollContainerRef} className="flex gap-4 lg:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
               {proofImages.map((proof) => (
                 <button
                   key={proof.id}

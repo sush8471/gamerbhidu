@@ -3,9 +3,10 @@
 import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { getGamesBySection } from "@/lib/local-db";
 import { SectionHeader } from "@/components/ui/section-header";
+import { CarouselNav } from "@/components/ui/carousel-nav";
 
 type Game = {
   id: string;
@@ -36,17 +37,6 @@ export default function UpcomingGames() {
     loadGames();
   }, []);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 300;
-      const newScrollPosition = scrollContainerRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
-      scrollContainerRef.current.scrollTo({
-        left: newScrollPosition,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   if (loading) {
     return null; // Don't render anything while loading
   }
@@ -61,33 +51,15 @@ export default function UpcomingGames() {
             icon={<Sparkles className="w-6 h-6 lg:w-8 lg:h-8" />}
           />
 
-          {/* Navigation Buttons */}
-          {games.length > 6 && (
-            <div className="hidden lg:flex items-center gap-2">
-              <button
-                onClick={() => scroll('left')}
-              className="p-2 rounded-lg bg-card hover:bg-surface-elevated border border-white/5 text-white transition-all duration-200 cursor-pointer"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              className="p-2 rounded-lg bg-card hover:bg-surface-elevated border border-white/5 text-white transition-all duration-200 cursor-pointer"
-              aria-label="Scroll right"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          )}
+          <CarouselNav scrollRef={scrollContainerRef} itemCount={games.length} show={games.length > 1} />
         </div>
 
         <div ref={scrollContainerRef} className="overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
           {games.length === 0 ? (
             // Empty state
             <div className="w-full text-center py-12">
-              <p className="text-gray-400 text-lg">No upcoming games at the moment</p>
-              <p className="text-gray-500 text-sm mt-2">Check back soon for new releases!</p>
+              <p className="text-muted-foreground text-lg">No upcoming games at the moment</p>
+              <p className="text-muted-foreground text-sm mt-2">Check back soon for new releases!</p>
             </div>
           ) : (
             games.map((game) => {

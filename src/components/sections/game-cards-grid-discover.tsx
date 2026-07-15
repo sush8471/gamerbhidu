@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getGamesBySection } from "@/lib/local-db";
 import { SectionHeader } from "@/components/ui/section-header";
+import { CarouselNav } from "@/components/ui/carousel-nav";
 
 type Game = {
   id: string;
@@ -38,17 +38,6 @@ export default function GameCardsGridDiscover() {
     loadGames();
   }, []);
 
-  const scroll = useCallback((direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 300;
-      const newScrollPosition = scrollContainerRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
-      scrollContainerRef.current.scrollTo({
-        left: newScrollPosition,
-        behavior: 'smooth'
-      });
-    }
-  }, []);
-
   if (loading || games.length === 0) {
     return null; // Don't render while loading or if empty
   }
@@ -62,23 +51,7 @@ export default function GameCardsGridDiscover() {
             subtitle="Premium games at India's best prices"
           />
 
-          {/* Navigation Buttons */}
-          <div className="hidden lg:flex items-center gap-2">
-            <button
-              onClick={() => scroll('left')}
-              className="p-2 rounded-lg bg-card hover:bg-surface-elevated border border-white/5 text-white transition-all duration-200 cursor-pointer"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              className="p-2 rounded-lg bg-card hover:bg-surface-elevated border border-white/5 text-white transition-all duration-200 cursor-pointer"
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
+          <CarouselNav scrollRef={scrollContainerRef} itemCount={games.length} />
         </div>
 
         <div ref={scrollContainerRef} className="overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">

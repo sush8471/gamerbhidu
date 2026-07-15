@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import { X, Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/section-header";
+import { CarouselNav } from "@/components/ui/carousel-nav";
 
 interface ComboData {
   id: number;
@@ -262,6 +263,7 @@ function GameListDialog({
 }
 
 export default function ComboDealSection() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<ComboData | null>(null);
 
@@ -287,14 +289,14 @@ export default function ComboDealSection() {
       <section className="w-full bg-background py-12 lg:py-16">
         <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4 mb-4 lg:mb-6">
-          <SectionHeader
-            title="Value Combos"
-            subtitle="Multiple games at unbeatable prices"
-          />
-          <div className="hidden md:block text-muted-foreground text-sm">Swipe →</div>
-        </div>
+            <SectionHeader
+              title="Value Combos"
+              subtitle="Multiple games at unbeatable prices"
+            />
+            <CarouselNav scrollRef={scrollContainerRef} itemCount={COMBOS.length} show={COMBOS.length > 1} />
+          </div>
 
-          <div className="lg:grid lg:grid-cols-3 lg:gap-4 overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
+          <div ref={scrollContainerRef} className="lg:grid lg:grid-cols-3 lg:gap-4 overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
             {COMBOS.map((combo) => (
               <button
                 key={combo.id}

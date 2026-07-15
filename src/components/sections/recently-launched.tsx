@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Rocket, ChevronLeft, ChevronRight } from "lucide-react";
+import { Rocket } from "lucide-react";
 import { getGamesBySection } from "@/lib/local-db";
 import { SectionHeader } from "@/components/ui/section-header";
+import { CarouselNav } from "@/components/ui/carousel-nav";
 
 type Game = {
   id: string;
@@ -38,17 +39,6 @@ export default function RecentlyLaunched() {
     loadGames();
   }, []);
 
-  const scroll = useCallback((direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 300;
-      const newScrollPosition = scrollContainerRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
-      scrollContainerRef.current.scrollTo({
-        left: newScrollPosition,
-        behavior: 'smooth'
-      });
-    }
-  }, []);
-
   if (loading || games.length === 0) {
     return null; // Don't render while loading or if empty
   }
@@ -63,25 +53,7 @@ export default function RecentlyLaunched() {
             icon={<Rocket className="w-6 h-6 lg:w-8 lg:h-8" />}
           />
 
-          {/* Navigation Buttons */}
-          {games.length > 6 && (
-            <div className="hidden lg:flex items-center gap-2">
-              <button
-                onClick={() => scroll('left')}
-                className="p-2 rounded-lg bg-card hover:bg-surface-elevated border border-border hover:border-white/30 text-white transition-all duration-200 hover:shadow-[0_0_12px_rgba(255,255,255,0.10)] cursor-pointer"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                className="p-2 rounded-lg bg-card hover:bg-surface-elevated border border-border hover:border-white/30 text-white transition-all duration-200 hover:shadow-[0_0_12px_rgba(255,255,255,0.10)] cursor-pointer"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          )}
+          <CarouselNav scrollRef={scrollContainerRef} itemCount={games.length} show={games.length > 1} />
         </div>
 
         <div ref={scrollContainerRef} className="overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
