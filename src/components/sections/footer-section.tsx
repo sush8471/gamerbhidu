@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Instagram, Facebook, ArrowUp } from "lucide-react"
+import { Instagram, ArrowUp } from "lucide-react"
 import { FaWhatsapp } from "react-icons/fa"
 
 const socialLinks = [
@@ -10,11 +10,6 @@ const socialLinks = [
     href: "https://www.instagram.com/gamer_bhidu/",
     label: "Instagram",
     icon: Instagram,
-  },
-  {
-    href: "https://www.facebook.com/profile.php?id=61581460503750",
-    label: "Facebook",
-    icon: Facebook,
   },
   {
     href: "https://wa.me/917752805529?text=Hi! I want to buy a game",

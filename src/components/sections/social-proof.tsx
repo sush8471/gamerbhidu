@@ -1,15 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { GlareCard } from "@/components/ui/glare-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 
 export default function SocialProof() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const proofImages = [
     {
@@ -18,18 +19,18 @@ export default function SocialProof() {
       label: "3 Games Deal Delivered",
       tag: "Order Delivered",
     },
-      {
-        id: 2,
-        src: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Screenshot_20251216_123138-1765869145631.jpg?width=8000&height=8000&resize=contain",
-        label: "Subnautica Deal Executed",
-        tag: "Verified Deal",
-      },
-      {
-        id: 3,
-        src: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Screenshot_20251216_123143-1765869145725.jpg?width=8000&height=8000&resize=contain",
-        label: "Mortal Kombat 11 Deal Closed",
-        tag: "Order Delivered",
-      },
+    {
+      id: 2,
+      src: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Screenshot_20251216_123138-1765869145631.jpg?width=8000&height=8000&resize=contain",
+      label: "Subnautica Deal Executed",
+      tag: "Verified Deal",
+    },
+    {
+      id: 3,
+      src: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Screenshot_20251216_123143-1765869145725.jpg?width=8000&height=8000&resize=contain",
+      label: "Mortal Kombat 11 Deal Closed",
+      tag: "Order Delivered",
+    },
     {
       id: 4,
       src: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Screenshot_20251216_123154-1765869145644.jpg?width=8000&height=8000&resize=contain",
@@ -176,6 +177,45 @@ export default function SocialProof() {
     },
   ];
 
+  const goNext = () => {
+    if (selectedIndex === null) return;
+    setSelectedIndex((prev) => (prev === null ? null : (prev + 1) % proofImages.length));
+  };
+
+  const goPrev = () => {
+    if (selectedIndex === null) return;
+    setSelectedIndex((prev) => (prev === null ? null : (prev - 1 + proofImages.length) % proofImages.length));
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (selectedIndex === null) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+      if (e.key === "Escape") setSelectedIndex(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedIndex]);
+
+  // Touch swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].screenX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const endX = e.changedTouches[0].screenX;
+    const delta = endX - touchStartX.current;
+    const threshold = 50;
+    if (delta < -threshold) goNext();
+    if (delta > threshold) goPrev();
+    touchStartX.current = null;
+  };
+
+  const currentProof = selectedIndex !== null ? proofImages[selectedIndex] : null;
+
   return (
     <>
       <section className="w-full bg-gradient-to-b from-background to-card py-16 lg:py-20">
@@ -190,20 +230,20 @@ export default function SocialProof() {
 
           <div className="relative overflow-hidden">
             <div ref={scrollContainerRef} className="flex gap-4 lg:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-              {proofImages.map((proof) => (
+              {proofImages.map((proof, idx) => (
                 <button
                   key={proof.id}
-                  onClick={() => setSelectedImage(proof.src)}
+                  onClick={() => setSelectedIndex(idx)}
                   className="flex-shrink-0 snap-center focus:outline-none relative"
                 >
                   <GlareCard className="flex flex-col items-center justify-center bg-card relative">
-                      <Image
-                        src={proof.src}
-                        alt={proof.label}
-                        fill
-                        className="object-contain"
-                        sizes="(max-width: 640px) 180px, (max-width: 768px) 220px, 260px"
-                      />
+                    <Image
+                      src={proof.src}
+                      alt={proof.label}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 640px) 180px, (max-width: 768px) 220px, 260px"
+                    />
                     <div className="absolute top-4 left-4 z-10 bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm border border-white/20">
                       {proof.tag}
                     </div>
@@ -228,48 +268,71 @@ export default function SocialProof() {
         </div>
       </section>
 
-      {selectedImage && (
+      {currentProof && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 animate-fade-in"
-          onClick={() => setSelectedImage(null)}
+          onClick={() => setSelectedIndex(null)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
+          {/* Close */}
           <button
-            onClick={() => setSelectedImage(null)}
+            onClick={() => setSelectedIndex(null)}
             className="absolute top-4 right-4 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
             aria-label="Close"
           >
             <X className="w-6 h-6 text-white" />
           </button>
 
-          <div className="relative max-w-[95vw] max-h-[95vh] animate-scale-in">
+          {/* Prev Arrow */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goPrev();
+            }}
+            className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+            aria-label="Previous image"
+          >
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+
+          {/* Next Arrow */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goNext();
+            }}
+            className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+            aria-label="Next image"
+          >
+            <ChevronRight className="w-6 h-6 text-white" />
+          </button>
+
+          {/* Image + caption */}
+          <div
+            className="relative max-w-[95vw] max-h-[95vh] animate-scale-in flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Image
-              src={selectedImage}
-              alt="Payment proof full view"
+              src={currentProof.src}
+              alt={currentProof.label}
               width={1200}
               height={2133}
-              className="max-w-full max-h-[95vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+              className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-lg shadow-2xl"
             />
+            <p className="mt-3 text-white/80 text-sm font-medium text-center">
+              {currentProof.label} · {selectedIndex! + 1} / {proofImages.length}
+            </p>
           </div>
 
           <style jsx>{`
             @keyframes fade-in {
-              from {
-                opacity: 0;
-              }
-              to {
-                opacity: 1;
-              }
+              from { opacity: 0; }
+              to { opacity: 1; }
             }
             @keyframes scale-in {
-              from {
-                opacity: 0;
-                transform: scale(0.95);
-              }
-              to {
-                opacity: 1;
-                transform: scale(1);
-              }
+              from { opacity: 0; transform: scale(0.95); }
+              to { opacity: 1; transform: scale(1); }
             }
             .animate-fade-in {
               animation: fade-in 0.2s ease-out;
