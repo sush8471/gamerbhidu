@@ -17,7 +17,8 @@ function SkeletonCard() {
 
 export default function GamesPageSkeleton() {
   return (
-    <main className="min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
+      <main className="flex-1">
       {/* Navbar placeholder */}
       <div className="h-[68px] lg:h-24" />
 
@@ -93,6 +94,7 @@ export default function GamesPageSkeleton() {
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </div>
   );
 }

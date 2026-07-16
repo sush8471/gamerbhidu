@@ -17,46 +17,17 @@ const socialLinks = [
   },
 ]
 
-const popularGames = [
-  { href: "/games/gta-v", label: "Grand Theft Auto V" },
-  { href: "/games/red-dead-redemption-2", label: "Red Dead Redemption 2" },
-  { href: "/games/cyberpunk-2077", label: "Cyberpunk 2077" },
-  { href: "/games/elden-ring", label: "Elden Ring" },
-  { href: "/games/the-last-of-us-part-i", label: "The Last of Us Part I" },
-  { href: "/games/assassins-creed-valhalla", label: "Assassin's Creed Valhalla" },
-  { href: "/games", label: "Browse All Games →" },
+const browseLinks = [
+  { href: "/#hot-deals", label: "Hot Deals" },
+  { href: "/#", label: "Value Combos" },
+  { href: "/#", label: "Recently Launched" },
+  { href: "/games", label: "Browse All Games" },
 ]
 
-const companyLinks = [
-  { href: "/faq", label: "FAQ" },
+const supportLinks = [
+  { href: "/faq", label: "FAQs" },
   { href: "https://wa.me/917752805529", label: "Contact & Support" },
-  { href: "/#how-it-works", label: "How It Works" },
 ]
-
-function FooterLink({ href, label }: { href: string; label: string }) {
-  const isExternal = href.startsWith("http")
-  return (
-    <Link
-      href={href}
-      target={isExternal ? "_blank" : undefined}
-      rel={isExternal ? "noopener noreferrer" : undefined}
-      className="block text-sm text-muted-foreground hover:text-white transition-colors"
-    >
-      {label}
-    </Link>
-  )
-}
-
-function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <h3 className="section-heading text-sm mb-4">{title}</h3>
-      <nav className="space-y-2.5">
-        {children}
-      </nav>
-    </div>
-  )
-}
 
 export function FooterSection() {
   const scrollToTop = () => {
@@ -66,12 +37,13 @@ export function FooterSection() {
   return (
     <footer className="relative border-t border-white/10 bg-background text-white transition-colors duration-300">
       {/* Main Footer Grid */}
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-10 md:py-14">
-        <div className="grid gap-8 md:gap-12 md:grid-cols-2 lg:grid-cols-4">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           
           {/* Follow Us */}
-          <FooterColumn title="Follow Us">
-            <div className="flex items-center gap-3">
+          <div>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Follow Us</h3>
+            <div className="flex items-center gap-2">
               {socialLinks.map((social) => {
                 const Icon = social.icon
                 return (
@@ -81,56 +53,75 @@ export function FooterSection() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    className="w-10 h-10 rounded-full border border-white/15 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-200"
+                    className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-200"
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5" />
                   </Link>
                 )
               })}
             </div>
-          </FooterColumn>
-
-          {/* Popular Games */}
-          <FooterColumn title="Popular Games">
-            {popularGames.map((game) => (
-              <FooterLink key={game.href} href={game.href} label={game.label} />
-            ))}
-          </FooterColumn>
-
-          {/* Company */}
-          <FooterColumn title="Company">
-            {companyLinks.map((link) => (
-              <FooterLink key={link.href} href={link.href} label={link.label} />
-            ))}
-          </FooterColumn>
-
-          {/* Back to Top */}
-          <div className="hidden lg:flex lg:justify-end lg:items-start">
-            <button
-              onClick={scrollToTop}
-              className="w-12 h-12 rounded-full border border-white/15 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-200"
-              aria-label="Back to top"
-            >
-              <ArrowUp className="w-5 h-5" />
-            </button>
           </div>
 
+          {/* Browse Links */}
+          <div>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Browse</h3>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              {browseLinks.map((link) => {
+                const isExternal = link.href.startsWith("http")
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    target={isExternal ? "_blank" : undefined}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                    className="text-sm text-muted-foreground hover:text-white transition-colors whitespace-nowrap"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Support</h3>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              {supportLinks.map((link) => {
+                const isExternal = link.href.startsWith("http")
+                return (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    target={isExternal ? "_blank" : undefined}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                    className="text-sm text-muted-foreground hover:text-white transition-colors whitespace-nowrap"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Back to Top */}
+          <button
+            onClick={scrollToTop}
+            className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-200 flex-shrink-0"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="w-4 h-4" />
+          </button>
 
         </div>
       </div>
 
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
-        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4">
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-xs text-muted-foreground text-center">
-              © 2026 Gamer Bhidu. All rights reserved.
-            </p>
-            
-            <p className="text-xs text-muted-foreground/60 text-center">
-              Made with ❤️ for Indian Gamers
-            </p>
-          </div>
+        <div className="container mx-auto px-4 md:px-6 lg:px-8 py-3">
+          <p className="text-xs text-muted-foreground text-center">
+            © 2026 Gamer Bhidu. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

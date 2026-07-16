@@ -213,8 +213,9 @@ export default function GameDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background text-white selection:bg-white/30 selection:text-white pb-12 lg:pb-0">
-      <GamerBhiduNavbar />
+    <div className="flex flex-col min-h-screen bg-background text-white selection:bg-white/30 selection:text-white">
+      <main className="flex-1 pb-12 lg:pb-0">
+        <GamerBhiduNavbar />
 
       {/* IMMERSIVE BACKGROUND */}
       <div className="fixed inset-0 h-screen -z-10 pointer-events-none overflow-hidden">
@@ -665,7 +666,8 @@ export default function GameDetailPage() {
         </div>
       </div>
 
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 }

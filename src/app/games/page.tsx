@@ -515,18 +515,19 @@ function BrowsePageInner() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-background">
-      <GamerBhiduNavbar />
+    <div className="flex flex-col min-h-screen bg-background">
+      <main className="flex-1">
+        <GamerBhiduNavbar />
 
-      <div className="pt-6 pb-16">
-        <div className="mx-auto max-w-[1600px] px-4 md:px-6 lg:px-8">
+        <div className="pt-6 pb-16">
+          <div className="mx-auto max-w-[1600px] px-4 md:px-6 lg:px-8">
 
-          {/* ── Page Header & Compact Search ── */}
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <div>
-              <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-white flex items-center gap-2 sm:gap-3">
-                <LayoutGrid className="w-5 h-5 sm:w-7 sm:h-7 text-white/60" />
-                Browse
+            {/* ── Page Header & Compact Search ── */}
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h1 className="text-xl sm:text-3xl lg:text-4xl font-black text-white flex items-center gap-2 sm:gap-3">
+                  <LayoutGrid className="w-5 h-5 sm:w-7 sm:h-7 text-white/60" />
+                  Browse
               </h1>
               {loading ? (
                 <Skeleton className="h-4 w-64 hidden sm:block mt-2 rounded" />
@@ -1030,8 +1031,9 @@ function BrowsePageInner() {
           </div>
         </div>
       </div>
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 }
 
