@@ -83,7 +83,7 @@ export default function GameDetailSkeleton() {
               </div>
 
               {/* Similar Games */}
-              <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16">
+              <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16 mb-8 lg:mb-16">
                 <Skeleton className="h-6 w-36 mb-6" />
                 <div className="flex gap-4 overflow-hidden">
                   <Skeleton className="h-[240px] w-[180px] lg:w-[200px] flex-shrink-0 rounded-xl" />

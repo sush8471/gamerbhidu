@@ -476,7 +476,7 @@ export default function GameDetailPage() {
                   whileInView="visible"
                   viewport={{ once: true, margin: "-50px" }}
                   variants={fadeInUp}
-                  className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16"
+                  className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16 mb-8 lg:mb-16"
                 >
                   <div className="flex items-center justify-between gap-4 mb-4">
                     <SectionHeader
