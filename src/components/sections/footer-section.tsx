@@ -29,6 +29,31 @@ const supportLinks = [
   { href: "https://wa.me/917752805529", label: "Contact & Support" },
 ]
 
+function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{title}</h3>
+      <nav className="space-y-1.5">
+        {children}
+      </nav>
+    </div>
+  )
+}
+
+function FooterLink({ href, label }: { href: string; label: string }) {
+  const isExternal = href.startsWith("http")
+  return (
+    <Link
+      href={href}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
+      className="block text-sm text-muted-foreground hover:text-white transition-colors"
+    >
+      {label}
+    </Link>
+  )
+}
+
 export function FooterSection() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -38,12 +63,11 @@ export function FooterSection() {
     <footer className="relative border-t border-white/10 bg-background text-white transition-colors duration-300">
       {/* Main Footer Grid */}
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="grid gap-6 md:grid-cols-4">
           
           {/* Follow Us */}
-          <div>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Follow Us</h3>
-            <div className="flex items-center gap-2">
+          <FooterColumn title="Follow Us">
+            <div className="flex items-center gap-2.5">
               {socialLinks.map((social) => {
                 const Icon = social.icon
                 return (
@@ -60,58 +84,32 @@ export function FooterSection() {
                 )
               })}
             </div>
-          </div>
+          </FooterColumn>
 
-          {/* Browse Links */}
-          <div>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Browse</h3>
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
-              {browseLinks.map((link) => {
-                const isExternal = link.href.startsWith("http")
-                return (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                    className="text-sm text-muted-foreground hover:text-white transition-colors whitespace-nowrap"
-                  >
-                    {link.label}
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
+          {/* Browse */}
+          <FooterColumn title="Browse">
+            {browseLinks.map((link) => (
+              <FooterLink key={link.label} href={link.href} label={link.label} />
+            ))}
+          </FooterColumn>
 
           {/* Support */}
-          <div>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Support</h3>
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
-              {supportLinks.map((link) => {
-                const isExternal = link.href.startsWith("http")
-                return (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                    className="text-sm text-muted-foreground hover:text-white transition-colors whitespace-nowrap"
-                  >
-                    {link.label}
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
+          <FooterColumn title="Support">
+            {supportLinks.map((link) => (
+              <FooterLink key={link.label} href={link.href} label={link.label} />
+            ))}
+          </FooterColumn>
 
           {/* Back to Top */}
-          <button
-            onClick={scrollToTop}
-            className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-200 flex-shrink-0"
-            aria-label="Back to top"
-          >
-            <ArrowUp className="w-4 h-4" />
-          </button>
+          <div className="flex items-start justify-start md:justify-end">
+            <button
+              onClick={scrollToTop}
+              className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-200"
+              aria-label="Back to top"
+            >
+              <ArrowUp className="w-4 h-4" />
+            </button>
+          </div>
 
         </div>
       </div>
