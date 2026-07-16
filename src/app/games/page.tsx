@@ -24,7 +24,6 @@ import type { SortField, SortDir } from "@/lib/local-db";
 import { Suspense } from "react";
 import GamesPageSkeleton from "@/components/ui/games-page-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
-import ShareButton from "@/components/ui/share-button";
 import {
   Sheet,
   SheetContent,
@@ -203,11 +202,6 @@ function GameCard({ game, priority = false }: { game: Game; priority?: boolean }
             FREE
           </div>
         ) : null}
-        <ShareButton
-          title={game.title}
-          slug={game.slug || game.id}
-          className="absolute top-2 left-2 z-10 w-7 h-7 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transition-all duration-200"
-        />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card to-transparent" />
       </div>
       <div className="p-2.5 flex flex-col gap-1.5 flex-1">

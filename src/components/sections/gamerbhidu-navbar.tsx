@@ -5,6 +5,7 @@ import { ShoppingCart, Home, Store, HelpCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { FaWhatsapp } from "react-icons/fa";
 import { NavbarSearch } from "@/components/ui/navbar-search";
@@ -16,9 +17,24 @@ export default function GamerBhiduNavbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/90">
       <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
-        {/* Left Side: Mobile menu trigger */}
-        <div className="lg:hidden">
-          <FullscreenMenu />
+        {/* Left Side: Mobile menu trigger + Logo */}
+        <div className="flex items-center gap-3">
+          {/* Mobile-only hamburger */}
+          <div className="lg:hidden">
+            <FullscreenMenu />
+          </div>
+
+          {/* Logo */}
+          <Link href="/" className="flex items-center hover:opacity-90 transition-opacity flex-shrink-0">
+            <Image
+              src="/new-logo.png"
+              alt="Gamer Bhidu - Affordable Gaming"
+              width={240}
+              height={70}
+              className="h-12 sm:h-14 w-auto"
+              priority
+            />
+          </Link>
         </div>
 
         {/* Search Bar - Desktop Center */}

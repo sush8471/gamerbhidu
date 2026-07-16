@@ -16,7 +16,6 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import GameDetailSkeleton from "@/components/ui/game-detail-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
-import ShareButton from "@/components/ui/share-button";
 
 // FAQ Item Component
 const FAQItem = ({ question, answer, isOpen, onClick }: { question: string; answer: string; isOpen: boolean; onClick: () => void }) => (
@@ -502,11 +501,6 @@ export default function GameDetailPage() {
                               -{sg.discount_percentage}%
                             </div>
                           )}
-                          <ShareButton
-                            title={sg.title}
-                            slug={sg.slug}
-                            className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transition-all duration-200"
-                          />
                         </div>
                         <h3 className="text-white text-sm font-semibold line-clamp-2 group-hover:text-white transition-colors mb-1">{sg.title}</h3>
                         <div className="flex items-center gap-2">

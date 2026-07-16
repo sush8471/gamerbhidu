@@ -7,7 +7,6 @@ import { getGamesBySection } from "@/lib/local-db";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import GameCardRowSkeleton from "@/components/ui/game-card-row-skeleton";
-import ShareButton from "@/components/ui/share-button";
 
 type Game = {
   id: string;
@@ -90,11 +89,6 @@ export default function GameCardsGridDiscover() {
                         -{game.discount_percentage}%
                       </div>
                     )}
-                    <ShareButton
-                      title={game.title}
-                      slug={game.slug}
-                      className="absolute top-2 left-2 z-10 w-7 h-7 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transition-all duration-200"
-                    />
                   </div>
                   <div className="p-2">
                     <div className="flex items-center gap-1.5">
