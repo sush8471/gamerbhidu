@@ -214,7 +214,7 @@ export default function GameDetailPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-white selection:bg-white/30 selection:text-white">
-      <main className="flex-1 pb-12 lg:pb-0">
+      <main className="flex-1 pb-12 lg:pb-16">
         <GamerBhiduNavbar />
 
       {/* IMMERSIVE BACKGROUND */}
