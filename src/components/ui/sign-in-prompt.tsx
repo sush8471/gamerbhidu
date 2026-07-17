@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, User } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { X, ShoppingCart, Package } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 
 const PROMPT_DELAY_MS = 15000; // 15 seconds
 const DISMISS_STORAGE_KEY = "signin-prompt-dismissed";
@@ -29,30 +30,43 @@ function markDismissed() {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Context-aware copy based on cart state
+// ---------------------------------------------------------------------------
+
+function getPromptCopy(itemCount: number): {
+  icon: typeof ShoppingCart;
+  heading: string;
+  subtext: string;
+} {
+  if (itemCount > 0) {
+    return {
+      icon: ShoppingCart,
+      heading: `Save your ${itemCount} item${itemCount > 1 ? "s" : ""} across devices`,
+      subtext:
+        "Sign in so your cart is never lost — access it from any device, anytime.",
+    };
+  }
+  return {
+    icon: Package,
+    heading: "Sign in for a better experience",
+    subtext: "Save your cart, track orders, and get exclusive deals.",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export function SignInPrompt() {
   const [visible, setVisible] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [authChecked, setAuthChecked] = useState(false);
+  const { isAuthenticated, loading, signIn } = useAuth();
+  const { itemCount } = useCart();
+
+  const { icon: PromptIcon, heading, subtext } = getPromptCopy(itemCount);
 
   useEffect(() => {
-    async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      setAuthChecked(true);
-    }
-    checkAuth();
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!authChecked || user) return;
+    if (loading || isAuthenticated) return;
     if (isDismissed()) return;
 
     const timer = setTimeout(() => {
@@ -60,7 +74,14 @@ export function SignInPrompt() {
     }, PROMPT_DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [authChecked, user]);
+  }, [loading, isAuthenticated]);
+
+  // Auto-dismiss if user signs in while prompt is visible
+  useEffect(() => {
+    if (isAuthenticated && visible) {
+      setVisible(false);
+    }
+  }, [isAuthenticated, visible]);
 
   const handleDismiss = () => {
     setVisible(false);
@@ -69,10 +90,7 @@ export function SignInPrompt() {
 
   const handleSignIn = () => {
     setVisible(false);
-    supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}${window.location.pathname}` },
-    });
+    signIn();
   };
 
   return (
@@ -86,10 +104,10 @@ export function SignInPrompt() {
           className="fixed bottom-6 right-6 z-[60] w-[360px] max-w-[calc(100vw-3rem)]"
         >
           <div className="relative bg-[#111111] border border-[#262626] rounded-2xl shadow-2xl p-5 overflow-hidden">
-            {/* Subtle gradient glow */}
+            {/* Glow */}
             <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-primary/10 blur-[60px] pointer-events-none" />
 
-            {/* Close button */}
+            {/* Close */}
             <button
               onClick={handleDismiss}
               className="absolute top-3 right-3 p-1 rounded-md text-muted-foreground hover:text-white hover:bg-white/5 transition-colors"
@@ -100,18 +118,41 @@ export function SignInPrompt() {
 
             {/* Content */}
             <div className="relative">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 border border-primary/20">
-                  <User className="h-5 w-5 text-primary" />
+              <div className="flex items-start gap-3 mb-3">
+                {/* Icon — highlighted if there are cart items */}
+                <div
+                  className={`flex items-center justify-center w-10 h-10 rounded-full shrink-0 border ${
+                    itemCount > 0
+                      ? "bg-orange-500/10 border-orange-500/30"
+                      : "bg-primary/10 border-primary/20"
+                  }`}
+                >
+                  <PromptIcon
+                    className={`h-5 w-5 ${itemCount > 0 ? "text-orange-400" : "text-primary"}`}
+                  />
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white">Sign in for a better experience</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Save your cart, track orders, and get exclusive deals.
+
+                <div className="pt-0.5">
+                  <h3 className="text-sm font-bold text-white leading-snug">
+                    {heading}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    {subtext}
                   </p>
                 </div>
               </div>
 
+              {/* Cart item count pill */}
+              {itemCount > 0 && (
+                <div className="flex items-center gap-2 mb-3 px-3 py-1.5 bg-white/5 rounded-lg border border-white/5">
+                  <ShoppingCart className="h-3.5 w-3.5 text-orange-400" />
+                  <span className="text-xs text-muted-foreground">
+                    <span className="text-white font-semibold">{itemCount} game{itemCount > 1 ? "s" : ""}</span> in your cart
+                  </span>
+                </div>
+              )}
+
+              {/* Google sign-in button */}
               <button
                 onClick={handleSignIn}
                 className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-[#262626] hover:border-white/20 text-white text-sm font-bold py-3 rounded-xl transition-all active:scale-[0.99]"
