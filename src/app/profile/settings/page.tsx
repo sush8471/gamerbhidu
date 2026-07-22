@@ -374,14 +374,14 @@ export default function ProfileSettingsPage() {
                       <form onSubmit={handleConnectSteam} className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-white mb-2">
-                            Enter Steam ID64 (17 digits)
+                            Enter Steam Profile Link, Username, or 17-digit Steam ID
                           </label>
                           <div className="flex flex-col sm:flex-row gap-3">
                             <input
                               type="text"
                               value={inputSteamId}
                               onChange={(e) => setInputSteamId(e.target.value)}
-                              placeholder="e.g. 76561198000000000"
+                              placeholder="e.g. https://steamcommunity.com/id/gamerflydon/ or 76561198..."
                               className="flex-1 bg-secondary border border-border rounded-xl px-4 py-3 text-sm text-white placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors font-mono"
                             />
                             <button
@@ -401,23 +401,24 @@ export default function ProfileSettingsPage() {
                         </div>
                       </form>
 
-                      {/* Helpful Steam ID Guide */}
+                      {/* Helpful Steam Link Guide */}
                       <div className="bg-secondary/30 rounded-xl p-4 border border-border/50 space-y-2 text-xs text-muted-foreground">
                         <div className="flex items-center gap-2 font-semibold text-white">
-                          <AlertCircle className="w-4 h-4 text-sky-400" /> Where do I find my 17-digit Steam ID?
+                          <AlertCircle className="w-4 h-4 text-sky-400" /> How to connect your Steam account?
                         </div>
                         <ul className="list-disc list-inside space-y-1 pl-1">
                           <li>
-                            Open Steam app &rarr; Click your profile avatar &rarr; View profile.
+                            Paste your full Steam profile link (e.g., <code className="text-sky-300">https://steamcommunity.com/id/gamerflydon/</code>).
                           </li>
                           <li>
-                            Your Steam ID is the 17-digit number in your profile URL (starts with 7656...).
+                            Or enter your custom profile URL name or 17-digit Steam ID.
                           </li>
                           <li>
-                            Ensure your Steam profile Game Details privacy setting is set to Public.
+                            Ensure your Steam profile & Game Details privacy settings are set to Public.
                           </li>
                         </ul>
                       </div>
+
                     </div>
                   )}
                 </div>
