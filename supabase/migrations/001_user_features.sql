@@ -138,6 +138,10 @@ create policy "Users view own orders"
   on public.orders for select
   using (auth.uid() = user_id);
 
+create policy "Users insert own orders"
+  on public.orders for insert
+  with check (auth.uid() = user_id);
+
 -- ---------------------------------------------------------------------------
 -- reviews policies
 -- ---------------------------------------------------------------------------
