@@ -9,7 +9,10 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import ComboDealSkeleton from "@/components/ui/combo-deal-skeleton";
 
+import { useSteam } from "@/context/SteamContext";
+
 interface ComboData {
+
   id: string;
   title: string;
   description: string | null;
@@ -231,6 +234,8 @@ export default function ComboDealSection() {
     );
   }
 
+  const { ownedAppIds } = useSteam();
+
   return (
     <>
       <section className="w-full bg-background py-12 lg:py-16">
@@ -247,57 +252,70 @@ export default function ComboDealSection() {
             ref={scrollContainerRef} 
             className="lg:grid lg:grid-cols-3 lg:gap-4 overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0"
           >
-            {combos.map((combo) => (
-              <button
-                key={combo.id}
-                onClick={() => handleComboClick(combo)}
-                className="group relative bg-card rounded-lg overflow-hidden border-0 transition-all duration-300 hover:scale-[1.01] text-left flex-shrink-0 w-[85vw] max-w-[380px] lg:w-full snap-start"
-              >
-                <div className="relative aspect-[16/9] w-full overflow-hidden">
-                  <Image
-                    src={combo.image}
-                    alt={combo.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    sizes="(max-width: 1024px) 85vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
+            {combos.map((combo) => {
+              const ownedInBundle = (combo.games || []).filter(
+                (g) => g.game?.steam_app_id && ownedAppIds.includes(g.game.steam_app_id)
+              ).length;
 
-                  {combo.price.discountDetails && (
-                    <div className="absolute top-2 right-2 bg-white/15 text-white text-xs font-bold px-2.5 py-1 rounded-md backdrop-blur-sm">
-                      {combo.price.discountDetails}
-                    </div>
-                  )}
-                </div>
+              return (
+                <button
+                  key={combo.id}
+                  onClick={() => handleComboClick(combo)}
+                  className="group relative bg-card rounded-lg overflow-hidden border-0 transition-all duration-300 hover:scale-[1.01] text-left flex-shrink-0 w-[85vw] max-w-[380px] lg:w-full snap-start"
+                >
+                  <div className="relative aspect-[16/9] w-full overflow-hidden">
+                    <Image
+                      src={combo.image}
+                      alt={combo.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 1024px) 85vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />
 
-                <div className="p-4">
-                  <h3 className="text-lg font-bold text-white mb-1.5 transition-colors">
-                    {combo.title}
-                  </h3>
+                    {ownedInBundle > 0 && (
+                      <div className="absolute top-2 left-2 bg-sky-950/90 border border-sky-500/50 text-sky-300 text-[11px] font-semibold px-2.5 py-1 rounded-md backdrop-blur-sm shadow flex items-center gap-1">
+                        🎮 You own {ownedInBundle} game{ownedInBundle > 1 ? "s" : ""} on Steam
+                      </div>
+                    )}
 
-                  <p className="text-muted-foreground text-xs mb-2">{combo.description}</p>
-
-                  <p className="text-muted-foreground text-xs mb-1.5">{combo.valueAnchor}</p>
-
-                  <p className="text-white/60 text-xs font-medium mb-3">{combo.curiosityCue}</p>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      {combo.price.original && (
-                        <span className="text-muted-foreground line-through text-xs">
-                          {combo.price.original}
-                        </span>
-                      )}
-                      <span className="text-white font-black text-xl">{combo.price.discounted}</span>
-                    </div>
-
-                    <span className="text-white/60 text-xs font-semibold">
-                      {combo.hasGameList ? "View Games" : "Ask on WhatsApp"}
-                    </span>
+                    {combo.price.discountDetails && (
+                      <div className="absolute top-2 right-2 bg-white/15 text-white text-xs font-bold px-2.5 py-1 rounded-md backdrop-blur-sm">
+                        {combo.price.discountDetails}
+                      </div>
+                    )}
                   </div>
-                </div>
-              </button>
-            ))}
+
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold text-white mb-1.5 transition-colors">
+                      {combo.title}
+                    </h3>
+
+                    <p className="text-muted-foreground text-xs mb-2">{combo.description}</p>
+
+                    <p className="text-muted-foreground text-xs mb-1.5">{combo.valueAnchor}</p>
+
+                    <p className="text-white/60 text-xs font-medium mb-3">{combo.curiosityCue}</p>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        {combo.price.original && (
+                          <span className="text-muted-foreground line-through text-xs">
+                            {combo.price.original}
+                          </span>
+                        )}
+                        <span className="text-white font-black text-xl">{combo.price.discounted}</span>
+                      </div>
+
+                      <span className="text-white/60 text-xs font-semibold">
+                        {combo.hasGameList ? "View Games" : "Ask on WhatsApp"}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+
           </div>
         </div>
       </section>

@@ -294,7 +294,9 @@ export interface ComboGame {
         title: string;
         slug: string;
         image_url: string;
+        steam_app_id?: number | null;
     };
+
 }
 
 /**

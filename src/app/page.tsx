@@ -12,6 +12,7 @@ import GameCardRowSkeleton from "@/components/ui/game-card-row-skeleton";
 
 // Lazy load non-critical sections for better initial load performance
 const ComboDealSection = lazy(() => import("@/components/sections/combo-deals"));
+const SteamRecommendations = lazy(() => import("@/components/sections/steam-recommendations"));
 const RecentlyLaunched = lazy(() => import("@/components/sections/recently-launched"));
 const UpcomingGames = lazy(() => import("@/components/sections/upcoming-games"));
 const Footer = lazy(() => import("@/components/sections/footer"));
@@ -65,6 +66,11 @@ export default function Home() {
       <Suspense fallback={<ComboDealSkeleton />}>
         <ComboDealSection />
       </Suspense>
+
+      <Suspense fallback={null}>
+        <SteamRecommendations />
+      </Suspense>
+
       <SocialProof />
 
       <Suspense fallback={
@@ -83,3 +89,4 @@ export default function Home() {
     </main>
   );
 }
+

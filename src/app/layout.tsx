@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { SteamProvider } from "@/context/SteamContext";
 import { SearchProvider } from "@/context/SearchContext";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
@@ -24,21 +25,23 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-            <SearchProvider>
-              {children}
-              <Analytics />
-              <Toaster
-                position="bottom-center"
-                toastOptions={{
-                  style: {
-                    background: "#111111",
-                    border: "1px solid #262626",
-                    color: "#fff",
-                  },
-                }}
-              />
-              <SignInPrompt />
-            </SearchProvider>
+              <SteamProvider>
+                <SearchProvider>
+                  {children}
+                  <Analytics />
+                  <Toaster
+                    position="bottom-center"
+                    toastOptions={{
+                      style: {
+                        background: "#111111",
+                        border: "1px solid #262626",
+                        color: "#fff",
+                      },
+                    }}
+                  />
+                  <SignInPrompt />
+                </SearchProvider>
+              </SteamProvider>
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>
@@ -46,3 +49,4 @@ export default function RootLayout({
     </html>
   );
 }
+

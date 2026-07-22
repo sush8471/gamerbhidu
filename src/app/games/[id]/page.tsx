@@ -6,17 +6,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ChevronDown, MessageCircle, Check, Share2, ChevronLeft, ChevronRight, ShieldCheck, Zap, Clock, ThumbsUp, ShoppingCart, ChevronUp } from "lucide-react";
 import { WishlistButton } from "@/components/ui/wishlist-button";
+import { SteamOwnedBadge } from "@/components/ui/steam-owned-badge";
 import GamerBhiduNavbar from "@/components/sections/gamerbhidu-navbar";
 import Footer from "@/components/sections/footer";
 import { getSteamGameDetails, parseSystemRequirements, type SteamGameDetails } from "@/lib/steam-api";
 import { getGameBySlug, getGames, type Game } from "@/lib/local-db";
 import { useCart } from "@/context/CartContext";
+import { useSteam } from "@/context/SteamContext";
 import { motion, Variants } from "framer-motion";
 import ThumbnailCarousel from "@/components/ui/thumbnail-carousel";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import GameDetailSkeleton from "@/components/ui/game-detail-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
+
 
 // FAQ Item Component
 const FAQItem = ({ question, answer, isOpen, onClick }: { question: string; answer: string; isOpen: boolean; onClick: () => void }) => (
@@ -68,8 +71,11 @@ export default function GameDetailPage() {
   const [showSystemReqs, setShowSystemReqs] = useState(true);
 
   const { addToCart, isInCart } = useCart();
+  const { isGameOwned } = useSteam();
   const isAdded = game ? isInCart(game.slug) : false;
+  const isSteamOwned = game ? isGameOwned(game.steam_app_id) : false;
   const similarScrollRef = useRef<HTMLDivElement>(null);
+
 
   const handleAddToCart = () => {
     if (game) {
@@ -136,11 +142,12 @@ export default function GameDetailPage() {
 
   // Fetch Steam data when game is loaded
   useEffect(() => {
-    if (!game?.steam_app_id) return;
+    const steamAppId = game?.steam_app_id;
+    if (typeof steamAppId !== "number") return;
 
     async function fetchSteamData() {
       try {
-        const data = await getSteamGameDetails(game.steam_app_id!);
+        const data = await getSteamGameDetails(steamAppId);
         setSteamData(data);
       } catch (error) {
         console.error("Error fetching Steam data:", error);
@@ -148,6 +155,8 @@ export default function GameDetailPage() {
     }
     fetchSteamData();
   }, [game?.steam_app_id]);
+
+
 
   // Show skeleton loading state while fetching
   if (loading) {
@@ -165,6 +174,9 @@ export default function GameDetailPage() {
       </main>
     );
   }
+
+  if (!game) return null;
+
 
 
   // Data Processing
@@ -258,7 +270,9 @@ export default function GameDetailPage() {
                   <span className="px-2 py-0.5 rounded-md bg-white/10 border border-white/20 text-white text-[10px] font-bold uppercase tracking-wider">
                     Base Game
                   </span>
+                  {isSteamOwned && <SteamOwnedBadge size="sm" />}
                 </div>
+
                 <h1 className="text-3xl lg:text-5xl font-black text-white leading-none mb-3 tracking-tight">{game.title}</h1>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -538,7 +552,13 @@ export default function GameDetailPage() {
                     </div>
 
                     <div className="relative z-10 space-y-4">
+                      {isSteamOwned && (
+                        <div className="mb-2">
+                          <SteamOwnedBadge size="md" className="w-full justify-center py-1.5" />
+                        </div>
+                      )}
                       <div className="flex items-end gap-2 mb-1">
+
                         <div className="bg-white/15 px-2 py-0.5 rounded-sm">
                           <span className="text-white text-sm font-bold">{discount}</span>
                         </div>
