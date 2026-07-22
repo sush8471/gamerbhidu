@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2 } from "lucide-react";
-import { FaWhatsapp, FaInstagram } from "react-icons/fa";
+import { X, CheckCircle2, ShieldCheck, HelpCircle } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import type { CartItem } from "@/context/CartContext";
 
 // ---------------------------------------------------------------------------
@@ -35,44 +35,40 @@ export function CheckoutModal({
   userName,
   userEmail,
 }: CheckoutModalProps) {
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [utrNumber, setUtrNumber] = useState("");
+  const [showUtrHelp, setShowUtrHelp] = useState(false);
 
   const itemCount = items.length;
 
-  const buildOrderMessage = (plain = false) => {
-    const lineBreak = plain ? "\n" : "\n";
-    const bold = (t: string) => (plain ? t : `*${t}*`);
+  // Validate UTR: must be exactly 12 numeric digits
+  const isValidUtr = /^\d{12}$/.test(utrNumber.trim());
 
+  const buildOrderMessage = () => {
     return [
-      `🎮 ${bold(`Gamer Bhidu Order ${orderId}`)}`,
+      `🎮 *Gamer Bhidu Order ${orderId}*`,
       "",
-      userName ? `👤 ${bold("Customer:")} ${userName}` : null,
-      userEmail ? `📧 ${bold("Email:")} ${userEmail}` : null,
+      userName ? `👤 *Customer:* ${userName}` : null,
+      userEmail ? `📧 *Email:* ${userEmail}` : null,
       "",
-      `📦 ${bold(`Games (${itemCount}):`)}`,
+      `📦 *Games (${itemCount}):*`,
       ...items.map((item, i) => `${i + 1}. ${item.name} - ₹${item.price}`),
       "",
-      `💰 ${bold(`Total: ₹${totalPrice}`)}`,
+      `💰 *Total Paid:* ₹${totalPrice}`,
+      `💳 *UPI UTR / Ref No:* ${utrNumber.trim()}`,
       "",
-      "I'd like to proceed with this order!",
+      "I have completed the UPI payment with UTR above. Please verify and confirm my order!",
     ]
       .filter((l) => l !== null)
-      .join(lineBreak);
+      .join("\n");
   };
 
   const handleWhatsApp = () => {
-    const message = buildOrderMessage(false);
+    if (!isValidUtr) return;
+    const message = buildOrderMessage();
     window.open(
       `https://wa.me/917752805529?text=${encodeURIComponent(message)}`,
       "_blank"
     );
-    onClose();
-  };
-
-  const handleInstagram = () => {
-    const message = buildOrderMessage(true);
-    navigator.clipboard.writeText(message).catch(() => {});
-    window.open("https://www.instagram.com/gamer_bhidu/", "_blank");
     onClose();
   };
 
@@ -100,7 +96,7 @@ export function CheckoutModal({
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-white">Order Ready!</h2>
+                  <h2 className="text-base font-bold text-white">Order Summary & Payment</h2>
                   <p className="text-xs text-muted-foreground">
                     Order ID: <span className="text-white font-mono">{orderId}</span>
                   </p>
@@ -153,8 +149,8 @@ export function CheckoutModal({
 
                 {/* QR Code */}
                 <div className="text-center space-y-3">
-                  <p className="text-sm text-muted-foreground">Scan QR Code to pay via UPI</p>
-                  <div className="bg-white p-4 rounded-xl inline-block">
+                  <p className="text-sm text-muted-foreground font-medium">Scan QR Code to pay via UPI</p>
+                  <div className="bg-white p-4 rounded-xl inline-block shadow-lg">
                     <Image
                       src="/payment-qr.png"
                       alt="Payment QR Code"
@@ -172,68 +168,78 @@ export function CheckoutModal({
                   </div>
                 </div>
 
-                {/* Payment confirmation checkbox */}
-                <div className="bg-background/30 border border-white/10 rounded-lg p-4">
-                  <label className="flex items-start gap-3 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      checked={paymentConfirmed}
-                      onChange={(e) => setPaymentConfirmed(e.target.checked)}
-                      className="mt-0.5 w-5 h-5 rounded border-2 border-white/10 bg-transparent checked:bg-white/30 cursor-pointer transition-all"
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm text-white font-medium">
-                        I have completed the payment
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Tick this after making the UPI payment to proceed
-                      </p>
+                {/* Secure UTR verification input */}
+                <div className="bg-background/40 border border-white/10 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <ShieldCheck className="h-4 w-4 text-green-400" />
+                      Enter 12-Digit UPI UTR / Ref No. <span className="text-red-400">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowUtrHelp(!showUtrHelp)}
+                      className="text-xs text-muted-foreground hover:text-white flex items-center gap-1 transition-colors"
+                    >
+                      <HelpCircle className="h-3.5 w-3.5" />
+                      What's this?
+                    </button>
+                  </div>
+
+                  {showUtrHelp && (
+                    <div className="p-3 bg-white/5 border border-white/10 rounded-lg text-xs text-muted-foreground leading-relaxed animate-in fade-in duration-200">
+                      After paying via GPay, PhonePe, Paytm, or BHIM, open the transaction details to find your 12-digit UTR / UPI Ref ID (e.g. 420198273615).
                     </div>
-                  </label>
+                  )}
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      maxLength={12}
+                      value={utrNumber}
+                      onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
+                      placeholder="e.g. 420198273615 (12 digits)"
+                      className="w-full bg-background border border-white/10 focus:border-green-500/50 rounded-lg px-4 py-2.5 text-sm font-mono text-white placeholder:text-muted-foreground/50 focus:outline-none transition-all tracking-wider"
+                    />
+                    {isValidUtr && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-green-400">
+                        Valid ✓
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-[11px] text-muted-foreground">
+                    {!utrNumber ? (
+                      "Please enter your 12-digit transaction ID after paying."
+                    ) : isValidUtr ? (
+                      <span className="text-green-400">
+                        12-digit UTR entered! Click below to send order on WhatsApp.
+                      </span>
+                    ) : (
+                      <span className="text-amber-400">
+                        {12 - utrNumber.length} more digit{12 - utrNumber.length > 1 ? "s" : ""} required (must be 12 digits).
+                      </span>
+                    )}
+                  </p>
                 </div>
 
-                {/* Divider */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-white/10" />
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="px-4 text-xs text-muted-foreground bg-card">THEN</span>
-                  </div>
-                </div>
-
-                {/* Contact buttons */}
+                {/* WhatsApp Submit Button */}
                 <button
                   onClick={handleWhatsApp}
-                  disabled={!paymentConfirmed}
-                  className={`w-full py-3.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                    paymentConfirmed
-                      ? "bg-[#25D366] text-white hover:bg-[#20BA5A] cursor-pointer"
+                  disabled={!isValidUtr}
+                  className={`w-full py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+                    isValidUtr
+                      ? "bg-[#25D366] text-white hover:bg-[#20BA5A] cursor-pointer shadow-lg shadow-green-500/20 active:scale-[0.99]"
                       : "bg-white/10 text-muted-foreground cursor-not-allowed opacity-50"
                   }`}
                 >
                   <FaWhatsapp className="h-5 w-5" />
-                  {paymentConfirmed ? "Continue on WhatsApp" : "Confirm Payment First"}
-                </button>
-
-                <button
-                  onClick={handleInstagram}
-                  disabled={!paymentConfirmed}
-                  className={`w-full py-3.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                    paymentConfirmed
-                      ? "bg-gradient-to-r from-[#833AB4] via-[#C13584] to-[#E1306C] text-white hover:opacity-90 cursor-pointer"
-                      : "bg-white/10 text-muted-foreground cursor-not-allowed opacity-50"
-                  }`}
-                >
-                  <FaInstagram className="h-5 w-5" />
-                  {paymentConfirmed ? "Contact via Instagram" : "Confirm Payment First"}
+                  {isValidUtr ? "Submit Order on WhatsApp" : "Enter 12-Digit UTR to Proceed"}
                 </button>
 
                 <p className="text-xs text-muted-foreground text-center pb-1">
-                  {paymentConfirmed
-                    ? "Your order details will be sent automatically"
-                    : "Complete payment and check the box above to continue"}
+                  Your order & 12-digit UTR will be sent directly via WhatsApp for instant verification.
                 </p>
+
               </div>
             </div>
           </motion.div>
