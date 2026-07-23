@@ -9,10 +9,8 @@
 | **3** | User Profile + Personalized Navbar | Phase 1 | Low |
 | **4** | Checkout Auto-Fill + Order System | Phase 3 | Medium |
 | **5** | Wishlist System | Phase 1, 2 | Medium |
-| **6** | Order History + One-Click Reorder | Phase 2, 4 | High |
-| **7** | Steam Profile Integration | Phase 3 | High |
-| **8** | Social Proof + Reviews | Phase 3, 6 | Medium |
-| **9** | Loyalty Program + Rewards | Phase 6 | Medium |
+| **6** | Social Proof + Reviews | Phase 3 | Medium |
+| **7** | Loyalty Program + Rewards | — | Medium |
 
 ---
 
@@ -521,140 +519,11 @@ From Phase 3's dropdown menu design.
 
 ---
 
-## Phase 6: Order History + One-Click Reorder
-
-**Goal:** Users can see past orders and reorder with one click.
-
-### 6A — Create `/orders` Page
-
-**File:** new `src/app/orders/page.tsx`
-
-```
-┌──────────────────────────────────────────┐
-│  My Orders                               │
-├──────────────────────────────────────────┤
-│  Order #SR12345678  •  15 Jul 2026       │
-│  Status: ✅ Delivered                     │
-│  GTA V, AC Valhalla (2 items)            │
-│  Total: ₹578                             │
-│  [Reorder]                               │
-├──────────────────────────────────────────┤
-│  Order #SR12345677  •  10 Jul 2026       │
-│  Status: ✅ Delivered                     │
-│  RDR2 (1 item)                           │
-│  Total: ₹399                             │
-│  [Reorder]                               │
-└──────────────────────────────────────────┘
-```
-
-### 6B — One-Click Reorder
-
-```tsx
-const handleReorder = async (order) => {
-  // 1. Add all items from order to current cart
-  for (const item of order.items) {
-    addToCart(item);
-  }
-  // 2. Navigate to cart
-  router.push('/cart');
-  toast.success(`${order.items.length} games added to cart`);
-};
-```
-
-### 6C — Order Status Tracking
-
-Add a visual progress indicator:
-
-```
-[Ordered] → [Confirmed] → [Delivered]
-   ✓              ✓              ○
-```
-
-### 6D — Admin Integration
-
-Update admin dashboard (`src/app/admin/(dashboard)/`) to:
-- View all orders
-- Update order status (pending → confirmed → delivered)
-- This automatically updates user's order page via DB
-
-### Deliverables for Phase 6
-
-- [ ] `src/app/orders/page.tsx`
-- [ ] `src/components/ui/order-card.tsx`
-- [ ] Reorder functionality
-- [ ] Order status indicator
-- [ ] Admin order management (if scope allows)
-
----
-
-## Phase 7: Steam Profile Integration
-
-**Goal:** Connect user's Steam account to show wishlist comparison, library overlap.
-
-### 7A — Create `/profile/settings` Page
-
-**File:** new `src/app/profile/settings/page.tsx`
-
-```
-┌──────────────────────────────────────────┐
-│  Profile Settings                        │
-├──────────────────────────────────────────┤
-│  [Avatar] Sushant                        │
-│  sushant@gmail.com                       │
-│                                          │
-│  Steam Connection                        │
-│  ┌──────────────────────────────┐       │
-│  │ Steam ID: 76561198xxxxxxxx  │       │
-│  │ [Connect Steam] / [Connected]│       │
-│  └──────────────────────────────┘       │
-│                                          │
-│  Loyalty Tier: 🥈 Silver                 │
-│  Total Spent: ₹2,450                     │
-│  Total Orders: 5                         │
-│                                          │
-│  [Save Changes]                          │
-└──────────────────────────────────────────┘
-```
-
-### 7B — Steam ID Input Flow
-
-1. User enters their Steam ID (numeric, like `76561198000000000`)
-2. Validate via `src/lib/steam-api.ts` → `getSteamUserSummary(steamId)`
-3. If valid, show Steam profile name + avatar for confirmation
-4. Save to `user_profiles.steam_id`
-
-### 7C — Steam Wishlist Comparison
-
-When viewing a game that the user already owns on Steam:
-- Show "You own this on Steam" badge
-- Skip add to cart
-
-When browsing, show:
-- "You have X of these games" on combo deals
-- Filter out owned games from recommendations
-
-### 7D — Steam Library Genre Analysis
-
-```ts
-// Fetch user's owned games from Steam API
-// Analyze genre distribution
-// Recommend: "Based on your library, you might like..."
-```
-
-### Deliverables for Phase 7
-
-- [ ] `src/app/profile/settings/page.tsx`
-- [ ] Steam ID validation + connection flow
-- [ ] "You own this" badges on game cards
-- [ ] Genre-based recommendations
-
----
-
-## Phase 8: Social Proof + Reviews
+## Phase 6: Social Proof + Reviews
 
 **Goal:** Build trust with verified purchaser reviews and real-time activity.
 
-### 8A — Create Review System
+### 6A — Create Review System
 
 **File:** new `src/components/ui/review-card.tsx`
 
@@ -663,7 +532,7 @@ When browsing, show:
 // Only Google-authenticated users who purchased the game can review
 ```
 
-### 8B — Create `/games/[slug]/reviews` Section
+### 6B — Create `/games/[slug]/reviews` Section
 
 **File:** new `src/components/sections/game-reviews.tsx`
 
@@ -672,7 +541,7 @@ When browsing, show:
 - "Write a Review" button (only for purchasers)
 - Average rating displayed on game card
 
-### 8C — Review Form (Modal)
+### 6C — Review Form (Modal)
 
 ```tsx
 // Requires: authentication + verified purchase
@@ -680,7 +549,7 @@ When browsing, show:
 // Shows user's Google avatar + name
 ```
 
-### 8D — "X Gamers Bought Today" Counter
+### 6D — "X Gamers Bought Today" Counter
 
 **File:** new `src/lib/db/purchase-db.ts`
 
@@ -695,7 +564,7 @@ Display on game cards:
 🔥 12 people bought this today
 ```
 
-### 8E — Social Proof Section Update
+### 6E — Social Proof Section Update
 
 **File:** `src/components/sections/social-proof.tsx`
 
@@ -704,7 +573,7 @@ Enhance existing social proof with:
 - Recent reviews
 - Live purchase notifications (if scope allows)
 
-### Deliverables for Phase 8
+### Deliverables for Phase 6
 
 - [ ] `src/components/ui/review-card.tsx`
 - [ ] `src/components/sections/game-reviews.tsx`
@@ -715,11 +584,11 @@ Enhance existing social proof with:
 
 ---
 
-## Phase 9: Loyalty Program + Rewards
+## Phase 7: Loyalty Program + Rewards
 
 **Goal:** Reward repeat customers with tiered benefits.
 
-### 9A — Loyalty Tier Calculation
+### 7A — Loyalty Tier Calculation
 
 **File:** new `src/lib/db/loyalty-db.ts`
 
@@ -734,7 +603,7 @@ calculateTier(totalSpent) → 'bronze' | 'silver' | 'gold' | 'platinum'
 getTierBenefits(tier) → { discount, badge, perks }
 ```
 
-### 9B — Tier-Based Discounts
+### 7B — Tier-Based Discounts
 
 ```
 Bronze:  0% (base prices)
@@ -745,7 +614,7 @@ Platinum: 10% additional discount
 
 Apply automatically at checkout based on user's `loyalty_tier`.
 
-### 9C — Create `/rewards` Page
+### 7C — Create `/rewards` Page
 
 **File:** new `src/app/rewards/page.tsx`
 
@@ -771,14 +640,14 @@ Apply automatically at checkout based on user's `loyalty_tier`.
 └──────────────────────────────────────────┘
 ```
 
-### 9D — Birthday Reward
+### 7D — Birthday Reward
 
 If user provides birthday (optional in profile settings):
 - Auto-detect on birthday month
 - Send special discount code
 - "Happy Birthday! Here's 20% off"
 
-### Deliverables for Phase 9
+### Deliverables for Phase 7
 
 - [ ] `src/lib/db/loyalty-db.ts`
 - [ ] `src/app/rewards/page.tsx`
@@ -819,21 +688,18 @@ src/
 │   ├── api/steam/
 │   ├── cart/page.tsx              (modified)
 │   ├── checkout/page.tsx          (new - Phase 4)
-│   ├── orders/page.tsx            (new - Phase 6)
-│   ├── profile/settings/page.tsx  (new - Phase 7)
-│   ├── rewards/page.tsx           (new - Phase 9)
+│   ├── rewards/page.tsx           (new - Phase 7)
 │   ├── wishlist/page.tsx          (new - Phase 5)
 │   └── layout.tsx                 (modified)
 ├── components/
 │   ├── sections/
-│   │   ├── game-reviews.tsx       (new - Phase 8)
+│   │   ├── game-reviews.tsx       (new - Phase 6)
 │   │   ├── gamerbhidu-navbar.tsx  (modified)
 │   │   └── social-proof.tsx       (modified)
 │   └── ui/
 │       ├── checkout-modal.tsx     (new - Phase 4)
-│       ├── order-card.tsx         (new - Phase 6)
-│       ├── review-card.tsx        (new - Phase 8)
-│       ├── review-form.tsx        (new - Phase 8)
+│       ├── review-card.tsx        (new - Phase 6)
+│       ├── review-form.tsx        (new - Phase 6)
 │       ├── sign-in-prompt.tsx     (modified)
 │       ├── user-avatar.tsx        (new - Phase 3)
 │       └── wishlist-button.tsx    (new - Phase 5)
@@ -845,9 +711,9 @@ src/
 └── lib/
     ├── db/
     │   ├── cart-db.ts             (new - Phase 1)
-    │   ├── loyalty-db.ts          (new - Phase 9)
+    │   ├── loyalty-db.ts          (new - Phase 7)
     │   ├── order-db.ts            (new - Phase 4)
-    │   ├── purchase-db.ts         (new - Phase 8)
+    │   ├── purchase-db.ts         (new - Phase 6)
     │   ├── user-db.ts             (new - Phase 1)
     │   └── wishlist-db.ts         (new - Phase 5)
     ├── auth-hooks.ts              (new - Phase 1)
