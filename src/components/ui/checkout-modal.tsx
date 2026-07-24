@@ -166,7 +166,9 @@ export function CheckoutModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm sm:p-4"
-          onClick={onClose}
+          onClick={() => {
+            if (!qrFullscreen) onClose();
+          }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="checkout-modal-title"
@@ -271,22 +273,24 @@ export function CheckoutModal({
               </div>
 
               {/* Copy order */}
-              <button
-                onClick={handleCopyOrder}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-3.5 w-3.5 text-green-400" />
-                    <span className="text-green-400">Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5" />
-                    <span>Copy Order</span>
-                  </>
-                )}
-              </button>
+              <div className="flex justify-center">
+                <button
+                  onClick={handleCopyOrder}
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 hover:bg-white/10 text-white/90 transition-all active:scale-[0.98]"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-3 w-3 text-green-400" />
+                      <span className="text-green-400">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3 w-3" />
+                      <span>Copy Order</span>
+                    </>
+                  )}
+                </button>
+              </div>
 
               {/* QR Code */}
               <div className="flex flex-col items-center gap-2.5 py-1">
@@ -384,7 +388,7 @@ export function CheckoutModal({
             </div>
           </motion.div>
 
-          {/* Fullscreen QR viewer */}
+          {/* Fullscreen QR viewer — stopPropagation so parent modal stays open */}
           <AnimatePresence>
             {qrFullscreen && (
               <motion.div
@@ -392,10 +396,17 @@ export function CheckoutModal({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 z-[60] bg-black/95 flex flex-col items-center justify-center p-6 cursor-pointer"
-                onClick={() => setQrFullscreen(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setQrFullscreen(false);
+                }}
               >
                 <button
-                  onClick={() => setQrFullscreen(false)}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setQrFullscreen(false);
+                  }}
                   className="absolute top-4 right-4 p-2.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
                   aria-label="Close QR"
                 >
