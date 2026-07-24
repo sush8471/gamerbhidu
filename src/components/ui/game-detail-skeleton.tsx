@@ -160,18 +160,18 @@ export default function GameDetailSkeleton() {
       </div>
 
       {/* Mobile Sticky Buy Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-white/10 lg:hidden z-40">
-        <div className="px-4 py-3 pb-6 flex items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <Skeleton className="h-4 w-10" />
-              <Skeleton className="h-3 w-10" />
+      <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-white/10 lg:hidden z-40">
+        <div className="px-3 pt-2.5 flex items-center gap-2.5" style={{ paddingBottom: "max(0.625rem, env(safe-area-inset-bottom))" }}>
+          <div className="flex flex-col gap-1 flex-shrink-0 max-w-[30%]">
+            <div className="flex items-center gap-1">
+              <Skeleton className="h-3 w-8" />
+              <Skeleton className="h-2.5 w-8" />
             </div>
-            <Skeleton className="h-6 w-16" />
+            <Skeleton className="h-4 w-12" />
           </div>
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-10 w-10 rounded-lg" />
-            <Skeleton className="h-10 w-28 rounded-lg" />
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <Skeleton className="h-11 w-11 rounded-xl flex-shrink-0" />
+            <Skeleton className="h-11 flex-1 rounded-xl" />
           </div>
         </div>
       </div>

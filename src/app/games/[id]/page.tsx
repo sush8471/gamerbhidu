@@ -340,14 +340,13 @@ export default function GameDetailPage() {
                   {/* Clickable Header */}
                   <button
                     onClick={() => setShowSystemReqs(!showSystemReqs)}
-                    className="w-full flex items-center justify-between p-6 lg:p-12 pb-0 lg:pb-0 group"
+                    className="w-full flex items-center justify-between gap-3 p-6 lg:p-12 pb-0 lg:pb-0 group"
                   >
-                    <SectionHeader
-                      title="System Requirements"
-                      className="mb-5"
-                    />
-                    <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
-                      <ChevronDown className={`w-5 h-5 text-white transition-transform duration-300 ${showSystemReqs ? 'rotate-180' : ''}`} />
+                    <h2 className="section-heading text-base sm:text-xl lg:text-4xl whitespace-nowrap mb-5 min-w-0">
+                      System Requirements
+                    </h2>
+                    <div className="p-1 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors flex-shrink-0 mb-5">
+                      <ChevronDown className={`w-3.5 h-3.5 text-white/70 transition-transform duration-300 ${showSystemReqs ? 'rotate-180' : ''}`} />
                     </div>
                   </button>
 
@@ -667,14 +666,14 @@ export default function GameDetailPage() {
         </div>
       </div>
 
-      {/* MOBILE STICKY BUY BAR - Modern Glassmorphism */}
-      <div className={`fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-white/10 lg:hidden transform transition-all duration-300 z-40 pb-safe ${showStickyNav ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
-        <div className="px-4 py-3 pb-6 flex items-center justify-between gap-4">
+      {/* MOBILE STICKY BUY BAR */}
+      <div className={`fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-white/10 lg:hidden transform transition-all duration-300 z-40 ${showStickyNav ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}>
+        <div className="px-3 pt-2.5 flex items-center gap-2.5" style={{ paddingBottom: "max(0.625rem, env(safe-area-inset-bottom))" }}>
           {game.release_status === "upcoming" ? (
             <>
-              <div className="flex items-center gap-2">
-                <CalendarClock className="w-4 h-4 text-primary" />
-                <span className="text-primary font-bold text-sm">Coming Soon</span>
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <CalendarClock className="w-4 h-4 text-primary flex-shrink-0" />
+                <span className="text-primary font-bold text-sm truncate">Coming Soon</span>
               </div>
               <WishlistButton
                 item={{
@@ -688,36 +687,39 @@ export default function GameDetailPage() {
             </>
           ) : (
             <>
-              <div className="flex flex-col flex-shrink-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="bg-white/15 text-white text-[10px] font-black px-1.5 py-0.5 rounded shadow-inner">{discount}</span>
-                  <span className="text-muted-foreground text-[10px] line-through decoration-white/20">{"\u20B9"}{game.original_price}</span>
+              <div className="flex flex-col justify-center flex-shrink-0 min-w-0 max-w-[30%]">
+                <div className="flex items-center gap-1 mb-0.5">
+                  {discount && (
+                    <span className="bg-white/15 text-white text-[9px] font-black px-1 py-px rounded leading-none">{discount}</span>
+                  )}
+                  {game.original_price && (
+                    <span className="text-muted-foreground text-[9px] line-through leading-none">{"\u20B9"}{game.original_price}</span>
+                  )}
                 </div>
-                <span className="text-white text-xl font-black tracking-tight leading-none">{"\u20B9"}{game.price}</span>
+                <span className="text-white text-base font-black tracking-tight leading-none tabular-nums">{"\u20B9"}{game.price}</span>
               </div>
 
-              <div className="flex items-center gap-2 flex-1 justify-end min-w-0">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
                 <button
                   onClick={handleAddToCart}
                   disabled={isAdded}
-                  className={`h-10 w-10 sm:w-auto sm:px-4 border text-white rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95 flex-shrink-0 ${isAdded ? 'bg-card border-white/10 opacity-70' : 'bg-card hover:bg-card border-white/10'}`}
+                  className={`h-11 w-11 border text-white rounded-xl flex items-center justify-center transition-all active:scale-95 flex-shrink-0 ${isAdded ? 'bg-white/10 border-white/15 opacity-80' : 'bg-white/5 border-white/10 active:bg-white/10'}`}
                   aria-label={isAdded ? "Already in Cart" : "Add to Cart"}
                 >
                   {isAdded ? (
-                    <Check className="w-5 h-5 text-white" />
+                    <Check className="w-4 h-4 text-white" />
                   ) : (
-                    <ShoppingCart className="w-5 h-5 text-white" />
+                    <ShoppingCart className="w-4 h-4 text-white" />
                   )}
-                  <span className="hidden sm:inline text-xs font-bold">{isAdded ? "Added" : "Cart"}</span>
                 </button>
 
                 <motion.button
-                  whileTap={{ scale: 0.95 }}
+                  whileTap={{ scale: 0.97 }}
                   onClick={() => window.open(`https://wa.me/917752805529?text=I want to buy ${game.title}`, '_blank')}
-                  className="flex-1 h-10 bg-white/15 hover:bg-white/25 text-white px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 border border-white/20 whitespace-nowrap"
+                  className="flex-1 h-11 min-w-0 bg-white text-black px-3 rounded-xl font-bold text-sm flex items-center justify-center gap-1.5 active:bg-white/90"
                 >
-                  <MessageCircle className="w-4 h-4 fill-white/20" />
-                  Buy Now
+                  <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate">Buy Now</span>
                 </motion.button>
               </div>
             </>
