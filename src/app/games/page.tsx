@@ -160,13 +160,13 @@ function Pagination({
 
 function GameCard({ game, priority = false }: { game: Game; priority?: boolean }) {
   const router = useRouter();
-  const { addToCart, isInCart } = useCart();
+  const { addToCart, removeFromCart, isInCart } = useCart();
   const inCart = isInCart(game.slug || game.id);
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (inCart) {
-      router.push("/cart");
+      removeFromCart(game.slug || game.id);
     } else {
       addToCart({
         id: game.slug || game.id,
