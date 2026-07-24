@@ -21,17 +21,18 @@ export default function CartPage() {
       <div className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-0 sm:justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <Link href="/games" className="flex items-center gap-1.5 text-muted-foreground hover:text-white transition-colors shrink-0">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="text-xs font-medium hidden sm:inline">Continue</span>
-              </Link>
-              <div>
-                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-1 sm:mb-2">Shopping Cart</h1>
-                <p className="text-muted-foreground text-xs sm:text-sm">{itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart</p>
-              </div>
-            </div>
+          <div className="mb-6 sm:mb-8">
+            <Link
+              href="/games"
+              className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-white transition-colors mb-3 sm:mb-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm font-medium">Continue Shopping</span>
+            </Link>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight">Shopping Cart</h1>
+            <p className="text-muted-foreground text-sm mt-1.5">
+              {itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart
+            </p>
           </div>
 
           {cart.length === 0 ? (
@@ -83,11 +84,11 @@ export default function CartPage() {
                       {cart.map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center gap-3 px-3 py-2.5 sm:px-4 hover:bg-white/[0.02] transition-colors"
+                          className="flex items-center gap-3.5 px-3 py-3 sm:px-4 hover:bg-white/[0.02] transition-colors"
                         >
                           <Link
                             href={`/games/${item.id}`}
-                            className="relative w-11 h-14 sm:w-12 sm:h-16 flex-shrink-0 rounded-md overflow-hidden border border-white/10"
+                            className="relative w-14 h-[4.5rem] sm:w-16 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden border border-white/10"
                           >
                             <Image
                               src={item.image}
@@ -100,12 +101,12 @@ export default function CartPage() {
                           <div className="flex-1 min-w-0">
                             <Link
                               href={`/games/${item.id}`}
-                              className="text-white text-sm font-medium truncate block hover:text-white/80 transition-colors"
+                              className="text-white text-sm sm:text-base font-medium line-clamp-2 leading-snug hover:text-white/80 transition-colors"
                             >
                               {item.name}
                             </Link>
-                            <div className="flex items-center gap-1.5 mt-0.5">
-                              <span className="text-white font-semibold text-sm tabular-nums">₹{item.price}</span>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-white font-semibold text-sm sm:text-base tabular-nums">₹{item.price}</span>
                               {item.originalPrice && (
                                 <span className="text-muted-foreground line-through text-xs tabular-nums">₹{item.originalPrice}</span>
                               )}
@@ -114,10 +115,10 @@ export default function CartPage() {
 
                           <button
                             onClick={() => removeFromCart(item.id)}
-                            className="p-1.5 text-red-500/80 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors flex-shrink-0"
+                            className="p-2 text-red-500/80 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
                             aria-label={`Remove ${item.name}`}
                           >
-                            <Trash2 className="h-3.5 w-3.5" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       ))}
