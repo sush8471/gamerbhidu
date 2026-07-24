@@ -21,15 +21,17 @@ export default function CartPage() {
       <div className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-4xl lg:text-5xl font-bold text-white mb-2">Shopping Cart</h1>
-              <p className="text-muted-foreground">{itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart</p>
+          <div className="flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-0 sm:justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <Link href="/games" className="flex items-center gap-1.5 text-muted-foreground hover:text-white transition-colors shrink-0">
+                <ArrowLeft className="h-4 w-4" />
+                <span className="text-xs font-medium hidden sm:inline">Continue</span>
+              </Link>
+              <div>
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-1 sm:mb-2">Shopping Cart</h1>
+                <p className="text-muted-foreground text-xs sm:text-sm">{itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart</p>
+              </div>
             </div>
-            <Link href="/games" className="flex items-center gap-2 text-white hover:text-white/70 transition-colors">
-              <ArrowLeft className="h-5 w-5" />
-              <span className="hidden sm:inline">Continue Shopping</span>
-            </Link>
           </div>
 
           {cart.length === 0 ? (
@@ -138,49 +140,49 @@ export default function CartPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-card border border-white/10 p-6 rounded-lg sticky top-24"
+                  className="bg-card border border-white/10 p-4 sm:p-6 rounded-xl sticky top-24 space-y-4"
                 >
-                  <h2 className="text-xl font-bold text-white mb-6">Order Summary</h2>
-                  
-                  <div className="space-y-3 mb-6">
+                  <h2 className="text-white font-bold text-base sm:text-lg">Order Summary</h2>
+
+                  <div className="space-y-1.5 text-sm">
                     <div className="flex justify-between text-muted-foreground">
                       <span>Subtotal ({itemCount} items)</span>
-                      <span>₹{totalPrice}</span>
+                      <span className="tabular-nums">₹{totalPrice}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">
                       <span>Delivery</span>
-                      <span className="text-green-500">FREE</span>
+                      <span className="text-green-500 font-medium">FREE</span>
                     </div>
-                    <div className="border-t border-white/10 pt-3 flex justify-between text-white text-xl font-bold">
+                    <div className="flex justify-between text-white font-bold text-base pt-2 border-t border-white/10">
                       <span>Total</span>
-                      <span>₹{totalPrice}</span>
+                      <span className="tabular-nums">₹{totalPrice}</span>
                     </div>
                   </div>
 
                   <Link
                     href="/checkout"
-                    className="w-full bg-[#25D366] text-white py-4 rounded-lg font-semibold hover:bg-[#20BA5A] transition-colors flex items-center justify-center gap-2 mb-3"
+                    className="w-full bg-[#25D366] text-white py-3 rounded-xl font-semibold hover:bg-[#20BA5A] transition-colors flex items-center justify-center gap-2 text-sm"
                   >
-                    <FaWhatsapp className="h-5 w-5" />
+                    <FaWhatsapp className="h-4 w-4" />
                     Proceed to Checkout
                   </Link>
 
-                  <p className="text-xs text-muted-foreground text-center">
+                  <p className="text-[11px] text-muted-foreground text-center leading-tight -mt-1">
                     Review your order and pay via UPI on the next step
                   </p>
 
                   {/* Trust Badges */}
-                  <div className="mt-6 pt-6 border-t border-white/10 space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground pt-2 border-t border-white/10">
+                    <div className="flex items-center gap-1">
+                      <span className="text-green-500 text-[10px]">✓</span>
                       <span>Instant Delivery</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>100% Original Games</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-green-500 text-[10px]">✓</span>
+                      <span>Original Games</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-green-500 text-[10px]">✓</span>
                       <span>24/7 Support</span>
                     </div>
                   </div>
