@@ -257,61 +257,79 @@ export default function GamesTab() {
     setFetchedTags([]);
   };
 
-  // Sync homepage section mappings when release_status changes
-  const syncHomepageSectionForStatusChange = async (
+  const getSectionIdBySlug = async (slug: string) => {
+    const { data: section, error } = await supabase
+      .from("homepage_sections")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+    if (error || !section) {
+      throw new Error(error?.message || `Homepage section "${slug}" not found`);
+    }
+    return section.id as string;
+  };
+
+  const removeGameFromSection = async (gameId: string, sectionSlug: string) => {
+    const sectionId = await getSectionIdBySlug(sectionSlug);
+    const { error } = await supabase
+      .from("section_games")
+      .delete()
+      .eq("section_id", sectionId)
+      .eq("game_id", gameId);
+    if (error) throw error;
+  };
+
+  const addGameToSection = async (gameId: string, sectionSlug: string) => {
+    const sectionId = await getSectionIdBySlug(sectionSlug);
+
+    const { data: existing, error: existingError } = await supabase
+      .from("section_games")
+      .select("id")
+      .eq("section_id", sectionId)
+      .eq("game_id", gameId)
+      .maybeSingle();
+    if (existingError) throw existingError;
+    if (existing) return;
+
+    const { data: maxOrder, error: orderError } = await supabase
+      .from("section_games")
+      .select("display_order")
+      .eq("section_id", sectionId)
+      .order("display_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (orderError) throw orderError;
+
+    const { error: insertError } = await supabase.from("section_games").insert([
+      {
+        section_id: sectionId,
+        game_id: gameId,
+        display_order: (maxOrder?.display_order ?? 0) + 10,
+      },
+    ]);
+    if (insertError) throw insertError;
+  };
+
+  // Sync homepage sections from release_status (and create path)
+  const syncHomepageSectionsForGame = async (
     gameId: string,
-    oldStatus: "released" | "upcoming",
-    newStatus: "released" | "upcoming"
+    status: "released" | "upcoming",
+    options: { isNew?: boolean; previousStatus?: "released" | "upcoming" } = {}
   ) => {
-    try {
-      if (oldStatus === "upcoming" && newStatus === "released") {
-        const { data: section } = await supabase
-          .from("homepage_sections")
-          .select("id")
-          .eq("slug", "upcoming-games")
-          .single();
+    if (status === "upcoming") {
+      await addGameToSection(gameId, "upcoming-games");
+      // Keep curated sections free of unreleased titles
+      await removeGameFromSection(gameId, "recently-launched").catch(() => {});
+      await removeGameFromSection(gameId, "hot-deals").catch(() => {});
+      return;
+    }
 
-        if (section) {
-          await supabase
-            .from("section_games")
-            .delete()
-            .eq("section_id", section.id)
-            .eq("game_id", gameId);
-        }
-      } else if (oldStatus === "released" && newStatus === "upcoming") {
-        const { data: section } = await supabase
-          .from("homepage_sections")
-          .select("id")
-          .eq("slug", "upcoming-games")
-          .single();
+    // released
+    await removeGameFromSection(gameId, "upcoming-games");
 
-        if (section) {
-          const { data: existing } = await supabase
-            .from("section_games")
-            .select("id")
-            .eq("section_id", section.id)
-            .eq("game_id", gameId)
-            .maybeSingle();
-
-          if (!existing) {
-            const { data: maxOrder } = await supabase
-              .from("section_games")
-              .select("display_order")
-              .eq("section_id", section.id)
-              .order("display_order", { ascending: false })
-              .limit(1)
-              .maybeSingle();
-
-            await supabase.from("section_games").insert([{
-              section_id: section.id,
-              game_id: gameId,
-              display_order: (maxOrder?.display_order ?? 0) + 10,
-            }]);
-          }
-        }
-      }
-    } catch (err) {
-      console.error("Failed to sync homepage section:", err);
+    // Auto-list new releases / status flips into Recently Launched
+    if (options.isNew || options.previousStatus === "upcoming") {
+      await addGameToSection(gameId, "recently-launched");
     }
   };
 
@@ -349,15 +367,51 @@ export default function GamesTab() {
 
     try {
       if (modalMode === "add") {
-        const { error: insertError } = await supabase.from("games").insert([parsedGame]);
+        const { data: created, error: insertError } = await supabase
+          .from("games")
+          .insert([parsedGame])
+          .select("id")
+          .single();
         if (insertError) throw insertError;
+        if (!created?.id) throw new Error("Failed to get created game id");
+
+        try {
+          await syncHomepageSectionsForGame(created.id, formData.release_status, {
+            isNew: true,
+          });
+        } catch (syncErr: any) {
+          console.error("Failed to sync homepage sections:", syncErr);
+          toast.error(
+            syncErr?.message ||
+              "Game saved, but failed to update homepage sections"
+          );
+        }
       } else {
         if (!selectedGame) return;
-        const { error: updateError } = await supabase.from("games").update(parsedGame).eq("id", selectedGame.id);
+        const { error: updateError } = await supabase
+          .from("games")
+          .update(parsedGame)
+          .eq("id", selectedGame.id);
         if (updateError) throw updateError;
 
-        if (selectedGame.release_status !== formData.release_status) {
-          await syncHomepageSectionForStatusChange(selectedGame.id, selectedGame.release_status, formData.release_status);
+        // Always re-sync when upcoming (idempotent repair); also on status change
+        if (
+          formData.release_status === "upcoming" ||
+          selectedGame.release_status !== formData.release_status
+        ) {
+          try {
+            await syncHomepageSectionsForGame(
+              selectedGame.id,
+              formData.release_status,
+              { previousStatus: selectedGame.release_status }
+            );
+          } catch (syncErr: any) {
+            console.error("Failed to sync homepage sections:", syncErr);
+            toast.error(
+              syncErr?.message ||
+                "Game saved, but failed to update homepage sections"
+            );
+          }
         }
       }
       setModalOpen(false);
@@ -403,6 +457,7 @@ export default function GamesTab() {
     setDeleteLoading(true);
     try {
       await supabase.from("section_games").delete().eq("game_id", gameToDelete.id);
+      await supabase.from("combo_games").delete().eq("game_id", gameToDelete.id);
       const { error: deleteError } = await supabase.from("games").delete().eq("id", gameToDelete.id);
       if (deleteError) throw deleteError;
       setDeleteOpen(false);

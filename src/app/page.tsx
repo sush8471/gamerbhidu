@@ -63,9 +63,11 @@ export default function Home() {
       <div id="hot-deals">
         <GameCardsGridDiscover />
       </div>
-      <Suspense fallback={<ComboDealSkeleton />}>
-        <ComboDealSection />
-      </Suspense>
+      <div id="value-combos">
+        <Suspense fallback={<ComboDealSkeleton />}>
+          <ComboDealSection />
+        </Suspense>
+      </div>
 
       <Suspense fallback={null}>
         <SteamRecommendations />
@@ -73,16 +75,20 @@ export default function Home() {
 
       <SocialProof />
 
-      <Suspense fallback={
-        <GameCardRowSkeleton title="Recently Launched" subtitle="Fresh arrivals - Get them now!" count={6} />
-      }>
-        <RecentlyLaunched />
-      </Suspense>
-      <Suspense fallback={
-        <GameCardRowSkeleton title="Upcoming Games" subtitle="New releases arriving soon" count={6} />
-      }>
-        <UpcomingGames />
-      </Suspense>
+      <div id="recently-launched">
+        <Suspense fallback={
+          <GameCardRowSkeleton title="Recently Launched" subtitle="Fresh arrivals - Get them now!" count={6} />
+        }>
+          <RecentlyLaunched />
+        </Suspense>
+      </div>
+      <div id="upcoming-games">
+        <Suspense fallback={
+          <GameCardRowSkeleton title="Upcoming Games" subtitle="New releases arriving soon" count={6} />
+        }>
+          <UpcomingGames />
+        </Suspense>
+      </div>
       <Suspense fallback={<div className="h-32 bg-background" />}>
         <Footer />
       </Suspense>

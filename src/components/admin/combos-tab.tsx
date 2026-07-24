@@ -318,6 +318,7 @@ export default function CombosTab() {
     if (!comboToDelete) return;
     setDeleteLoading(true);
     try {
+      await supabase.from("combo_games").delete().eq("combo_id", comboToDelete.id);
       const { error } = await supabase.from("combos").delete().eq("id", comboToDelete.id);
       if (error) throw error;
       setDeleteOpen(false);

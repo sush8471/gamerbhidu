@@ -66,11 +66,11 @@ export async function getGameBySlug(slug: string) {
     // Check if input slug is a UUID
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
     
-    const query = supabase.from('games').select('*');
+    let query = supabase.from('games').select('*').eq('visible', true);
     if (isUuid) {
-        query.or(`id.eq.${slug},slug.eq.${slug}`);
+        query = query.or(`id.eq.${slug},slug.eq.${slug}`);
     } else {
-        query.eq('slug', slug);
+        query = query.eq('slug', slug);
     }
 
     const { data, error } = await query.maybeSingle();
@@ -319,7 +319,9 @@ export async function getCombos() {
                     id,
                     title,
                     slug,
-                    image_url
+                    image_url,
+                    steam_app_id,
+                    visible
                 )
             )
         `)
@@ -336,7 +338,7 @@ export async function getCombos() {
         .map((combo: any) => ({
             ...combo,
             games: (combo.combo_games || [])
-                .filter((cg: any) => cg.games)
+                .filter((cg: any) => cg.games && cg.games.visible !== false)
                 .sort((a: any, b: any) => a.display_order - b.display_order)
                 .map((cg: any) => ({
                     id: cg.id,
@@ -367,7 +369,9 @@ export async function getComboById(id: string) {
                     id,
                     title,
                     slug,
-                    image_url
+                    image_url,
+                    steam_app_id,
+                    visible
                 )
             )
         `)
@@ -384,7 +388,7 @@ export async function getComboById(id: string) {
     const combo: Combo = {
         ...data,
         games: (data.combo_games || [])
-            .filter((cg: any) => cg.games)
+            .filter((cg: any) => cg.games && cg.games.visible !== false)
             .sort((a: any, b: any) => a.display_order - b.display_order)
             .map((cg: any) => ({
                 id: cg.id,

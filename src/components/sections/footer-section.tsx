@@ -19,8 +19,9 @@ const socialLinks = [
 
 const browseLinks = [
   { href: "/#hot-deals", label: "Hot Deals" },
-  { href: "/#", label: "Value Combos" },
-  { href: "/#", label: "Recently Launched" },
+  { href: "/#value-combos", label: "Value Combos" },
+  { href: "/#recently-launched", label: "Recently Launched" },
+  { href: "/#upcoming-games", label: "Upcoming Games" },
   { href: "/games", label: "Browse All Games" },
 ]
 
