@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, ShieldCheck, HelpCircle } from "lucide-react";
+import { X, CheckCircle2, ShieldCheck, HelpCircle, Copy, Check } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import type { CartItem } from "@/context/CartContext";
 
@@ -35,6 +35,7 @@ export function CheckoutModal({
 }: CheckoutModalProps) {
   const [utrNumber, setUtrNumber] = useState("");
   const [showUtrHelp, setShowUtrHelp] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const itemCount = items.length;
 
@@ -58,6 +59,41 @@ export function CheckoutModal({
     ]
       .filter((l) => l !== null)
       .join("\n");
+  };
+
+  const buildCopyMessage = () => {
+    return [
+      `Gamer Bhidu - Order`,
+      "",
+      userName ? `Name: ${userName}` : null,
+      userEmail ? `Email: ${userEmail}` : null,
+      "",
+      `Games (${itemCount}):`,
+      ...items.map((item, i) => `${i + 1}. ${item.name} - ₹${item.price}`),
+      "",
+      `Total: ₹${totalPrice}`,
+      utrNumber.trim() ? `UPI UTR: ${utrNumber.trim()}` : null,
+    ]
+      .filter((l) => l !== null)
+      .join("\n");
+  };
+
+  const handleCopyOrder = async () => {
+    const message = buildCopyMessage();
+    try {
+      await navigator.clipboard.writeText(message);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = message;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleWhatsApp = () => {
@@ -142,6 +178,18 @@ export function CheckoutModal({
                     <span className="text-xl font-bold text-white">₹{totalPrice}</span>
                   </div>
                 </div>
+
+                {/* Copy order for Instagram */}
+                <button
+                  onClick={handleCopyOrder}
+                  className="w-full py-2.5 rounded-xl font-bold text-sm bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                >
+                  {copied ? (
+                    <><Check className="h-4 w-4 text-green-400" /><span className="text-green-400">Copied!</span></>
+                  ) : (
+                    <><Copy className="h-4 w-4" /><span>Copy Order & Send on Instagram</span></>
+                  )}
+                </button>
 
                 {/* QR Code */}
                 <div className="text-center space-y-3">
