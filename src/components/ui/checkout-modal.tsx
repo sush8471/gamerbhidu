@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, ShieldCheck, HelpCircle, Copy, Check, ChevronDown } from "lucide-react";
+import { X, CheckCircle2, ShieldCheck, Copy, Check, ChevronDown, Maximize2 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import type { CartItem } from "@/context/CartContext";
 
@@ -34,9 +34,9 @@ export function CheckoutModal({
   userEmail,
 }: CheckoutModalProps) {
   const [utrNumber, setUtrNumber] = useState("");
-  const [showUtrHelp, setShowUtrHelp] = useState(false);
   const [copied, setCopied] = useState(false);
   const [orderExpanded, setOrderExpanded] = useState(false);
+  const [qrFullscreen, setQrFullscreen] = useState(false);
 
   const itemCount = items.length;
 
@@ -221,10 +221,13 @@ export function CheckoutModal({
                   )}
                 </button>
 
-                {/* QR Code */}
+                {/* QR Code — tap to enlarge on mobile */}
                 <div className="text-center space-y-3">
-                  <p className="text-sm text-muted-foreground font-medium">Scan QR Code to pay via UPI</p>
-                  <div className="bg-white p-4 rounded-xl inline-block shadow-lg">
+                  <button
+                    type="button"
+                    onClick={() => setQrFullscreen(true)}
+                    className="bg-white p-3 rounded-xl inline-block shadow-lg cursor-pointer active:scale-[0.97] transition-transform relative group"
+                  >
                     <Image
                       src="/payment-qr.png"
                       alt="Payment QR Code"
@@ -233,45 +236,26 @@ export function CheckoutModal({
                       className="w-full h-auto"
                       priority
                     />
-                  </div>
-                  <div className="px-4 py-2.5 bg-background/50 rounded-lg">
-                    <p className="text-xs text-muted-foreground mb-0.5">UPI ID</p>
-                    <p className="text-sm text-white font-mono font-semibold">
-                      sushantcha00123@okicici
-                    </p>
-                  </div>
+                    <span className="absolute top-2 right-2 bg-black/50 rounded-md p-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                      <Maximize2 className="h-3 w-3 text-white" />
+                    </span>
+                  </button>
+                  <p className="text-xs text-muted-foreground font-mono">sushantcha00123@okicici</p>
                 </div>
 
-                {/* Secure UTR verification input */}
-                <div className="bg-background/40 border border-white/10 rounded-xl p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <ShieldCheck className="h-4 w-4 text-green-400" />
-                      Enter 12-Digit UPI UTR / Ref No. <span className="text-red-400">*</span>
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setShowUtrHelp(!showUtrHelp)}
-                      className="text-xs text-muted-foreground hover:text-white flex items-center gap-1 transition-colors"
-                    >
-                      <HelpCircle className="h-3.5 w-3.5" />
-                      What's this?
-                    </button>
-                  </div>
-
-                  {showUtrHelp && (
-                    <div className="p-3 bg-white/5 border border-white/10 rounded-lg text-xs text-muted-foreground leading-relaxed animate-in fade-in duration-200">
-                      After paying via GPay, PhonePe, Paytm, or BHIM, open the transaction details to find your 12-digit UTR / UPI Ref ID (e.g. 420198273615).
-                    </div>
-                  )}
-
+                {/* UTR input — simplified */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-green-400" />
+                    Enter 12-Digit UTR / Ref No. <span className="text-red-400">*</span>
+                  </label>
                   <div className="relative">
                     <input
                       type="text"
                       maxLength={12}
                       value={utrNumber}
                       onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
-                      placeholder="e.g. 420198273615 (12 digits)"
+                      placeholder="e.g. 420198273615"
                       className="w-full bg-background border border-white/10 focus:border-green-500/50 rounded-lg px-4 py-2.5 text-sm font-mono text-white placeholder:text-muted-foreground/50 focus:outline-none transition-all tracking-wider"
                     />
                     {isValidUtr && (
@@ -280,19 +264,13 @@ export function CheckoutModal({
                       </span>
                     )}
                   </div>
-
                   <p className="text-[11px] text-muted-foreground">
-                    {!utrNumber ? (
-                      "Please enter your 12-digit transaction ID after paying."
-                    ) : isValidUtr ? (
-                      <span className="text-green-400">
-                        12-digit UTR entered! Click below to send order on WhatsApp.
-                      </span>
-                    ) : (
-                      <span className="text-amber-400">
-                        {12 - utrNumber.length} more digit{12 - utrNumber.length > 1 ? "s" : ""} required (must be 12 digits).
-                      </span>
-                    )}
+                    {!utrNumber
+                      ? "Find this 12-digit ID in your GPay / PhonePe / Paytm transaction details."
+                      : isValidUtr
+                        ? <span className="text-green-400">Ready to submit!</span>
+                        : <span className="text-amber-400">{12 - utrNumber.length} more digit{12 - utrNumber.length > 1 ? "s" : ""}</span>
+                    }
                   </p>
                 </div>
 
@@ -317,6 +295,43 @@ export function CheckoutModal({
               </div>
             </div>
           </motion.div>
+
+          {/* Fullscreen QR viewer */}
+          <AnimatePresence>
+            {qrFullscreen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] bg-black/90 flex flex-col items-center justify-center p-6 cursor-pointer"
+                onClick={() => setQrFullscreen(false)}
+              >
+                <button
+                  onClick={() => setQrFullscreen(false)}
+                  className="absolute top-4 right-4 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  className="bg-white p-6 rounded-2xl shadow-2xl max-w-xs w-full"
+                >
+                  <Image
+                    src="/payment-qr.png"
+                    alt="Payment QR Code"
+                    width={400}
+                    height={400}
+                    className="w-full h-auto"
+                    priority
+                  />
+                </motion.div>
+                <p className="text-white/60 text-sm mt-4 font-mono">sushantcha00123@okicici</p>
+                <p className="text-white/40 text-xs mt-2">Tap anywhere to close</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>
