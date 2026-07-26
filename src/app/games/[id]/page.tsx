@@ -510,16 +510,27 @@ export default function GameDetailPage() {
                         <div className="relative aspect-[2/3] rounded-xl overflow-hidden mb-3 ring-1 ring-white/10 group-hover:ring-2 group-hover:ring-white/30 transition-all duration-300">
                           <Image src={sg.image_url} alt={sg.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
-                          {sg.discount_percentage && (
+                          {sg.release_status !== "upcoming" && sg.discount_percentage && (
                             <div className="absolute top-3 left-3 bg-white/15 text-white text-xs font-bold px-2 py-1 rounded shadow-lg backdrop-blur-md">
                               -{sg.discount_percentage}%
+                            </div>
+                          )}
+                          {sg.release_status === "upcoming" && (
+                            <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-black px-2 py-1 rounded shadow-lg">
+                              UPCOMING
                             </div>
                           )}
                         </div>
                         <h3 className="text-white text-sm font-semibold line-clamp-2 group-hover:text-white transition-colors mb-1">{sg.title}</h3>
                         <div className="flex items-center gap-2">
-                          {sg.original_price && <span className="text-muted-foreground text-xs line-through">₹{sg.original_price}</span>}
-                          <span className="text-white text-sm font-bold">₹{sg.price}</span>
+                          {sg.release_status === "upcoming" ? (
+                            <span className="text-primary text-sm font-bold">Upcoming</span>
+                          ) : (
+                            <>
+                              {sg.original_price && <span className="text-muted-foreground text-xs line-through">₹{sg.original_price}</span>}
+                              <span className="text-white text-sm font-bold">₹{sg.price}</span>
+                            </>
+                          )}
                         </div>
                       </Link>
                     ))}

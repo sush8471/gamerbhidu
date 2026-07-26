@@ -9,9 +9,44 @@ import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
 import { SignInPrompt } from "@/components/ui/sign-in-prompt";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://gamerbhidu.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Gamer Bhidu | Premium PC Games at Unbeatable Prices",
-  description: "Your ultimate destination for PC gaming deals",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Gamer Bhidu | Premium PC Games at Unbeatable Prices",
+    template: "%s | Gamer Bhidu",
+  },
+  description:
+    "Your ultimate destination for discounted PC games. Browse thousands of titles, grab unbeatable deals, and build your library for less.",
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: SITE_URL,
+    siteName: "Gamer Bhidu",
+    title: "Gamer Bhidu | Premium PC Games at Unbeatable Prices",
+    description:
+      "Your ultimate destination for discounted PC games. Browse thousands of titles, grab unbeatable deals, and build your library for less.",
+    images: [
+      {
+        url: `${SITE_URL}/api/og`,
+        width: 1200,
+        height: 630,
+        alt: "Gamer Bhidu – PC Gaming Deals",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Gamer Bhidu | Premium PC Games at Unbeatable Prices",
+    description:
+      "Your ultimate destination for discounted PC games. Browse thousands of titles, grab unbeatable deals, and build your library for less.",
+    images: [`${SITE_URL}/api/og`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
