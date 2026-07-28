@@ -230,6 +230,13 @@ export default function ComboDealSection() {
     setSelectedBundle(null);
   };
 
+  useEffect(() => {
+    if (!isDialogOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [isDialogOpen]);
+
   // Show loading state
   if (loading) {
     return <ComboDealSkeleton />;
