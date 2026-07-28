@@ -360,7 +360,7 @@ export async function getCombos() {
     const gamesByCombo = new Map<string, ComboGame[]>();
     for (const cg of cgData || []) {
         const game = gameMap.get(cg.game_id);
-        if (!game || game.visible === false) continue;
+        if (!game) continue;
         const entry: ComboGame = {
             id: cg.id,
             combo_id: cg.combo_id,
@@ -430,10 +430,7 @@ export async function getComboById(id: string) {
     const combo: Combo = {
         ...data,
         games: (cgData || [])
-            .filter((cg: any) => {
-                const game = gameMap.get(cg.game_id);
-                return game && game.visible !== false;
-            })
+            .filter((cg: any) => gameMap.has(cg.game_id))
             .map((cg: any) => ({
                 id: cg.id,
                 combo_id: cg.combo_id,
