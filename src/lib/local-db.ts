@@ -298,6 +298,7 @@ export interface ComboGame {
         slug: string;
         image_url: string;
         steam_app_id?: number | null;
+        visible?: boolean;
     };
 
 }
@@ -306,25 +307,9 @@ export interface ComboGame {
  * Get all visible combos ordered by display_order, with their associated games
  */
 export async function getCombos() {
-    const { data, error } = await supabase
+    const { data: comboData, error } = await supabase
         .from('combos')
-        .select(`
-            *,
-            combo_games (
-                id,
-                combo_id,
-                game_id,
-                display_order,
-                games (
-                    id,
-                    title,
-                    slug,
-                    image_url,
-                    steam_app_id,
-                    visible
-                )
-            )
-        `)
+        .select('*')
         .eq('visible', true)
         .order('display_order', { ascending: true });
 
@@ -332,21 +317,67 @@ export async function getCombos() {
         return { data: [], error: error.message };
     }
 
+    if (!comboData || comboData.length === 0) {
+        return { data: [], error: null };
+    }
+
+    const comboIds = comboData.map((c: any) => c.id);
+
+    const { data: cgData, error: cgError } = await supabase
+        .from('combo_games')
+        .select(`
+            id,
+            combo_id,
+            game_id,
+            display_order
+        `)
+        .in('combo_id', comboIds)
+        .order('display_order', { ascending: true });
+
+    if (cgError) {
+        return { data: [], error: cgError.message };
+    }
+
+    const gameIds = [...new Set((cgData || []).map((cg: any) => cg.game_id))];
+    const gameMap = new Map<string, any>();
+
+    if (gameIds.length > 0) {
+        const { data: gameData, error: gameError } = await supabase
+            .from('games')
+            .select('id, title, slug, image_url, steam_app_id, visible')
+            .in('id', gameIds);
+
+        if (gameError) {
+            return { data: [], error: gameError.message };
+        }
+        for (const g of gameData || []) {
+            gameMap.set(g.id, g);
+        }
+    }
+
     const now = new Date().toISOString();
-    const combos: Combo[] = (data || [])
+
+    const gamesByCombo = new Map<string, ComboGame[]>();
+    for (const cg of cgData || []) {
+        const game = gameMap.get(cg.game_id);
+        if (!game || game.visible === false) continue;
+        const entry: ComboGame = {
+            id: cg.id,
+            combo_id: cg.combo_id,
+            game_id: cg.game_id,
+            display_order: cg.display_order,
+            game: game,
+        };
+        const list = gamesByCombo.get(cg.combo_id) || [];
+        list.push(entry);
+        gamesByCombo.set(cg.combo_id, list);
+    }
+
+    const combos: Combo[] = comboData
         .filter((combo: any) => !combo.deal_expires_at || combo.deal_expires_at > now)
         .map((combo: any) => ({
             ...combo,
-            games: (combo.combo_games || [])
-                .filter((cg: any) => cg.games && cg.games.visible !== false)
-                .sort((a: any, b: any) => a.display_order - b.display_order)
-                .map((cg: any) => ({
-                    id: cg.id,
-                    combo_id: cg.combo_id,
-                    game_id: cg.game_id,
-                    display_order: cg.display_order,
-                    game: cg.games,
-                })),
+            games: gamesByCombo.get(combo.id) || [],
         }));
 
     return { data: combos, error: null };
@@ -358,23 +389,7 @@ export async function getCombos() {
 export async function getComboById(id: string) {
     const { data, error } = await supabase
         .from('combos')
-        .select(`
-            *,
-            combo_games (
-                id,
-                combo_id,
-                game_id,
-                display_order,
-                games (
-                    id,
-                    title,
-                    slug,
-                    image_url,
-                    steam_app_id,
-                    visible
-                )
-            )
-        `)
+        .select('*')
         .eq('id', id)
         .single();
 
@@ -385,17 +400,46 @@ export async function getComboById(id: string) {
         return { data: null, error: "Combo not found" };
     }
 
+    const { data: cgData, error: cgError } = await supabase
+        .from('combo_games')
+        .select('id, combo_id, game_id, display_order')
+        .eq('combo_id', id)
+        .order('display_order', { ascending: true });
+
+    if (cgError) {
+        return { data: null, error: cgError.message };
+    }
+
+    const gameIds = [...new Set((cgData || []).map((cg: any) => cg.game_id))];
+    const gameMap = new Map<string, any>();
+
+    if (gameIds.length > 0) {
+        const { data: gameData, error: gameError } = await supabase
+            .from('games')
+            .select('id, title, slug, image_url, steam_app_id, visible')
+            .in('id', gameIds);
+
+        if (gameError) {
+            return { data: null, error: gameError.message };
+        }
+        for (const g of gameData || []) {
+            gameMap.set(g.id, g);
+        }
+    }
+
     const combo: Combo = {
         ...data,
-        games: (data.combo_games || [])
-            .filter((cg: any) => cg.games && cg.games.visible !== false)
-            .sort((a: any, b: any) => a.display_order - b.display_order)
+        games: (cgData || [])
+            .filter((cg: any) => {
+                const game = gameMap.get(cg.game_id);
+                return game && game.visible !== false;
+            })
             .map((cg: any) => ({
                 id: cg.id,
                 combo_id: cg.combo_id,
                 game_id: cg.game_id,
                 display_order: cg.display_order,
-                game: cg.games,
+                game: gameMap.get(cg.game_id),
             })),
     };
 
