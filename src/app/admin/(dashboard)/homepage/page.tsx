@@ -61,6 +61,7 @@ export default function AdminHomepageSectionsPage() {
 
   // Selector form state
   const [selectedGameId, setSelectedGameId] = useState("");
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
   // Load sections on mount
   useEffect(() => {
@@ -254,6 +255,7 @@ export default function AdminHomepageSectionsPage() {
       if (insertError) throw insertError;
 
       setSelectedGameId("");
+      setAddModalOpen(false);
       toast.success("Game assigned to section");
       loadSectionMappings(activeSectionId);
     } catch (err) {
@@ -347,11 +349,9 @@ export default function AdminHomepageSectionsPage() {
       {showCombos ? (
         <CombosTab />
       ) : (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Mapping list — table layout */}
-        <div className="lg:col-span-2 bg-[#111111] border border-[#262626] rounded-xl overflow-hidden shadow-xl">
-          {/* Search bar */}
-          <div className="p-3 border-b border-[#262626]">
+        <div className="space-y-4">
+          {/* Toolbar — matches Value Combos layout */}
+          <div className="bg-[#111111] border border-[#262626] p-3 lg:p-4 rounded-xl space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
@@ -370,211 +370,241 @@ export default function AdminHomepageSectionsPage() {
                 </button>
               )}
             </div>
+            <div className="flex justify-end">
+              <Button
+                onClick={() => { setSelectedGameId(""); setActionError(null); setAddModalOpen(true); }}
+                className="w-full sm:w-auto font-black active:scale-[0.98]"
+              >
+                <Plus className="w-4 h-4" />
+                Add Game
+              </Button>
+            </div>
           </div>
 
-          {mappingsLoading ? (
-            <div className="h-72 flex flex-col items-center justify-center gap-2">
-              <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              <p className="text-xs text-muted-foreground font-medium">Updating section games...</p>
-            </div>
-          ) : mappings.length === 0 ? (
-            <div className="h-72 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-              <Home className="w-10 h-10 stroke-[1.25]" />
-              <div className="text-center space-y-1">
-                <p className="text-xs font-semibold">No games assigned to this section</p>
-                <p className="text-[10px] text-muted-foreground">Use the panel on the right to add games</p>
+          {/* Full-width table */}
+          <div className="bg-[#111111] border border-[#262626] rounded-xl overflow-hidden shadow-xl">
+            {mappingsLoading ? (
+              <div className="h-72 flex flex-col items-center justify-center gap-2">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                <p className="text-xs text-muted-foreground font-medium">Updating section games...</p>
               </div>
-            </div>
-          ) : filteredMappings.length === 0 ? (
-            <div className="h-72 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-              <Search className="w-10 h-10 stroke-[1.25]" />
-              <div className="text-center space-y-1">
-                <p className="text-xs font-semibold">No games match your search</p>
-                <p className="text-[10px] text-muted-foreground">Try a different search term</p>
+            ) : mappings.length === 0 ? (
+              <div className="h-72 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                <Home className="w-10 h-10 stroke-[1.25]" />
+                <div className="text-center space-y-1">
+                  <p className="text-xs font-semibold">No games assigned to this section</p>
+                  <p className="text-[10px] text-muted-foreground">Tap Add Game to assign listings</p>
+                </div>
+                <Button onClick={() => setAddModalOpen(true)} size="sm" className="font-black">
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Game
+                </Button>
               </div>
-            </div>
-          ) : (
-            <>
-              {/* Desktop table */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-[#262626] bg-black/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                      <th className="py-3 px-4 w-14"></th>
-                      <th className="py-3 px-4">Image</th>
-                      <th className="py-3 px-4">Title</th>
-                      <th className="py-3 px-4 w-24">Price</th>
-                      <th className="py-3 px-4 w-20">Discount</th>
-                      <th className="py-3 px-4 w-24 text-center">Visibility</th>
-                      <th className="py-3 px-4 w-24 text-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#262626]/60 text-sm">
-                    {paginatedMappings.map((mapping, i) => (
-                      <tr key={mapping.id} className="hover:bg-white/[0.02] transition-colors group">
-                        <td className="py-3 px-4">
-                          <div className="text-muted-foreground/40 group-hover:text-muted-foreground transition-colors cursor-grab active:cursor-grabbing">
-                            <GripVertical className="w-4 h-4" />
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="relative w-10 h-12 bg-black/20 rounded border border-[#262626] overflow-hidden">
-                            <Image src={mapping.image_url} alt={mapping.title} fill sizes="40px" className="object-cover" />
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <p className="font-bold text-white text-xs leading-snug truncate max-w-[180px]" title={mapping.title}>{mapping.title}</p>
-                          <p className="text-[10px] text-muted-foreground font-mono truncate">/{mapping.slug}</p>
-                        </td>
-                        <td className="py-3 px-4">
-                          <p className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</p>
-                          {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
-                            <p className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</p>
-                          )}
-                        </td>
-                        <td className="py-3 px-4">
-                          {mapping.discount_percentage != null && mapping.discount_percentage > 0 ? (
-                            <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
-                              -{mapping.discount_percentage}%
-                            </span>
-                          ) : <span className="text-xs text-muted-foreground">—</span>}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${
-                            mapping.visible
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                              : "bg-gray-500/10 text-muted-foreground border-gray-500/20"
-                          }`}>
-                            {mapping.visible ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
-                            {mapping.visible ? "Live" : "Hidden"}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center justify-center gap-1">
-                            <a
-                              href={`/games/${mapping.slug}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer"
-                              title="View on store"
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-                            <button
-                              disabled={actionLoading}
-                              onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
-                              className="p-2 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
-                              title="Remove from section"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
+            ) : filteredMappings.length === 0 ? (
+              <div className="h-72 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+                <Search className="w-10 h-10 stroke-[1.25]" />
+                <div className="text-center space-y-1">
+                  <p className="text-xs font-semibold">No games match your search</p>
+                  <p className="text-[10px] text-muted-foreground">Try a different search term</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Desktop table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-[#262626] bg-black/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        <th className="py-4 px-6 w-12"></th>
+                        <th className="py-4 px-6 w-16">Image</th>
+                        <th className="py-4 px-6">Title</th>
+                        <th className="py-4 px-6 w-28">Price</th>
+                        <th className="py-4 px-6 w-24">Discount</th>
+                        <th className="py-4 px-6 w-28 text-center">Visibility</th>
+                        <th className="py-4 px-6 w-28 text-center">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-[#262626]/60 text-sm">
+                      {paginatedMappings.map((mapping) => {
+                        const fullIndex = mappings.findIndex((m) => m.id === mapping.id);
+                        return (
+                          <tr
+                            key={mapping.id}
+                            draggable={!searchQuery}
+                            onDragStart={() => handleDragStart(fullIndex)}
+                            onDragOver={(e) => handleDragOver(e, fullIndex)}
+                            onDragEnd={handleDragEnd}
+                            className="hover:bg-white/[0.02] transition-colors group"
+                          >
+                            <td className="py-3 px-6">
+                              <div className="text-muted-foreground/40 group-hover:text-muted-foreground transition-colors cursor-grab active:cursor-grabbing">
+                                <GripVertical className="w-4 h-4" />
+                              </div>
+                            </td>
+                            <td className="py-3 px-6">
+                              <div className="relative w-12 h-8 bg-black/20 rounded border border-[#262626] overflow-hidden">
+                                <Image src={mapping.image_url} alt={mapping.title} fill sizes="48px" className="object-cover" />
+                              </div>
+                            </td>
+                            <td className="py-3 px-6">
+                              <p className="font-bold text-white max-w-sm truncate" title={mapping.title}>{mapping.title}</p>
+                              <p className="text-[10px] text-muted-foreground font-mono truncate">/{mapping.slug}</p>
+                            </td>
+                            <td className="py-3 px-6">
+                              <p className="font-black text-white">₹{mapping.selling_price ?? 0}</p>
+                              {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
+                                <p className="text-xs text-muted-foreground line-through">₹{mapping.original_price}</p>
+                              )}
+                            </td>
+                            <td className="py-3 px-6">
+                              {mapping.discount_percentage != null && mapping.discount_percentage > 0 ? (
+                                <span className="text-xs font-black bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded border border-blue-500/20">
+                                  -{mapping.discount_percentage}%
+                                </span>
+                              ) : <span className="text-xs text-muted-foreground">—</span>}
+                            </td>
+                            <td className="py-3 px-6 text-center">
+                              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
+                                mapping.visible
+                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                  : "bg-gray-500/10 text-muted-foreground border border-gray-500/20"
+                              }`}>
+                                {mapping.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                                {mapping.visible ? "Visible" : "Hidden"}
+                              </span>
+                            </td>
+                            <td className="py-3 px-6">
+                              <div className="flex items-center justify-center gap-2.5">
+                                <a
+                                  href={`/games/${mapping.slug}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-2.5 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer"
+                                  title="View on store"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </a>
+                                <button
+                                  disabled={actionLoading}
+                                  onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
+                                  className="p-2.5 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
+                                  title="Remove from section"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
 
-              {/* Mobile cards */}
-              <div className="md:hidden divide-y divide-[#262626]/60">
-                {paginatedMappings.map((mapping) => (
-                  <div key={mapping.id} className="flex items-center gap-3 p-3">
-                    <div className="relative w-12 h-14 flex-shrink-0 bg-black/20 rounded border border-[#262626] overflow-hidden">
-                      <Image src={mapping.image_url} alt={mapping.title} fill sizes="48px" className="object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <p className="text-white font-bold text-xs leading-tight truncate">{mapping.title}</p>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</span>
-                        {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
-                          <span className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</span>
-                        )}
-                        {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
-                          <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">-{mapping.discount_percentage}%</span>
-                        )}
-                        <span className={`inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                          mapping.visible ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-gray-500/10 text-muted-foreground border-gray-500/20"
-                        }`}>
-                          {mapping.visible ? <Eye className="w-2 h-2" /> : <EyeOff className="w-2 h-2" />}
-                          {mapping.visible ? "Live" : "Hidden"}
-                        </span>
+                {/* Mobile cards */}
+                <div className="md:hidden divide-y divide-[#262626]/60">
+                  {paginatedMappings.map((mapping) => (
+                    <div key={mapping.id} className="flex items-center gap-3 p-3">
+                      <div className="relative w-14 h-10 flex-shrink-0 bg-black/20 rounded border border-[#262626] overflow-hidden">
+                        <Image src={mapping.image_url} alt={mapping.title} fill sizes="56px" className="object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <p className="text-white font-bold text-xs leading-tight truncate">{mapping.title}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</span>
+                          {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
+                            <span className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</span>
+                          )}
+                          {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
+                            <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">-{mapping.discount_percentage}%</span>
+                          )}
+                          <span className={`inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                            mapping.visible ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-gray-500/10 text-muted-foreground border-gray-500/20"
+                          }`}>
+                            {mapping.visible ? <Eye className="w-2 h-2" /> : <EyeOff className="w-2 h-2" />}
+                            {mapping.visible ? "Visible" : "Hidden"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <button
+                          disabled={actionLoading}
+                          onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
+                          className="p-2.5 text-muted-foreground hover:text-red-400 rounded transition-all cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <button
-                        disabled={actionLoading}
-                        onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
-                        className="p-2.5 text-muted-foreground hover:text-red-400 rounded transition-all cursor-pointer"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {filteredMappings.length > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#262626] px-4 py-3 bg-black/5">
+                    <p className="text-xs text-muted-foreground">
+                      Showing <span className="font-semibold text-white">{(currentPage - 1) * itemsPerPage + 1}</span>–<span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, filteredMappings.length)}</span> of <span className="font-semibold text-white">{filteredMappings.length}</span>
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2.5 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
+                      <span className="text-xs text-muted-foreground min-w-[80px] text-center">Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}</span>
+                      <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2.5 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {filteredMappings.length > itemsPerPage && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#262626] px-4 py-3 bg-black/5">
-                  <p className="text-xs text-muted-foreground">
-                    Showing <span className="font-semibold text-white">{(currentPage - 1) * itemsPerPage + 1}</span>–<span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, filteredMappings.length)}</span> of <span className="font-semibold text-white">{filteredMappings.length}</span>
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
-                    <span className="text-xs text-muted-foreground min-w-[80px] text-center">Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}</span>
-                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Add game controller panel */}
-        <div className="bg-[#111111] border border-[#262626] rounded-xl p-6 space-y-4 shadow-xl">
-          <div className="space-y-1">
-            <h3 className="font-bold text-white">Add Game to Section</h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Assign a visible catalog game to the currently selected homepage section. New games are appended to the bottom.
-            </p>
+                )}
+              </>
+            )}
           </div>
-
-          {actionError && (
-            <div className="flex items-start gap-2.5 bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] p-3 rounded-lg leading-relaxed">
-              <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              <span>{actionError}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleAddGame} className="space-y-4 pt-2">
-            <GamePicker
-              options={unmappedGames}
-              value={selectedGameId ? [selectedGameId] : []}
-              onChange={(ids) => setSelectedGameId(ids[0] || "")}
-              placeholder={unmappedGames.length === 0 ? "No unmapped games available" : "Search games to add..."}
-              label="Select Game"
-              single
-            />
-
-            <Button
-              type="submit"
-              disabled={actionLoading || !selectedGameId}
-              className="w-full font-black active:scale-[0.98]"
-            >
-              <Plus className="w-4 h-4" />
-              Assign to Section
-            </Button>
-          </form>
-
-          {unmappedGames.length === 0 && (
-            <div className="flex items-start gap-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] p-3 rounded-lg leading-relaxed mt-2">
-              <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              <span>All visible storefront listings are already assigned to this section.</span>
-            </div>
-          )}
         </div>
-      </div>
+      )}
+
+      {/* Add Game Modal */}
+      {addModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full sm:max-w-md bg-[#111111] border border-[#262626] sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fadeIn">
+            <div className="px-6 py-4 border-b border-[#262626] flex items-center justify-between flex-shrink-0">
+              <h3 className="text-lg font-bold text-white">Add Game to Section</h3>
+              <button onClick={() => setAddModalOpen(false)} className="p-1 text-muted-foreground hover:text-white transition-colors cursor-pointer">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleAddGame} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Assign a catalog game to this homepage section. New games are appended to the bottom.
+                </p>
+                {actionError && (
+                  <div className="flex items-start gap-2.5 bg-red-500/10 border border-red-500/20 text-red-400 text-[11px] p-3 rounded-lg leading-relaxed">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>{actionError}</span>
+                  </div>
+                )}
+                <GamePicker
+                  options={unmappedGames}
+                  value={selectedGameId ? [selectedGameId] : []}
+                  onChange={(ids) => setSelectedGameId(ids[0] || "")}
+                  placeholder={unmappedGames.length === 0 ? "No unmapped games available" : "Search games to add..."}
+                  label="Select Game"
+                  single
+                />
+                {unmappedGames.length === 0 && (
+                  <div className="flex items-start gap-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] p-3 rounded-lg leading-relaxed">
+                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    <span>All visible storefront listings are already assigned to this section.</span>
+                  </div>
+                )}
+              </div>
+              <div className="border-t border-[#262626] p-4 bg-[#111111] flex justify-end gap-3 flex-shrink-0">
+                <Button type="button" variant="outline" onClick={() => setAddModalOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={actionLoading || !selectedGameId} className="font-black active:scale-[0.98]">
+                  {actionLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  <Plus className="w-4 h-4" />
+                  Assign to Section
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* Delete Confirmation Modal */}
