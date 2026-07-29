@@ -2,13 +2,15 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { X, Check, ExternalLink, Clock } from "lucide-react";
+import { X, Check, ExternalLink, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { getCombos, Combo, ComboGame } from "@/lib/local-db";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import ComboDealSkeleton from "@/components/ui/combo-deal-skeleton";
 import { useCountdown } from "@/hooks/use-countdown";
+import { CheckoutModal } from "@/components/ui/checkout-modal";
+import { useAuth } from "@/context/AuthContext";
 
 import { useSteam } from "@/context/SteamContext";
 
@@ -54,11 +56,13 @@ function transformCombo(combo: Combo): ComboData {
 function GameListDialog({ 
   isOpen, 
   onClose, 
-  bundle 
+  bundle,
+  onProceedToCheckout,
 }: { 
   isOpen: boolean; 
   onClose: () => void;
   bundle: ComboData | null;
+  onProceedToCheckout: (bundle: ComboData) => void;
 }) {
   if (!isOpen || !bundle) return null;
 
@@ -141,20 +145,11 @@ function GameListDialog({
         {/* Footer */}
         <div className="sticky bottom-0 bg-gradient-to-t from-card to-card/95 backdrop-blur-sm border-t border-white/10 p-4 sm:p-6">
           <button
-            onClick={() => {
-              window.parent.postMessage(
-                {
-                  type: "OPEN_EXTERNAL_URL",
-                  data: { 
-                    url: `https://wa.me/917752805529?text=I want to buy the ${bundle.title} (${gameCount} games for ${bundle.price.discounted})` 
-                  },
-                },
-                "*"
-              );
-            }}
-            className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold py-3.5 sm:py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-[0_0_20px_rgba(37,211,102,0.4)]"
+            onClick={() => onProceedToCheckout(bundle)}
+            className="w-full bg-white/10 hover:bg-white text-white hover:text-black font-bold py-3.5 sm:py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
           >
-            <span className="text-sm sm:text-base">Buy on WhatsApp for {bundle.price.discounted}</span>
+            <span className="text-sm sm:text-base">Proceed to Checkout</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
           <p className="text-center text-muted-foreground text-[10px] sm:text-xs mt-2.5 sm:mt-3">
             Instant delivery • Original Steam games • 24/7 support
@@ -191,6 +186,12 @@ export default function ComboDealSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedBundle, setSelectedBundle] = useState<ComboData | null>(null);
   const { ownedAppIds } = useSteam();
+  const { user } = useAuth();
+
+  const [comboCheckoutOpen, setComboCheckoutOpen] = useState(false);
+  const [comboCheckoutName, setComboCheckoutName] = useState("");
+  const [comboCheckoutEmail, setComboCheckoutEmail] = useState("");
+  const [checkoutBundle, setCheckoutBundle] = useState<ComboData | null>(null);
 
   const loadCombos = useCallback(async () => {
     try {
@@ -236,6 +237,56 @@ export default function ComboDealSection() {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = prev; };
   }, [isDialogOpen]);
+
+  useEffect(() => {
+    if (!comboCheckoutOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [comboCheckoutOpen]);
+
+  const handleProceedToCheckout = (bundle: ComboData) => {
+    setIsDialogOpen(false);
+    setSelectedBundle(null);
+    setCheckoutBundle(bundle);
+    setComboCheckoutName(user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "");
+    setComboCheckoutEmail(user?.email ?? "");
+    setComboCheckoutOpen(true);
+  };
+
+  const buildComboWhatsAppMessage = useCallback(() => {
+    if (!checkoutBundle) return "";
+    const gameNames = (checkoutBundle.games || []).map((g, i) => `${i + 1}. ${g.game?.title || "Unknown Game"}`);
+    return [
+      `🎮 *Gamer Bhidu - Combo Purchase*`,
+      "",
+      comboCheckoutName ? `👤 *Customer:* ${comboCheckoutName}` : null,
+      comboCheckoutEmail ? `📧 *Email:* ${comboCheckoutEmail}` : null,
+      "",
+      `📦 *Combo:* ${checkoutBundle.title} (${gameNames.length} games)`,
+      ...gameNames,
+      "",
+      `💰 *Total Paid:* ${checkoutBundle.price.discounted}`,
+      "",
+      "I have completed the UPI payment. Please verify and confirm!",
+    ].filter((l) => l !== null).join("\n");
+  }, [checkoutBundle, comboCheckoutName, comboCheckoutEmail]);
+
+  const buildComboCopyMessage = useCallback(() => {
+    if (!checkoutBundle) return "";
+    const gameNames = (checkoutBundle.games || []).map((g, i) => `${i + 1}. ${g.game?.title || "Unknown Game"}`);
+    return [
+      `Gamer Bhidu - Combo Order`,
+      "",
+      comboCheckoutName ? `Name: ${comboCheckoutName}` : null,
+      comboCheckoutEmail ? `Email: ${comboCheckoutEmail}` : null,
+      "",
+      `Combo: ${checkoutBundle.title} (${gameNames.length} games)`,
+      ...gameNames,
+      "",
+      `Total: ${checkoutBundle.price.discounted}`,
+    ].filter((l) => l !== null).join("\n");
+  }, [checkoutBundle, comboCheckoutName, comboCheckoutEmail]);
 
   // Show loading state
   if (loading) {
@@ -348,7 +399,25 @@ export default function ComboDealSection() {
         </div>
       </section>
 
-      <GameListDialog isOpen={isDialogOpen} onClose={handleCloseDialog} bundle={selectedBundle} />
+      <GameListDialog isOpen={isDialogOpen} onClose={handleCloseDialog} bundle={selectedBundle} onProceedToCheckout={handleProceedToCheckout} />
+
+      {checkoutBundle && (
+        <CheckoutModal
+          open={comboCheckoutOpen}
+          onClose={() => { setComboCheckoutOpen(false); setCheckoutBundle(null); }}
+          items={(checkoutBundle.games || []).map((g, i) => ({
+            id: g.game_id,
+            name: g.game?.title || "Unknown Game",
+            price: 0,
+            image: g.game?.image_url || "",
+          }))}
+          totalPrice={parseInt(checkoutBundle.price.discounted.replace(/[₹,]/g, "")) || 0}
+          userName={comboCheckoutName || undefined}
+          userEmail={comboCheckoutEmail || undefined}
+          whatsappMessageBuilder={buildComboWhatsAppMessage}
+          copyMessageBuilder={buildComboCopyMessage}
+        />
+      )}
     </>
   );
 }

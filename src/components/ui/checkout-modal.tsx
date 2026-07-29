@@ -19,6 +19,10 @@ interface CheckoutModalProps {
   /** Pre-filled from Google profile — optional */
   userName?: string;
   userEmail?: string;
+  /** Override the default WhatsApp message — used for combo purchases */
+  whatsappMessageBuilder?: () => string;
+  /** Override the default copy message — used for combo purchases */
+  copyMessageBuilder?: () => string;
 }
 
 // ---------------------------------------------------------------------------
@@ -32,6 +36,8 @@ export function CheckoutModal({
   totalPrice,
   userName,
   userEmail,
+  whatsappMessageBuilder,
+  copyMessageBuilder,
 }: CheckoutModalProps) {
   const [utrNumber, setUtrNumber] = useState("");
   const [copied, setCopied] = useState(false);
@@ -135,7 +141,8 @@ export function CheckoutModal({
   };
 
   const handleCopyOrder = async () => {
-    await copyText(buildCopyMessage(), () => {
+    const text = copyMessageBuilder ? copyMessageBuilder() : buildCopyMessage();
+    await copyText(text, () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -150,7 +157,7 @@ export function CheckoutModal({
 
   const handleWhatsApp = () => {
     if (!isValidUtr) return;
-    const message = buildOrderMessage();
+    const message = whatsappMessageBuilder ? whatsappMessageBuilder() : buildOrderMessage();
     window.open(
       `https://wa.me/917752805529?text=${encodeURIComponent(message)}`,
       "_blank"
