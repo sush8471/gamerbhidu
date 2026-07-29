@@ -105,47 +105,51 @@ export default function GameFormModal({
             {/* Image Upload */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground">Game Poster Cover <span className="text-red-500">*</span></label>
-              <div
-                onDragEnter={onDrag} onDragOver={onDrag} onDragLeave={onDrag} onDrop={onDrop}
-                onClick={() => document.getElementById("file-upload")?.click()}
-                className={`border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 transition-all cursor-pointer relative overflow-hidden aspect-[3/4] max-h-48 ${
-                  dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
-                }`}
-              >
-                <input type="file" id="file-upload" accept="image/*" onChange={onFileInput} className="hidden" />
-                {uploadingImage ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                    <p className="text-xs text-muted-foreground">Uploading...</p>
-                  </div>
-                ) : formData.image_url ? (
-                  <>
-                    <div className="absolute inset-0 z-0">
-                      <Image src={formData.image_url} alt="" fill className="object-cover" />
+              <div className="flex gap-3">
+                <div
+                  onDragEnter={onDrag} onDragOver={onDrag} onDragLeave={onDrag} onDrop={onDrop}
+                  onClick={() => document.getElementById("file-upload")?.click()}
+                  className={`border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 transition-all cursor-pointer relative overflow-hidden aspect-[3/4] w-36 flex-shrink-0 ${
+                    dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <input type="file" id="file-upload" accept="image/*" onChange={onFileInput} className="hidden" />
+                  {uploadingImage ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                      <p className="text-xs text-muted-foreground">Uploading...</p>
                     </div>
-                    <div className="absolute inset-0 z-10 bg-black/40 flex flex-col items-center justify-center gap-1 opacity-0 hover:opacity-100 transition-opacity">
-                      <FileImage className="w-6 h-6 text-primary" />
-                      <p className="text-xs text-white font-semibold">Drop or click to change</p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-6 h-6 text-muted-foreground" />
-                    <div className="text-center">
-                      <p className="text-xs text-foreground font-semibold">Drag & drop poster image</p>
-                      <p className="text-[10px] text-muted-foreground">PNG, JPG, WebP</p>
-                    </div>
-                  </>
-                )}
+                  ) : formData.image_url ? (
+                    <>
+                      <div className="absolute inset-0 z-0">
+                        <Image src={formData.image_url} alt="" fill className="object-cover" />
+                      </div>
+                      <div className="absolute inset-0 z-10 bg-black/40 flex flex-col items-center justify-center gap-1 opacity-0 hover:opacity-100 transition-opacity">
+                        <FileImage className="w-6 h-6 text-primary" />
+                        <p className="text-xs text-white font-semibold">Drop or click to change</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-6 h-6 text-muted-foreground" />
+                      <div className="text-center px-2">
+                        <p className="text-xs text-foreground font-semibold">Drag & drop</p>
+                        <p className="text-[10px] text-muted-foreground">PNG, JPG, WebP</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="flex-1 flex items-center">
+                  <input
+                    type="text"
+                    required
+                    value={formData.image_url}
+                    onChange={set("image_url")}
+                    placeholder="Paste image URL"
+                    className="w-full bg-background border border-border focus:border-primary rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none placeholder:text-muted-foreground/50 font-mono"
+                  />
+                </div>
               </div>
-              <input
-                type="text"
-                required
-                value={formData.image_url}
-                onChange={set("image_url")}
-                placeholder="Or paste image URL"
-                className="w-full bg-background border border-border focus:border-primary rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none placeholder:text-muted-foreground/50 font-mono"
-              />
             </div>
 
             {/* Title + Slug */}
