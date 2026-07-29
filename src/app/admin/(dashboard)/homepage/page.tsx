@@ -700,7 +700,7 @@ export default function AdminHomepageSectionsPage() {
                     <thead>
                       <tr className="border-b border-[#262626] bg-black/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
                         <th className="py-4 px-6 w-12"></th>
-                        <th className="py-4 px-6 w-16">Image</th>
+                        <th className="py-4 px-6 w-20">Image</th>
                         <th className="py-4 px-6">Title</th>
                         <th className="py-4 px-6 w-28">Price</th>
                         <th className="py-4 px-6 w-24">Discount</th>
@@ -726,8 +726,14 @@ export default function AdminHomepageSectionsPage() {
                               </div>
                             </td>
                             <td className="py-3 px-6">
-                              <div className="relative w-12 h-8 bg-black/20 rounded border border-[#262626] overflow-hidden">
-                                <Image src={mapping.image_url} alt={mapping.title} fill sizes="48px" className="object-cover" />
+                              <div className="relative w-11 h-14 bg-black/30 rounded-md border border-[#262626] overflow-hidden shadow-sm">
+                                <Image
+                                  src={mapping.image_url}
+                                  alt={mapping.title}
+                                  fill
+                                  sizes="44px"
+                                  className="object-cover object-center"
+                                />
                               </div>
                             </td>
                             <td className="py-3 px-6">
@@ -800,8 +806,14 @@ export default function AdminHomepageSectionsPage() {
                 <div className="md:hidden divide-y divide-[#262626]/60">
                   {paginatedMappings.map((mapping) => (
                     <div key={mapping.id} className="flex items-center gap-3 p-3">
-                      <div className="relative w-14 h-10 flex-shrink-0 bg-black/20 rounded border border-[#262626] overflow-hidden">
-                        <Image src={mapping.image_url} alt={mapping.title} fill sizes="56px" className="object-cover" />
+                      <div className="relative w-12 h-16 flex-shrink-0 bg-black/30 rounded-md border border-[#262626] overflow-hidden shadow-sm">
+                        <Image
+                          src={mapping.image_url}
+                          alt={mapping.title}
+                          fill
+                          sizes="48px"
+                          className="object-cover object-center"
+                        />
                       </div>
                       <div className="flex-1 min-w-0 space-y-1">
                         <p className="text-white font-bold text-xs leading-tight truncate">{mapping.title}</p>
