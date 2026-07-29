@@ -20,7 +20,6 @@ import GamerBhiduNavbar from "@/components/sections/gamerbhidu-navbar";
 import { useCart } from "@/context/CartContext";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { getGames } from "@/lib/local-db";
-import type { SortField, SortDir } from "@/lib/local-db";
 import { Suspense } from "react";
 import GamesPageSkeleton from "@/components/ui/games-page-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,35 +31,10 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ITEMS_PER_PAGE = 24;
-
-type SortOption = {
-  label: string;
-  field: SortField;
-  dir: SortDir;
-};
-
-const SORT_OPTIONS: SortOption[] = [
-  { label: "Newest First", field: "created_at", dir: "desc" },
-  { label: "Most Popular", field: "discount_percentage", dir: "desc" },
-  { label: "Name: A to Z", field: "title", dir: "asc" },
-  { label: "Name: Z to A", field: "title", dir: "desc" },
-  { label: "Price: Low to High", field: "selling_price", dir: "asc" },
-  { label: "Price: High to Low", field: "selling_price", dir: "desc" },
-  { label: "Highest Discount", field: "discount_percentage", dir: "desc" },
-];
 
 const PRICE_RANGES = [
   { value: "all", label: "All Prices", min: undefined, max: undefined },
@@ -310,16 +284,8 @@ function BrowsePageInner() {
   const [priceRange, setPriceRange] = useState<string>(() => searchParams.get("price") || "all");
   const [onSaleOnly, setOnSaleOnly] = useState<boolean>(() => searchParams.get("sale") === "1");
   const [searchQuery, setSearchQuery] = useState<string>(() => searchParams.get("q") || searchParams.get("search") || "");
-  const [sortKey, setSortKey] = useState<string>(() => searchParams.get("sort") || "name:-a-to-z");
   const [currentPage, setCurrentPage] = useState<number>(() =>
     parseInt(searchParams.get("page") || "1", 10)
-  );
-
-  const currentSort = useMemo(
-    () =>
-      SORT_OPTIONS.find((s) => s.label.toLowerCase().replace(/\s/g, "-") === sortKey) ||
-      SORT_OPTIONS[0],
-    [sortKey]
   );
 
   const selectedPriceRange = useMemo(
@@ -336,8 +302,8 @@ function BrowsePageInner() {
       const params: Parameters<typeof getGames>[0] = {
         limit: ITEMS_PER_PAGE,
         offset: (currentPage - 1) * ITEMS_PER_PAGE,
-        sortBy: currentSort.field,
-        sortDir: currentSort.dir,
+        sortBy: "title",
+        sortDir: "asc",
       };
       if (selectedGenres.length > 0) params.genre = selectedGenres;
       if (selectedPriceRange.min !== undefined) params.minPrice = selectedPriceRange.min;
@@ -364,7 +330,7 @@ function BrowsePageInner() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, currentSort, selectedGenres, selectedPriceRange, onSaleOnly, searchQuery]);
+  }, [currentPage, selectedGenres, selectedPriceRange, onSaleOnly, searchQuery]);
 
   useEffect(() => {
     fetchGames();
@@ -444,14 +410,6 @@ function BrowsePageInner() {
       params.delete("search"); // remove old fallback key
     }
 
-    if (updates.sort !== undefined) {
-      if (updates.sort !== "name:-a-to-z") {
-        params.set("sort", updates.sort);
-      } else {
-        params.delete("sort");
-      }
-    }
-
     const qs = params.toString();
     router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
   }, [searchParams, pathname, router]);
@@ -472,9 +430,6 @@ function BrowsePageInner() {
     if (urlQ !== searchQuery) {
       setSearchQuery(urlQ);
     }
-
-    const sort = searchParams.get("sort") || "name:-a-to-z";
-    setSortKey(sort);
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     setCurrentPage(page);
@@ -595,40 +550,6 @@ function BrowsePageInner() {
                 {totalCount.toLocaleString()} games
               </span>
             )}
-
-            {/* Sort selector (Custom Dropdown Menu for Premium Styling) */}
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground text-sm hidden md:block">Sort:</span>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-1.5 px-3 py-2 bg-card border border-white/5 rounded-lg text-white text-sm hover:border-white/10 hover:text-white transition-all cursor-pointer">
-                    <span className="text-muted-foreground text-xs sm:hidden">Sort:</span>
-                    <span className="font-semibold">{currentSort.label}</span>
-                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-card border border-border text-white rounded-lg shadow-2xl p-1 w-48 z-50">
-                  <DropdownMenuLabel className="text-xs text-muted-foreground px-2 py-1.5 uppercase font-black tracking-wider">
-                    Sort By
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-white/5" />
-                  <DropdownMenuRadioGroup value={sortKey} onValueChange={(val) => updateFilters({ sort: val })}>
-                    {SORT_OPTIONS.map((opt) => {
-                      const key = opt.label.toLowerCase().replace(/\s/g, "-");
-                      return (
-                        <DropdownMenuRadioItem
-                          key={key}
-                          value={key}
-                          className="flex items-center justify-between text-xs px-2 py-1.5 hover:bg-white/5 cursor-pointer rounded transition-colors text-muted-foreground data-[state=checked]:text-white data-[state=checked]:font-bold"
-                        >
-                          {opt.label}
-                        </DropdownMenuRadioItem>
-                      );
-                    })}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
           </div>
 
           {/* ── Collapsible Filter Panel (Desktop only) ── */}
@@ -859,7 +780,7 @@ function BrowsePageInner() {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[360px] bg-background border-l border-border p-5 text-white overflow-y-auto flex flex-col h-full z-50">
                 <SheetHeader className="pb-3 border-b border-border flex flex-row items-center justify-between">
-                  <SheetTitle className="text-base font-black text-white">Filter & Sort</SheetTitle>
+                  <SheetTitle className="text-base font-black text-white">Filters</SheetTitle>
                   {activeFilterCount > 0 && (
                     <button
                       onClick={clearAllFilters}
@@ -870,44 +791,9 @@ function BrowsePageInner() {
                   )}
                 </SheetHeader>
                 
-                {/* Mobile Drawer Filter & Sort Sections */}
+                {/* Mobile Drawer Filter Sections */}
                 <div className="flex-1 space-y-5 py-4 overflow-y-auto pr-1 scrollbar-hide">
                   
-                  {/* Sort Options Integrated inside Drawer */}
-                  <div>
-                    <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider block mb-2">
-                      Sort By
-                    </span>
-                    <div className="space-y-1 bg-card border border-border rounded-xl p-3">
-                      {SORT_OPTIONS.map((opt) => {
-                        const key = opt.label.toLowerCase().replace(/\s/g, "-");
-                        const isSelected = sortKey === key;
-                        return (
-                          <label
-                            key={key}
-                            onClick={() => updateFilters({ sort: key })}
-                            className="flex items-center justify-between py-2.5 cursor-pointer group last:border-0 border-b border-white/5"
-                          >
-                            <span
-                              className={`text-xs transition-colors ${
-                                isSelected ? "text-white font-bold" : "text-muted-foreground group-hover:text-white"
-                              }`}
-                            >
-                              {opt.label}
-                             </span>
-                            <div
-                              className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 transition-all ${
-                                isSelected ? "border-white/40" : "border-white/10"
-                              }`}
-                            >
-                              {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
-                            </div>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-
                   {/* Genre */}
                   <div className="border-t border-border pt-4">
                     <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider block mb-2">
