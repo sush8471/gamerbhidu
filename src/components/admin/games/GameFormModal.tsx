@@ -180,49 +180,47 @@ export default function GameFormModal({
               </div>
             </div>
 
-            {/* Genre */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-muted-foreground">Genre *</label>
-              <select
-                value={formData.genre}
-                onChange={(e) => onFormDataChange((prev) => ({ ...prev, genre: e.target.value }))}
-                className="w-full bg-background border border-border focus:border-primary rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none cursor-pointer"
-              >
-                <option value="">Select genre</option>
-                <option value="Action">Action</option>
-                <option value="Adventure">Adventure</option>
-                <option value="RPG">RPG</option>
-                <option value="Strategy">Strategy</option>
-                <option value="Simulation">Simulation</option>
-                <option value="Sports">Sports</option>
-                <option value="Racing">Racing</option>
-                <option value="Fighting">Fighting</option>
-                <option value="Shooter">Shooter</option>
-                <option value="Puzzle">Puzzle</option>
-                <option value="Platformer">Platformer</option>
-                <option value="Stealth">Stealth</option>
-                <option value="Survival">Survival</option>
-                <option value="Horror">Horror</option>
-                <option value="Open World">Open World</option>
-                <option value="MMO">MMO</option>
-                <option value="Battle Royale">Battle Royale</option>
-                <option value="Roguelike">Roguelike</option>
-                <option value="Metroidvania">Metroidvania</option>
-                <option value="Soulslike">Soulslike</option>
-                <option value="Sandbox">Sandbox</option>
-                <option value="Visual Novel">Visual Novel</option>
-                <option value="Tower Defense">Tower Defense</option>
-                <option value="Turn-Based">Turn-Based</option>
-                <option value="Card Game">Card Game</option>
-                <option value="Rhythm">Rhythm</option>
-                <option value="Party">Party</option>
-                <option value="Educational">Educational</option>
-              </select>
-            </div>
-
-            {/* Publishing */}
-            <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center gap-4">
+            {/* Genre + Publishing */}
+            <div className="flex flex-wrap items-end gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-muted-foreground">Genre *</label>
+                <select
+                  value={formData.genre}
+                  onChange={(e) => onFormDataChange((prev) => ({ ...prev, genre: e.target.value }))}
+                  className="w-44 bg-background border border-border focus:border-primary rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none cursor-pointer"
+                >
+                  <option value="">Select genre</option>
+                  <option value="Action">Action</option>
+                  <option value="Adventure">Adventure</option>
+                  <option value="RPG">RPG</option>
+                  <option value="Strategy">Strategy</option>
+                  <option value="Simulation">Simulation</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Racing">Racing</option>
+                  <option value="Fighting">Fighting</option>
+                  <option value="Shooter">Shooter</option>
+                  <option value="Puzzle">Puzzle</option>
+                  <option value="Platformer">Platformer</option>
+                  <option value="Stealth">Stealth</option>
+                  <option value="Survival">Survival</option>
+                  <option value="Horror">Horror</option>
+                  <option value="Open World">Open World</option>
+                  <option value="MMO">MMO</option>
+                  <option value="Battle Royale">Battle Royale</option>
+                  <option value="Roguelike">Roguelike</option>
+                  <option value="Metroidvania">Metroidvania</option>
+                  <option value="Soulslike">Soulslike</option>
+                  <option value="Sandbox">Sandbox</option>
+                  <option value="Visual Novel">Visual Novel</option>
+                  <option value="Tower Defense">Tower Defense</option>
+                  <option value="Turn-Based">Turn-Based</option>
+                  <option value="Card Game">Card Game</option>
+                  <option value="Rhythm">Rhythm</option>
+                  <option value="Party">Party</option>
+                  <option value="Educational">Educational</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-4 pb-0.5">
                 <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
                   <input type="radio" name="release_status" value="released" checked={formData.release_status === "released"} onChange={() => onFormDataChange((prev) => ({ ...prev, release_status: "released" }))} className="accent-primary" />
                   Released
@@ -232,10 +230,12 @@ export default function GameFormModal({
                   Upcoming
                 </label>
               </div>
-              <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
-                <input type="checkbox" checked={formData.visible} onChange={(e) => onFormDataChange((prev) => ({ ...prev, visible: e.target.checked }))} className="w-4 h-4 rounded accent-primary" />
-                Visible
-              </label>
+              <div className="ml-auto pb-0.5">
+                <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
+                  <input type="checkbox" checked={formData.visible} onChange={(e) => onFormDataChange((prev) => ({ ...prev, visible: e.target.checked }))} className="w-4 h-4 rounded accent-primary" />
+                  Visible
+                </label>
+              </div>
             </div>
           </div>
 
