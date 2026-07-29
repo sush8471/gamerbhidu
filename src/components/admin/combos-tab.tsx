@@ -453,7 +453,7 @@ export default function CombosTab() {
                     {openMenuId === combo.id && (
                       <>
                         <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                        <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden">
+                        <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
                           <button
                             onClick={() => { openEditModal(combo); setOpenMenuId(null); }}
                             className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
@@ -532,7 +532,7 @@ export default function CombosTab() {
                           {openMenuId === combo.id && (
                             <>
                               <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                              <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden">
+                              <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
                                 <button
                                   onClick={() => { openEditModal(combo); setOpenMenuId(null); }}
                                   className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
@@ -583,8 +583,8 @@ export default function CombosTab() {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm overflow-hidden">
-          <div className="w-full h-full sm:h-auto sm:max-w-lg bg-card border-0 sm:border border-border sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col sm:max-h-[90vh] animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm overflow-hidden animate-fade-in">
+          <div className="w-full h-full sm:h-auto sm:max-w-lg bg-card border-0 sm:border border-border sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col sm:max-h-[90vh] animate-scale-in">
             <div className="px-6 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
               <h3 className="text-lg font-bold text-foreground">{modalMode === "add" ? "Add Combo Deal" : "Edit Combo Deal"}</h3>
               <button onClick={() => setModalOpen(false)} className="p-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"><X className="w-5 h-5" /></button>
@@ -751,8 +751,8 @@ export default function CombosTab() {
       )}
 
       {deleteOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-card border border-red-500/20 rounded-2xl shadow-2xl p-6 space-y-6 animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-md bg-card border border-red-500/20 rounded-2xl shadow-2xl p-6 space-y-6 animate-scale-in">
             <div className="flex items-start gap-4">
               <div className="p-3 bg-red-500/10 text-red-400 rounded-lg"><AlertTriangle className="w-6 h-6" /></div>
               <div className="space-y-1">

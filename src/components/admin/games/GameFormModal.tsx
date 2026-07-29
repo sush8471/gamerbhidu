@@ -58,8 +58,8 @@ export default function GameFormModal({
     onFormDataChange((prev) => ({ ...prev, [field]: e.target.value }));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm overflow-hidden">
-      <div className="w-full h-full sm:h-auto sm:max-w-lg bg-card border-0 sm:border border-border sm:rounded-xl shadow-2xl overflow-hidden flex flex-col sm:max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm overflow-hidden animate-fade-in">
+      <div className="w-full h-full sm:h-auto sm:max-w-lg bg-card border-0 sm:border border-border sm:rounded-xl shadow-2xl overflow-hidden flex flex-col sm:max-h-[90vh] animate-scale-in">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
           <h3 className="text-base font-bold text-foreground">
