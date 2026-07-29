@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import {
   Layers, Search, Plus, Edit2, Trash2, Eye, EyeOff, X,
-  Loader2, ChevronLeft, ChevronRight, AlertTriangle, Upload, FileImage,
+  Loader2, ChevronLeft, ChevronRight, AlertTriangle, Upload, FileImage, MoreVertical,
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -48,6 +48,7 @@ export default function CombosTab() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [pendingToggleId, setPendingToggleId] = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -428,12 +429,43 @@ export default function CombosTab() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <button onClick={() => handleToggleVisible(combo)} className={`p-2 rounded transition-all cursor-pointer ${pendingToggleId === combo.id ? "text-amber-400 bg-amber-500/10" : combo.visible ? "text-emerald-400" : "text-muted-foreground"}`}>
-                      {pendingToggleId === combo.id ? <AlertTriangle className="w-4 h-4" /> : combo.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  <div className="flex items-center flex-shrink-0 relative">
+                    <button
+                      onClick={() => setOpenMenuId(openMenuId === combo.id ? null : combo.id)}
+                      className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+                      title="More actions"
+                    >
+                      <MoreVertical className="w-5 h-5" />
                     </button>
-                    <button onClick={() => openEditModal(combo)} className="p-2 text-muted-foreground hover:text-primary rounded transition-all cursor-pointer"><Edit2 className="w-4 h-4" /></button>
-                    <button onClick={() => { setComboToDelete(combo); setDeleteError(null); setDeleteOpen(true); }} className="p-2 text-muted-foreground hover:text-red-400 rounded transition-all cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                    {openMenuId === combo.id && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                        <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden">
+                          <button
+                            onClick={() => { openEditModal(combo); setOpenMenuId(null); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                          >
+                            <Edit2 className="w-4 h-4 text-muted-foreground" />
+                            Edit Combo
+                          </button>
+                          <button
+                            onClick={() => { handleToggleVisible(combo); setOpenMenuId(null); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                          >
+                            {combo.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
+                            {combo.visible ? "Hide from Store" : "Show on Store"}
+                          </button>
+                          <div className="border-t border-[#262626] my-1" />
+                          <button
+                            onClick={() => { setComboToDelete(combo); setDeleteError(null); setDeleteOpen(true); setOpenMenuId(null); }}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
@@ -448,7 +480,6 @@ export default function CombosTab() {
                     <th className="py-4 px-6">Title</th>
                     <th className="py-4 px-6 w-32">Price</th>
                     <th className="py-4 px-6 w-24">Discount</th>
-                    <th className="py-4 px-6 w-28 text-center">Visibility</th>
                     <th className="py-4 px-6 w-28 text-center">Actions</th>
                   </tr>
                 </thead>
@@ -476,28 +507,44 @@ export default function CombosTab() {
                           <span className="text-xs font-black bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded border border-blue-500/20">{combo.discount_details}</span>
                         ) : <span className="text-xs text-muted-foreground">-</span>}
                       </td>
-                      <td className="py-3 px-6 text-center">
-                        <button
-                          onClick={() => handleToggleVisible(combo)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer min-h-[36px] ${
-                            pendingToggleId === combo.id
-                              ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                              : combo.visible ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-gray-500/10 text-muted-foreground border border-gray-500/20 hover:text-foreground"
-                          }`}
-                        >
-                          {pendingToggleId === combo.id ? (
-                            <><AlertTriangle className="w-3.5 h-3.5" /><span>Confirm?</span></>
-                          ) : combo.visible ? (
-                            <><Eye className="w-3.5 h-3.5" /><span>Visible</span></>
-                          ) : (
-                            <><EyeOff className="w-3.5 h-3.5" /><span>Hidden</span></>
-                          )}
-                        </button>
-                      </td>
                       <td className="py-3 px-6">
-                        <div className="flex items-center justify-center gap-2.5">
-                          <button onClick={() => openEditModal(combo)} className="p-2.5 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer" title="Edit"><Edit2 className="w-4 h-4" /></button>
-                          <button onClick={() => { setComboToDelete(combo); setDeleteError(null); setDeleteOpen(true); }} className="p-2.5 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                        <div className="flex items-center justify-center relative">
+                          <button
+                            onClick={() => setOpenMenuId(openMenuId === combo.id ? null : combo.id)}
+                            className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+                            title="More actions"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                          {openMenuId === combo.id && (
+                            <>
+                              <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                              <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden">
+                                <button
+                                  onClick={() => { openEditModal(combo); setOpenMenuId(null); }}
+                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                                >
+                                  <Edit2 className="w-4 h-4 text-muted-foreground" />
+                                  Edit Combo
+                                </button>
+                                <button
+                                  onClick={() => { handleToggleVisible(combo); setOpenMenuId(null); }}
+                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                                >
+                                  {combo.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
+                                  {combo.visible ? "Hide from Store" : "Show on Store"}
+                                </button>
+                                <div className="border-t border-[#262626] my-1" />
+                                <button
+                                  onClick={() => { setComboToDelete(combo); setDeleteError(null); setDeleteOpen(true); setOpenMenuId(null); }}
+                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Delete
+                                </button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

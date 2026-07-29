@@ -707,7 +707,6 @@ export default function AdminHomepageSectionsPage() {
                         <th className="py-4 px-6">Title</th>
                         <th className="py-4 px-6 w-28">Price</th>
                         <th className="py-4 px-6 w-24">Discount</th>
-                        <th className="py-4 px-6 w-28 text-center">Visibility</th>
                         <th className="py-4 px-6 w-28 text-center">Actions</th>
                       </tr>
                     </thead>
@@ -755,28 +754,6 @@ export default function AdminHomepageSectionsPage() {
                                   -{mapping.discount_percentage}%
                                 </span>
                               ) : <span className="text-xs text-muted-foreground">—</span>}
-                            </td>
-                            <td className="py-3 px-6 text-center">
-                              <button
-                                type="button"
-                                onClick={() => handleToggleVisible(mapping)}
-                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer min-h-[36px] ${
-                                  pendingToggleId === mapping.game_id
-                                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                                    : mapping.visible
-                                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                      : "bg-gray-500/10 text-muted-foreground border border-gray-500/20 hover:text-white"
-                                }`}
-                                title={pendingToggleId === mapping.game_id ? "Click again to confirm" : "Toggle visibility"}
-                              >
-                                {pendingToggleId === mapping.game_id ? (
-                                  <><AlertTriangle className="w-3.5 h-3.5" /><span>Confirm?</span></>
-                                ) : mapping.visible ? (
-                                  <><Eye className="w-3.5 h-3.5" /><span>Visible</span></>
-                                ) : (
-                                  <><EyeOff className="w-3.5 h-3.5" /><span>Hidden</span></>
-                                )}
-                              </button>
                             </td>
                             <td className="py-3 px-6">
                               <div className="flex items-center justify-center relative">
