@@ -239,15 +239,6 @@ export default function AdminDashboardLayout({
             >
               <Menu className="w-5 h-5" />
             </button>
-            {/* Collapse toggle — desktop header (when collapsed, easy expand) */}
-            <button
-              onClick={toggleCollapsed}
-              className="hidden lg:flex flex-shrink-0 p-2 rounded-lg text-muted-foreground hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-            </button>
             <h2 className="text-sm lg:text-lg font-bold text-white truncate">
               {currentPageLabel}
             </h2>
