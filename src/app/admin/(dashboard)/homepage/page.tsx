@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { 
   Home, Plus, GripVertical, Loader2, AlertTriangle, CheckCircle, Layers,
-  Trash2, Eye, EyeOff, X, Edit2, ExternalLink, Tag
+  Trash2, Eye, EyeOff, X, Edit2, ExternalLink, Tag, Search, ChevronLeft, ChevronRight
 } from "lucide-react";
 import Image from "next/image";
 import CombosTab from "@/components/admin/combos-tab";
@@ -53,6 +53,11 @@ export default function AdminHomepageSectionsPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [gameToDelete, setGameToDelete] = useState<GameMapping | null>(null);
+
+  // Search & pagination state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Selector form state
   const [selectedGameId, setSelectedGameId] = useState("");
@@ -166,6 +171,21 @@ export default function AdminHomepageSectionsPage() {
       (game) => !mappings.some((m) => m.game_id === game.id)
     );
   }, [allVisibleGames, mappings]);
+
+  // Filtered and paginated mappings
+  const filteredMappings = useMemo(() => {
+    if (!searchQuery.trim()) return mappings;
+    const q = searchQuery.toLowerCase();
+    return mappings.filter((m) => m.title.toLowerCase().includes(q) || m.slug.toLowerCase().includes(q));
+  }, [mappings, searchQuery]);
+
+  const totalPages = Math.ceil(filteredMappings.length / itemsPerPage) || 1;
+  const paginatedMappings = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredMappings.slice(start, start + itemsPerPage);
+  }, [filteredMappings, currentPage]);
+
+  useEffect(() => { setCurrentPage(1); }, [searchQuery]);
 
   // Drag-and-drop reorder
   const dragItemRef = useRef<number | null>(null);
@@ -328,114 +348,186 @@ export default function AdminHomepageSectionsPage() {
         <CombosTab />
       ) : (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Mapping list table */}
+        {/* Mapping list — table layout */}
         <div className="lg:col-span-2 bg-[#111111] border border-[#262626] rounded-xl overflow-hidden shadow-xl">
-          <div className="px-6 py-4 border-b border-[#262626] flex items-center justify-between">
-            <h3 className="font-bold text-white">Active Section Listings</h3>
-            <span className="text-xs font-bold text-muted-foreground bg-[#262626] px-2.5 py-1 rounded-full">
-              {mappings.length} {mappings.length === 1 ? "game" : "games"}
-            </span>
+          {/* Search bar */}
+          <div className="p-3 border-b border-[#262626]">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search games in this section..."
+                className="w-full bg-[#050505]/50 border border-[#262626] focus:border-primary rounded-lg pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-white rounded transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
           {mappingsLoading ? (
-            <div className="h-64 flex flex-col items-center justify-center gap-2">
+            <div className="h-72 flex flex-col items-center justify-center gap-2">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-xs text-muted-foreground font-medium">Updating section games...</p>
             </div>
           ) : mappings.length === 0 ? (
-            <div className="h-64 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+            <div className="h-72 flex flex-col items-center justify-center gap-3 text-muted-foreground">
               <Home className="w-10 h-10 stroke-[1.25]" />
               <div className="text-center space-y-1">
                 <p className="text-xs font-semibold">No games assigned to this section</p>
                 <p className="text-[10px] text-muted-foreground">Use the panel on the right to add games</p>
               </div>
             </div>
+          ) : filteredMappings.length === 0 ? (
+            <div className="h-72 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+              <Search className="w-10 h-10 stroke-[1.25]" />
+              <div className="text-center space-y-1">
+                <p className="text-xs font-semibold">No games match your search</p>
+                <p className="text-[10px] text-muted-foreground">Try a different search term</p>
+              </div>
+            </div>
           ) : (
-            <div className="divide-y divide-[#262626]/60">
-              {mappings.map((mapping, i) => (
-                <div
-                  key={mapping.id}
-                  draggable
-                  onDragStart={() => handleDragStart(i)}
-                  onDragOver={(e) => handleDragOver(e, i)}
-                  onDragEnd={handleDragEnd}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-4 hover:bg-white/[0.02] transition-colors gap-3 group cursor-grab active:cursor-grabbing"
-                >
-                  {/* Info */}
-                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                    {/* Drag Handle */}
-                    <div className="flex-shrink-0 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors">
-                      <GripVertical className="w-4 h-4" />
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#262626] bg-black/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      <th className="py-3 px-4 w-14"></th>
+                      <th className="py-3 px-4">Image</th>
+                      <th className="py-3 px-4">Title</th>
+                      <th className="py-3 px-4 w-24">Price</th>
+                      <th className="py-3 px-4 w-20">Discount</th>
+                      <th className="py-3 px-4 w-24 text-center">Visibility</th>
+                      <th className="py-3 px-4 w-24 text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#262626]/60 text-sm">
+                    {paginatedMappings.map((mapping, i) => (
+                      <tr key={mapping.id} className="hover:bg-white/[0.02] transition-colors group">
+                        <td className="py-3 px-4">
+                          <div className="text-muted-foreground/40 group-hover:text-muted-foreground transition-colors cursor-grab active:cursor-grabbing">
+                            <GripVertical className="w-4 h-4" />
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="relative w-10 h-12 bg-black/20 rounded border border-[#262626] overflow-hidden">
+                            <Image src={mapping.image_url} alt={mapping.title} fill sizes="40px" className="object-cover" />
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <p className="font-bold text-white text-xs leading-snug truncate max-w-[180px]" title={mapping.title}>{mapping.title}</p>
+                          <p className="text-[10px] text-muted-foreground font-mono truncate">/{mapping.slug}</p>
+                        </td>
+                        <td className="py-3 px-4">
+                          <p className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</p>
+                          {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
+                            <p className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</p>
+                          )}
+                        </td>
+                        <td className="py-3 px-4">
+                          {mapping.discount_percentage != null && mapping.discount_percentage > 0 ? (
+                            <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
+                              -{mapping.discount_percentage}%
+                            </span>
+                          ) : <span className="text-xs text-muted-foreground">—</span>}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${
+                            mapping.visible
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : "bg-gray-500/10 text-muted-foreground border-gray-500/20"
+                          }`}>
+                            {mapping.visible ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
+                            {mapping.visible ? "Live" : "Hidden"}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center justify-center gap-1">
+                            <a
+                              href={`/games/${mapping.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer"
+                              title="View on store"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                            <button
+                              disabled={actionLoading}
+                              onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
+                              className="p-2 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
+                              title="Remove from section"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <div className="md:hidden divide-y divide-[#262626]/60">
+                {paginatedMappings.map((mapping) => (
+                  <div key={mapping.id} className="flex items-center gap-3 p-3">
+                    <div className="relative w-12 h-14 flex-shrink-0 bg-black/20 rounded border border-[#262626] overflow-hidden">
+                      <Image src={mapping.image_url} alt={mapping.title} fill sizes="48px" className="object-cover" />
                     </div>
-
-                    {/* Image */}
-                    <div className="relative w-8 h-10 bg-black/20 rounded border border-[#262626] overflow-hidden flex-shrink-0">
-                      <Image
-                        src={mapping.image_url}
-                        alt={mapping.title}
-                        fill
-                        sizes="32px"
-                        className="object-cover"
-                      />
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <p className="text-white font-bold text-xs leading-tight truncate">{mapping.title}</p>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</span>
+                        {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
+                          <span className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</span>
+                        )}
+                        {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
+                          <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">-{mapping.discount_percentage}%</span>
+                        )}
+                        <span className={`inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                          mapping.visible ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-gray-500/10 text-muted-foreground border-gray-500/20"
+                        }`}>
+                          {mapping.visible ? <Eye className="w-2 h-2" /> : <EyeOff className="w-2 h-2" />}
+                          {mapping.visible ? "Live" : "Hidden"}
+                        </span>
+                      </div>
                     </div>
-
-                    {/* Title + Slug */}
-                    <div className="min-w-0">
-                      <p className="font-bold text-white text-xs lg:text-sm leading-snug truncate" title={mapping.title}>{mapping.title}</p>
-                      <p className="text-[10px] text-muted-foreground font-mono truncate">/{mapping.slug}</p>
-                    </div>
-                  </div>
-
-                  {/* Pricing */}
-                  <div className="flex items-center gap-3 flex-shrink-0 ml-9 sm:ml-0">
-                    <div className="text-right">
-                      <p className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</p>
-                      {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
-                        <p className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</p>
-                      )}
-                    </div>
-
-                    {/* Discount badge */}
-                    {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
-                      <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
-                        -{mapping.discount_percentage}%
-                      </span>
-                    )}
-
-                    {/* Visibility */}
-                    <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                      mapping.visible
-                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                        : "bg-gray-500/10 text-muted-foreground border-gray-500/20"
-                    }`}>
-                      {mapping.visible ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
-                      {mapping.visible ? "Live" : "Hidden"}
-                    </span>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-1">
-                      <a
-                        href={`/games/${mapping.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer"
-                        title="View on store"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <button
                         disabled={actionLoading}
                         onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
-                        className="p-2 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
-                        title="Remove from section"
+                        className="p-2.5 text-muted-foreground hover:text-red-400 rounded transition-all cursor-pointer"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {filteredMappings.length > itemsPerPage && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#262626] px-4 py-3 bg-black/5">
+                  <p className="text-xs text-muted-foreground">
+                    Showing <span className="font-semibold text-white">{(currentPage - 1) * itemsPerPage + 1}</span>–<span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, filteredMappings.length)}</span> of <span className="font-semibold text-white">{filteredMappings.length}</span>
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
+                    <span className="text-xs text-muted-foreground min-w-[80px] text-center">Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}</span>
+                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
+                  </div>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
 
