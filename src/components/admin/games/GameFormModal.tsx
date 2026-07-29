@@ -108,7 +108,7 @@ export default function GameFormModal({
               <div
                 onDragEnter={onDrag} onDragOver={onDrag} onDragLeave={onDrag} onDrop={onDrop}
                 onClick={() => document.getElementById("file-upload")?.click()}
-                className={`border-2 border-dashed rounded-lg p-5 flex flex-col items-center justify-center gap-2 transition-all cursor-pointer relative overflow-hidden h-36 ${
+                className={`border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-2 transition-all cursor-pointer relative overflow-hidden aspect-[3/4] max-h-48 ${
                   dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                 }`}
               >
@@ -120,12 +120,12 @@ export default function GameFormModal({
                   </div>
                 ) : formData.image_url ? (
                   <>
-                    <div className="absolute inset-0 z-0 opacity-30 blur-sm scale-110">
+                    <div className="absolute inset-0 z-0">
                       <Image src={formData.image_url} alt="" fill className="object-cover" />
                     </div>
-                    <div className="relative z-10 flex flex-col items-center gap-1">
+                    <div className="absolute inset-0 z-10 bg-black/40 flex flex-col items-center justify-center gap-1 opacity-0 hover:opacity-100 transition-opacity">
                       <FileImage className="w-6 h-6 text-primary" />
-                      <p className="text-xs text-foreground font-semibold">Drop or click to change</p>
+                      <p className="text-xs text-white font-semibold">Drop or click to change</p>
                     </div>
                   </>
                 ) : (
