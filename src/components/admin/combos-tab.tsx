@@ -315,6 +315,19 @@ export default function CombosTab() {
     }
   };
 
+  const handleDirectToggleVisible = async (combo: DbCombo) => {
+    const updated = !combo.visible;
+    setCombos(prev => prev.map(c => c.id === combo.id ? { ...c, visible: updated } : c));
+    try {
+      const { error } = await supabase.from("combos").update({ visible: updated }).eq("id", combo.id);
+      if (error) throw error;
+      toast.success(updated ? "Combo is now visible on storefront" : "Combo is now hidden from storefront");
+    } catch {
+      setCombos(prev => prev.map(c => c.id === combo.id ? { ...c, visible: combo.visible } : c));
+      toast.error("Failed to update visibility");
+    }
+  };
+
   const handleDeleteSubmit = async () => {
     if (!comboToDelete) return;
     setDeleteLoading(true);
@@ -449,7 +462,7 @@ export default function CombosTab() {
                             Edit Combo
                           </button>
                           <button
-                            onClick={() => { handleToggleVisible(combo); setOpenMenuId(null); }}
+                            onClick={() => { handleDirectToggleVisible(combo); setOpenMenuId(null); }}
                             className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
                           >
                             {combo.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
@@ -528,7 +541,7 @@ export default function CombosTab() {
                                   Edit Combo
                                 </button>
                                 <button
-                                  onClick={() => { handleToggleVisible(combo); setOpenMenuId(null); }}
+                                  onClick={() => { handleDirectToggleVisible(combo); setOpenMenuId(null); }}
                                   className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
                                 >
                                   {combo.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}

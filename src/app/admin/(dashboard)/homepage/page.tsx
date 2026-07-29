@@ -330,7 +330,7 @@ export default function AdminHomepageSectionsPage() {
     }
   };
 
-  // Visibility toggle (2-tap confirm)
+  // Visibility toggle (2-tap confirm) — kept for potential future inline use
   const handleToggleVisible = async (mapping: GameMapping) => {
     if (pendingToggleId === mapping.game_id) {
       setPendingToggleId(null);
@@ -354,6 +354,27 @@ export default function AdminHomepageSectionsPage() {
     } else {
       setPendingToggleId(mapping.game_id);
       setTimeout(() => setPendingToggleId((prev) => (prev === mapping.game_id ? null : prev)), 3000);
+    }
+  };
+
+  // Direct visibility toggle — instant, used from 3-dot menu
+  const handleDirectToggleVisible = async (mapping: GameMapping) => {
+    const updated = !mapping.visible;
+    setMappings((prev) =>
+      prev.map((m) => (m.game_id === mapping.game_id ? { ...m, visible: updated } : m))
+    );
+    try {
+      const { error } = await supabase
+        .from("games")
+        .update({ visible: updated })
+        .eq("id", mapping.game_id);
+      if (error) throw error;
+      toast.success(updated ? "Game is now visible on storefront" : "Game is now hidden from storefront");
+    } catch {
+      setMappings((prev) =>
+        prev.map((m) => (m.game_id === mapping.game_id ? { ...m, visible: mapping.visible } : m))
+      );
+      toast.error("Failed to update visibility");
     }
   };
 
@@ -777,7 +798,7 @@ export default function AdminHomepageSectionsPage() {
                                         Edit Game
                                       </button>
                                       <button
-                                        onClick={() => { handleToggleVisible(mapping); setOpenMenuId(null); }}
+                                        onClick={() => { handleDirectToggleVisible(mapping); setOpenMenuId(null); }}
                                         className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
                                       >
                                         {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
@@ -843,7 +864,7 @@ export default function AdminHomepageSectionsPage() {
                             <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
                             <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden">
                               <button
-                                onClick={() => { handleToggleVisible(mapping); setOpenMenuId(null); }}
+                                onClick={() => { handleDirectToggleVisible(mapping); setOpenMenuId(null); }}
                                 className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
                               >
                                 {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
