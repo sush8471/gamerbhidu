@@ -3,7 +3,8 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { 
-  Home, Plus, GripVertical, Loader2, AlertTriangle, CheckCircle, Layers
+  Home, Plus, GripVertical, Loader2, AlertTriangle, CheckCircle, Layers,
+  Trash2, Eye, EyeOff, X, Edit2, ExternalLink, Tag
 } from "lucide-react";
 import Image from "next/image";
 import CombosTab from "@/components/admin/combos-tab";
@@ -26,6 +27,10 @@ type GameMapping = {
   slug: string;
   image_url: string;
   selling_price: number | null;
+  original_price: number | null;
+  discount_percentage: number | null;
+  visible: boolean;
+  release_status: string | null;
 };
 
 type DropdownGame = {
@@ -46,7 +51,8 @@ export default function AdminHomepageSectionsPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [gameToDelete, setGameToDelete] = useState<GameMapping | null>(null);
 
   // Selector form state
   const [selectedGameId, setSelectedGameId] = useState("");
@@ -106,7 +112,11 @@ export default function AdminHomepageSectionsPage() {
               title,
               slug,
               image_url,
-              selling_price
+              selling_price,
+              original_price,
+              discount_percentage,
+              visible,
+              release_status
             )
           )
         `)
@@ -118,7 +128,7 @@ export default function AdminHomepageSectionsPage() {
       // Extract and map
       const rawMappings = data?.section_games || [];
       const mapped: GameMapping[] = rawMappings
-        .filter((m: any) => m.games) // Ensure game relation is populated
+        .filter((m: any) => m.games)
         .map((m: any) => ({
           id: m.id,
           display_order: m.display_order,
@@ -127,6 +137,10 @@ export default function AdminHomepageSectionsPage() {
           slug: m.games.slug,
           image_url: m.games.image_url,
           selling_price: m.games.selling_price,
+          original_price: m.games.original_price,
+          discount_percentage: m.games.discount_percentage,
+          visible: m.games.visible,
+          release_status: m.games.release_status,
         }));
 
       // Sort by display order
@@ -141,9 +155,8 @@ export default function AdminHomepageSectionsPage() {
 
   useEffect(() => {
     if (activeSectionId) {
-      setPendingRemoveId(null);
       loadSectionMappings(activeSectionId);
-      setSelectedGameId(""); // Reset select dropdown
+      setSelectedGameId("");
     }
   }, [activeSectionId]);
 
@@ -231,31 +244,28 @@ export default function AdminHomepageSectionsPage() {
     }
   };
 
-  // Remove Game Mapping (with 2-tap confirm)
-  const handleRemoveGame = async (mappingId: string) => {
-    if (pendingRemoveId === mappingId) {
-      setPendingRemoveId(null);
-      setActionLoading(true);
-      setActionError(null);
-      try {
-        const { error: deleteError } = await supabase
-          .from("section_games")
-          .delete()
-          .eq("id", mappingId);
+  // Remove Game Mapping (with confirmation dialog)
+  const handleRemoveGame = async () => {
+    if (!gameToDelete) return;
+    setDeleteModalOpen(false);
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const { error: deleteError } = await supabase
+        .from("section_games")
+        .delete()
+        .eq("id", gameToDelete.id);
 
-        if (deleteError) throw deleteError;
+      if (deleteError) throw deleteError;
 
-        if (activeSectionId) loadSectionMappings(activeSectionId);
-        toast.success("Game removed from section");
-      } catch (err) {
-        console.error("Failed to remove game mapping:", err);
-        setActionError("Failed to remove game from this section.");
-      } finally {
-        setActionLoading(false);
-      }
-    } else {
-      setPendingRemoveId(mappingId);
-      setTimeout(() => setPendingRemoveId(prev => prev === mappingId ? null : prev), 3000);
+      if (activeSectionId) loadSectionMappings(activeSectionId);
+      toast.success(`${gameToDelete.title} removed from section`);
+      setGameToDelete(null);
+    } catch (err) {
+      console.error("Failed to remove game mapping:", err);
+      setActionError("Failed to remove game from this section.");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -352,7 +362,7 @@ export default function AdminHomepageSectionsPage() {
                   className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-4 hover:bg-white/[0.02] transition-colors gap-3 group cursor-grab active:cursor-grabbing"
                 >
                   {/* Info */}
-                  <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
                     {/* Drag Handle */}
                     <div className="flex-shrink-0 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors">
                       <GripVertical className="w-4 h-4" />
@@ -369,27 +379,59 @@ export default function AdminHomepageSectionsPage() {
                       />
                     </div>
 
-                    {/* Title */}
+                    {/* Title + Slug */}
                     <div className="min-w-0">
                       <p className="font-bold text-white text-xs lg:text-sm leading-snug truncate" title={mapping.title}>{mapping.title}</p>
                       <p className="text-[10px] text-muted-foreground font-mono truncate">/{mapping.slug}</p>
                     </div>
                   </div>
 
-                  {/* Actions (Remove) */}
-                  <div className="flex items-center justify-end gap-3.5 flex-shrink-0 ml-9 sm:ml-0">
-                    <button
-                      disabled={actionLoading}
-                      onClick={() => handleRemoveGame(mapping.id)}
-                      className={`p-2.5 rounded-lg border transition-all cursor-pointer ${
-                        pendingRemoveId === mapping.id
-                          ? "bg-red-500/10 text-red-400 border-red-500/20"
-                          : "text-muted-foreground hover:text-red-400 hover:bg-red-500/5 border-transparent hover:border-red-500/10"
-                      }`}
-                      title={pendingRemoveId === mapping.id ? "Tap again to confirm" : "Remove from section"}
-                    >
-                      <AlertTriangle className="w-4 h-4" />
-                    </button>
+                  {/* Pricing */}
+                  <div className="flex items-center gap-3 flex-shrink-0 ml-9 sm:ml-0">
+                    <div className="text-right">
+                      <p className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</p>
+                      {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
+                        <p className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</p>
+                      )}
+                    </div>
+
+                    {/* Discount badge */}
+                    {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
+                      <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">
+                        -{mapping.discount_percentage}%
+                      </span>
+                    )}
+
+                    {/* Visibility */}
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                      mapping.visible
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        : "bg-gray-500/10 text-muted-foreground border-gray-500/20"
+                    }`}>
+                      {mapping.visible ? <Eye className="w-2.5 h-2.5" /> : <EyeOff className="w-2.5 h-2.5" />}
+                      {mapping.visible ? "Live" : "Hidden"}
+                    </span>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1">
+                      <a
+                        href={`/games/${mapping.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer"
+                        title="View on store"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                      <button
+                        disabled={actionLoading}
+                        onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
+                        className="p-2 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
+                        title="Remove from section"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -441,6 +483,32 @@ export default function AdminHomepageSectionsPage() {
           )}
         </div>
       </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && gameToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-[#111111] border border-red-500/20 rounded-2xl shadow-2xl p-6 space-y-6 animate-fadeIn">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-red-500/10 text-red-400 rounded-lg">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-white">Remove Game?</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Remove <span className="text-white font-semibold">"{gameToDelete.title}"</span> from this homepage section? You can re-add it later.
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button variant="outline" onClick={() => { setDeleteModalOpen(false); setGameToDelete(null); }}>Cancel</Button>
+              <Button variant="destructive" onClick={handleRemoveGame} disabled={actionLoading} className="active:scale-[0.98]">
+                {actionLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                Remove
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
