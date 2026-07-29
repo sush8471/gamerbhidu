@@ -4,13 +4,15 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { 
   Home, Plus, GripVertical, Loader2, AlertTriangle, CheckCircle, Layers,
-  Trash2, Eye, EyeOff, X, Edit2, ExternalLink, Tag, Search, ChevronLeft, ChevronRight
+  Trash2, Eye, EyeOff, X, Edit2, Search, ChevronLeft, ChevronRight
 } from "lucide-react";
 import Image from "next/image";
 import CombosTab from "@/components/admin/combos-tab";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import GamePicker from "@/components/admin/games/GamePicker";
+import GameFormModal from "@/components/admin/games/GameFormModal";
+import type { GameFormData } from "@/types/game";
 
 type Section = {
   id: string;
@@ -30,7 +32,12 @@ type GameMapping = {
   original_price: number | null;
   discount_percentage: number | null;
   visible: boolean;
-  release_status: string | null;
+  release_status: "released" | "upcoming";
+  genre: string[];
+  tags: string[];
+  series: string | null;
+  description: string | null;
+  steam_app_id: number | null;
 };
 
 type DropdownGame = {
@@ -62,6 +69,25 @@ export default function AdminHomepageSectionsPage() {
   // Selector form state
   const [selectedGameId, setSelectedGameId] = useState("");
   const [addModalOpen, setAddModalOpen] = useState(false);
+
+  // Visibility toggle (2-tap confirm)
+  const [pendingToggleId, setPendingToggleId] = useState<string | null>(null);
+
+  // Edit game modal
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingGameId, setEditingGameId] = useState<string | null>(null);
+  const [editFormData, setEditFormData] = useState<GameFormData>({
+    title: "", slug: "", image_url: "",
+    selling_price: "", original_price: "", discount_percentage: "",
+    genre: "", series: "", description: "",
+    release_status: "released", visible: true, steam_app_id: "",
+  });
+  const [editFormError, setEditFormError] = useState<string | null>(null);
+  const [editFormLoading, setEditFormLoading] = useState(false);
+  const [fetchingSteam, setFetchingSteam] = useState(false);
+  const [fetchedTags, setFetchedTags] = useState<string[]>([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   // Load sections on mount
   useEffect(() => {
@@ -122,7 +148,12 @@ export default function AdminHomepageSectionsPage() {
               original_price,
               discount_percentage,
               visible,
-              release_status
+              release_status,
+              genre,
+              tags,
+              series,
+              description,
+              steam_app_id
             )
           )
         `)
@@ -145,8 +176,13 @@ export default function AdminHomepageSectionsPage() {
           selling_price: m.games.selling_price,
           original_price: m.games.original_price,
           discount_percentage: m.games.discount_percentage,
-          visible: m.games.visible,
-          release_status: m.games.release_status,
+          visible: m.games.visible ?? true,
+          release_status: m.games.release_status || "released",
+          genre: m.games.genre || [],
+          tags: m.games.tags || [],
+          series: m.games.series ?? null,
+          description: m.games.description ?? null,
+          steam_app_id: m.games.steam_app_id ?? null,
         }));
 
       // Sort by display order
@@ -288,6 +324,254 @@ export default function AdminHomepageSectionsPage() {
       setActionError("Failed to remove game from this section.");
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  // Visibility toggle (2-tap confirm)
+  const handleToggleVisible = async (mapping: GameMapping) => {
+    if (pendingToggleId === mapping.game_id) {
+      setPendingToggleId(null);
+      const updated = !mapping.visible;
+      setMappings((prev) =>
+        prev.map((m) => (m.game_id === mapping.game_id ? { ...m, visible: updated } : m))
+      );
+      try {
+        const { error } = await supabase
+          .from("games")
+          .update({ visible: updated })
+          .eq("id", mapping.game_id);
+        if (error) throw error;
+        toast.success(updated ? "Game is now visible on storefront" : "Game is now hidden from storefront");
+      } catch {
+        setMappings((prev) =>
+          prev.map((m) => (m.game_id === mapping.game_id ? { ...m, visible: mapping.visible } : m))
+        );
+        toast.error("Failed to update visibility");
+      }
+    } else {
+      setPendingToggleId(mapping.game_id);
+      setTimeout(() => setPendingToggleId((prev) => (prev === mapping.game_id ? null : prev)), 3000);
+    }
+  };
+
+  // Auto-calc discount when prices change in edit form
+  useEffect(() => {
+    if (!editModalOpen) return;
+    const sell = parseFloat(editFormData.selling_price);
+    const orig = parseFloat(editFormData.original_price);
+    if (!isNaN(sell) && !isNaN(orig) && orig > 0) {
+      const pct = Math.round(((orig - sell) / orig) * 100);
+      setEditFormData((prev) => ({
+        ...prev,
+        discount_percentage: pct > 0 ? pct.toString() : "",
+      }));
+    } else {
+      setEditFormData((prev) => ({ ...prev, discount_percentage: "" }));
+    }
+  }, [editFormData.selling_price, editFormData.original_price, editModalOpen]);
+
+  const openEditModal = async (mapping: GameMapping) => {
+    setEditingGameId(mapping.game_id);
+    setEditFormData({
+      title: mapping.title,
+      slug: mapping.slug,
+      image_url: mapping.image_url || "",
+      selling_price: mapping.selling_price !== null ? String(mapping.selling_price) : "",
+      original_price: mapping.original_price !== null ? String(mapping.original_price) : "",
+      discount_percentage: mapping.discount_percentage !== null ? String(mapping.discount_percentage) : "",
+      genre: mapping.genre?.length ? mapping.genre.join(", ") : "",
+      series: mapping.series || "",
+      description: mapping.description || "",
+      release_status: mapping.release_status || "released",
+      visible: mapping.visible,
+      steam_app_id: mapping.steam_app_id !== null ? String(mapping.steam_app_id) : "",
+    });
+    setEditFormError(null);
+    setFetchedTags(mapping.tags || []);
+    setEditModalOpen(true);
+
+    // Load full game row so edit form always has complete fields
+    try {
+      const { data, error } = await supabase
+        .from("games")
+        .select("*")
+        .eq("id", mapping.game_id)
+        .single();
+      if (error || !data) return;
+      setEditFormData({
+        title: data.title,
+        slug: data.slug,
+        image_url: data.image_url || "",
+        selling_price: data.selling_price !== null ? String(data.selling_price) : "",
+        original_price: data.original_price !== null ? String(data.original_price) : "",
+        discount_percentage: data.discount_percentage !== null ? String(data.discount_percentage) : "",
+        genre: data.genre?.length ? data.genre.join(", ") : "",
+        series: data.series || "",
+        description: data.description || "",
+        release_status: data.release_status || "released",
+        visible: data.visible ?? true,
+        steam_app_id: data.steam_app_id !== null ? String(data.steam_app_id) : "",
+      });
+      setFetchedTags(data.tags || []);
+    } catch (err) {
+      console.error("Failed to load full game for edit:", err);
+    }
+  };
+
+  const handleEditTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setEditFormData((prev) => ({ ...prev, title: val }));
+  };
+
+  const handleFetchSteam = async () => {
+    const appId = editFormData.steam_app_id.trim();
+    if (!appId) {
+      setEditFormError("Please enter a Steam App ID first.");
+      return;
+    }
+    setFetchingSteam(true);
+    setEditFormError(null);
+    try {
+      const res = await fetch(`/api/steam?appId=${appId}`);
+      if (!res.ok) throw new Error("Failed to fetch from Steam Store API.");
+      const json = await res.json();
+      const result = json[appId];
+      if (!result?.success || !result.data) throw new Error("No data found for this Steam App ID.");
+      const s = result.data;
+      const title = s.name || "";
+      const slug = title
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+      const genres = s.genres ? s.genres.map((g: any) => g.description).join(", ") : "";
+      setFetchedTags([
+        title.toLowerCase(),
+        ...(s.genres ? s.genres.map((g: any) => g.description.toLowerCase()) : []),
+      ]);
+      setEditFormData((prev) => ({
+        ...prev,
+        title,
+        slug,
+        genre: genres,
+        image_url: s.header_image || prev.image_url,
+        description: s.short_description || prev.description,
+      }));
+    } catch (err: any) {
+      setEditFormError(err?.message || "Failed to retrieve details from Steam.");
+    } finally {
+      setFetchingSteam(false);
+    }
+  };
+
+  const handleImageUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setEditFormError("Please upload an image file.");
+      return;
+    }
+    setUploadingImage(true);
+    setEditFormError(null);
+    try {
+      const ext = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
+      const filePath = `game-thumbnails/${fileName}`;
+      const { error: uploadError } = await supabase.storage
+        .from("document-uploads")
+        .upload(filePath, file);
+      if (uploadError) throw uploadError;
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("document-uploads").getPublicUrl(filePath);
+      setEditFormData((prev) => ({ ...prev, image_url: publicUrl }));
+    } catch (err: any) {
+      if (err?.message?.includes("Bucket not found") || err?.message?.includes("bucket_not_found")) {
+        setEditFormError(
+          "Storage bucket 'document-uploads' not found. Please create a public bucket named 'document-uploads' in your Supabase Storage dashboard."
+        );
+      } else {
+        setEditFormError(err?.message || "Failed to upload image.");
+      }
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleEditDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+    else if (e.type === "dragleave") setDragActive(false);
+  };
+
+  const handleEditDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files?.[0]) await handleImageUpload(e.dataTransfer.files[0]);
+  };
+
+  const handleEditFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) await handleImageUpload(e.target.files[0]);
+  };
+
+  const handleEditFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEditFormError(null);
+    if (!editingGameId) return;
+    if (!editFormData.title.trim()) return setEditFormError("Title is required.");
+    if (!editFormData.slug.trim()) return setEditFormError("Slug is required.");
+    if (!editFormData.image_url.trim()) return setEditFormError("Image URL/Poster is required.");
+    if (!editFormData.genre.trim()) return setEditFormError("At least one genre is required.");
+
+    const slugRegex = /^[a-z0-9-_]+$/;
+    if (!slugRegex.test(editFormData.slug)) {
+      return setEditFormError("Slug must contain only lowercase letters, numbers, hyphens, and underscores.");
+    }
+
+    setEditFormLoading(true);
+    const parsedGame = {
+      title: editFormData.title.trim(),
+      slug: editFormData.slug.trim(),
+      image_url: editFormData.image_url.trim(),
+      selling_price: editFormData.selling_price.trim() !== "" ? Number(editFormData.selling_price) : null,
+      original_price: editFormData.original_price.trim() !== "" ? Number(editFormData.original_price) : null,
+      discount_percentage:
+        editFormData.discount_percentage.trim() !== ""
+          ? parseInt(editFormData.discount_percentage)
+          : null,
+      genre: editFormData.genre
+        ? editFormData.genre.split(",").map((g) => g.trim()).filter(Boolean)
+        : [],
+      tags:
+        fetchedTags.length > 0
+          ? fetchedTags
+          : editFormData.title
+            ? editFormData.title
+                .split(" ")
+                .concat(editFormData.genre ? editFormData.genre.split(",").map((g) => g.trim()) : [])
+            : [],
+      series: editFormData.series.trim() || null,
+      description: editFormData.description.trim() || null,
+      release_status: editFormData.release_status,
+      visible: editFormData.visible,
+      steam_app_id: editFormData.steam_app_id.trim() !== "" ? parseInt(editFormData.steam_app_id) : null,
+    };
+
+    try {
+      const { error: updateError } = await supabase
+        .from("games")
+        .update(parsedGame)
+        .eq("id", editingGameId);
+      if (updateError) throw updateError;
+      setEditModalOpen(false);
+      setEditingGameId(null);
+      toast.success("Game listing updated");
+      if (activeSectionId) loadSectionMappings(activeSectionId);
+    } catch (err: any) {
+      setEditFormError(err?.message || "Failed to save the game listing.");
+    } finally {
+      setEditFormLoading(false);
     }
   };
 
@@ -464,26 +748,37 @@ export default function AdminHomepageSectionsPage() {
                               ) : <span className="text-xs text-muted-foreground">—</span>}
                             </td>
                             <td className="py-3 px-6 text-center">
-                              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${
-                                mapping.visible
-                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                  : "bg-gray-500/10 text-muted-foreground border border-gray-500/20"
-                              }`}>
-                                {mapping.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-                                {mapping.visible ? "Visible" : "Hidden"}
-                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleVisible(mapping)}
+                                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer min-h-[36px] ${
+                                  pendingToggleId === mapping.game_id
+                                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                    : mapping.visible
+                                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                      : "bg-gray-500/10 text-muted-foreground border border-gray-500/20 hover:text-white"
+                                }`}
+                                title={pendingToggleId === mapping.game_id ? "Click again to confirm" : "Toggle visibility"}
+                              >
+                                {pendingToggleId === mapping.game_id ? (
+                                  <><AlertTriangle className="w-3.5 h-3.5" /><span>Confirm?</span></>
+                                ) : mapping.visible ? (
+                                  <><Eye className="w-3.5 h-3.5" /><span>Visible</span></>
+                                ) : (
+                                  <><EyeOff className="w-3.5 h-3.5" /><span>Hidden</span></>
+                                )}
+                              </button>
                             </td>
                             <td className="py-3 px-6">
                               <div className="flex items-center justify-center gap-2.5">
-                                <a
-                                  href={`/games/${mapping.slug}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  type="button"
+                                  onClick={() => openEditModal(mapping)}
                                   className="p-2.5 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer"
-                                  title="View on store"
+                                  title="Edit game"
                                 >
-                                  <ExternalLink className="w-4 h-4" />
-                                </a>
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
                                 <button
                                   disabled={actionLoading}
                                   onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
@@ -518,19 +813,42 @@ export default function AdminHomepageSectionsPage() {
                           {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
                             <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">-{mapping.discount_percentage}%</span>
                           )}
-                          <span className={`inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                            mapping.visible ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-gray-500/10 text-muted-foreground border-gray-500/20"
-                          }`}>
-                            {mapping.visible ? <Eye className="w-2 h-2" /> : <EyeOff className="w-2 h-2" />}
-                            {mapping.visible ? "Visible" : "Hidden"}
-                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
+                      <div className="flex items-center gap-0.5 flex-shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleVisible(mapping)}
+                          className={`p-2.5 rounded transition-all cursor-pointer ${
+                            pendingToggleId === mapping.game_id
+                              ? "text-amber-400 bg-amber-500/10"
+                              : mapping.visible
+                                ? "text-emerald-400"
+                                : "text-muted-foreground"
+                          }`}
+                          title={pendingToggleId === mapping.game_id ? "Tap again to confirm" : "Toggle visibility"}
+                        >
+                          {pendingToggleId === mapping.game_id ? (
+                            <AlertTriangle className="w-4 h-4" />
+                          ) : mapping.visible ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(mapping)}
+                          className="p-2.5 text-muted-foreground hover:text-primary rounded transition-all cursor-pointer"
+                          title="Edit game"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
                         <button
                           disabled={actionLoading}
                           onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
                           className="p-2.5 text-muted-foreground hover:text-red-400 rounded transition-all cursor-pointer"
+                          title="Remove from section"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -632,6 +950,26 @@ export default function AdminHomepageSectionsPage() {
           </div>
         </div>
       )}
+
+      {/* Edit Game Modal */}
+      <GameFormModal
+        open={editModalOpen}
+        onClose={() => { setEditModalOpen(false); setEditingGameId(null); }}
+        mode="edit"
+        formData={editFormData}
+        onFormDataChange={setEditFormData}
+        formError={editFormError}
+        formLoading={editFormLoading}
+        fetchingSteam={fetchingSteam}
+        uploadingImage={uploadingImage}
+        dragActive={dragActive}
+        onSubmit={handleEditFormSubmit}
+        onTitleChange={handleEditTitleChange}
+        onFetchSteam={handleFetchSteam}
+        onDrag={handleEditDrag}
+        onDrop={handleEditDrop}
+        onFileInput={handleEditFileInput}
+      />
     </div>
   );
 }
