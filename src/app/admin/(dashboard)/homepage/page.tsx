@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { 
   Home, Plus, GripVertical, Loader2, AlertTriangle, CheckCircle, Layers,
-  Trash2, Eye, EyeOff, X, Edit2, Search, ChevronLeft, ChevronRight
+  Trash2, Eye, EyeOff, X, Edit2, Search, ChevronLeft, ChevronRight, MoreVertical
 } from "lucide-react";
 import Image from "next/image";
 import CombosTab from "@/components/admin/combos-tab";
@@ -72,6 +72,9 @@ export default function AdminHomepageSectionsPage() {
 
   // Visibility toggle (2-tap confirm)
   const [pendingToggleId, setPendingToggleId] = useState<string | null>(null);
+
+  // 3-dot menu state
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   // Edit game modal
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -776,23 +779,45 @@ export default function AdminHomepageSectionsPage() {
                               </button>
                             </td>
                             <td className="py-3 px-6">
-                              <div className="flex items-center justify-center gap-2.5">
+                              <div className="flex items-center justify-center relative">
                                 <button
                                   type="button"
-                                  onClick={() => openEditModal(mapping)}
-                                  className="p-2.5 text-muted-foreground hover:text-primary hover:bg-white/5 rounded transition-all cursor-pointer"
-                                  title="Edit game"
+                                  onClick={() => setOpenMenuId(openMenuId === mapping.id ? null : mapping.id)}
+                                  className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+                                  title="More actions"
                                 >
-                                  <Edit2 className="w-4 h-4" />
+                                  <MoreVertical className="w-4 h-4" />
                                 </button>
-                                <button
-                                  disabled={actionLoading}
-                                  onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
-                                  className="p-2.5 text-muted-foreground hover:text-red-400 hover:bg-red-500/5 rounded transition-all cursor-pointer"
-                                  title="Remove from section"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                {openMenuId === mapping.id && (
+                                  <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                                    <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden">
+                                      <button
+                                        onClick={() => { openEditModal(mapping); setOpenMenuId(null); }}
+                                        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                                      >
+                                        <Edit2 className="w-4 h-4 text-muted-foreground" />
+                                        Edit Game
+                                      </button>
+                                      <button
+                                        onClick={() => { handleToggleVisible(mapping); setOpenMenuId(null); }}
+                                        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                                      >
+                                        {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
+                                        {mapping.visible ? "Hide from Store" : "Show on Store"}
+                                      </button>
+                                      <div className="border-t border-[#262626] my-1" />
+                                      <button
+                                        disabled={actionLoading}
+                                        onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); setOpenMenuId(null); }}
+                                        className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                        Remove
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -827,43 +852,45 @@ export default function AdminHomepageSectionsPage() {
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-0.5 flex-shrink-0">
+                      <div className="flex items-center flex-shrink-0 relative">
                         <button
                           type="button"
-                          onClick={() => handleToggleVisible(mapping)}
-                          className={`p-2.5 rounded transition-all cursor-pointer ${
-                            pendingToggleId === mapping.game_id
-                              ? "text-amber-400 bg-amber-500/10"
-                              : mapping.visible
-                                ? "text-emerald-400"
-                                : "text-muted-foreground"
-                          }`}
-                          title={pendingToggleId === mapping.game_id ? "Tap again to confirm" : "Toggle visibility"}
+                          onClick={() => setOpenMenuId(openMenuId === mapping.id ? null : mapping.id)}
+                          className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+                          title="More actions"
                         >
-                          {pendingToggleId === mapping.game_id ? (
-                            <AlertTriangle className="w-4 h-4" />
-                          ) : mapping.visible ? (
-                            <Eye className="w-4 h-4" />
-                          ) : (
-                            <EyeOff className="w-4 h-4" />
-                          )}
+                          <MoreVertical className="w-5 h-5" />
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => openEditModal(mapping)}
-                          className="p-2.5 text-muted-foreground hover:text-primary rounded transition-all cursor-pointer"
-                          title="Edit game"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          disabled={actionLoading}
-                          onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); }}
-                          className="p-2.5 text-muted-foreground hover:text-red-400 rounded transition-all cursor-pointer"
-                          title="Remove from section"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {openMenuId === mapping.id && (
+                          <>
+                            <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                            <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden">
+                              <button
+                                onClick={() => { handleToggleVisible(mapping); setOpenMenuId(null); }}
+                                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                              >
+                                {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
+                                {mapping.visible ? "Hide from Store" : "Show on Store"}
+                              </button>
+                              <button
+                                onClick={() => { openEditModal(mapping); setOpenMenuId(null); }}
+                                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                              >
+                                <Edit2 className="w-4 h-4 text-muted-foreground" />
+                                Edit Game
+                              </button>
+                              <div className="border-t border-[#262626] my-1" />
+                              <button
+                                disabled={actionLoading}
+                                onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); setOpenMenuId(null); }}
+                                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Remove
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
