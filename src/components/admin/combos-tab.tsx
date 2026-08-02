@@ -98,11 +98,28 @@ export default function CombosTab() {
 
   const loadGames = async () => {
     try {
-      const { data } = await supabase
-        .from("games")
-        .select("id, title")
-        .order("title", { ascending: true });
-      setGames(data || []);
+      const allGames: { id: string; title: string }[] = [];
+      const PAGE_SIZE = 1000;
+      let offset = 0;
+      let hasMore = true;
+
+      while (hasMore) {
+        const { data } = await supabase
+          .from("games")
+          .select("id, title")
+          .order("title", { ascending: true })
+          .range(offset, offset + PAGE_SIZE - 1);
+
+        if (data && data.length > 0) {
+          allGames.push(...data);
+          offset += PAGE_SIZE;
+          hasMore = data.length === PAGE_SIZE;
+        } else {
+          hasMore = false;
+        }
+      }
+
+      setGames(allGames);
     } catch (err) {
       console.error("Failed to load games:", err);
     }
@@ -110,12 +127,29 @@ export default function CombosTab() {
 
   const loadComboGames = async (comboId: string) => {
     try {
-      const { data } = await supabase
-        .from("combo_games")
-        .select("game_id")
-        .eq("combo_id", comboId)
-        .order("display_order", { ascending: true });
-      setSelectedGameIds((data || []).map((cg: any) => cg.game_id));
+      const allIds: string[] = [];
+      const PAGE_SIZE = 1000;
+      let offset = 0;
+      let hasMore = true;
+
+      while (hasMore) {
+        const { data } = await supabase
+          .from("combo_games")
+          .select("game_id")
+          .eq("combo_id", comboId)
+          .order("display_order", { ascending: true })
+          .range(offset, offset + PAGE_SIZE - 1);
+
+        if (data && data.length > 0) {
+          allIds.push(...data.map((cg: any) => cg.game_id));
+          offset += PAGE_SIZE;
+          hasMore = data.length === PAGE_SIZE;
+        } else {
+          hasMore = false;
+        }
+      }
+
+      setSelectedGameIds(allIds);
     } catch (err) {
       console.error("Failed to load combo games:", err);
     }

@@ -71,9 +71,9 @@ function GameListDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full sm:max-w-2xl max-h-[90vh] sm:max-h-[85vh] bg-card sm:rounded-xl rounded-t-xl border border-white/10 shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 sm:animate-in zoom-in-95 duration-300">
+      <div className="relative w-full sm:max-w-2xl h-[95vh] sm:h-auto sm:max-h-[90vh] bg-card sm:rounded-xl rounded-t-xl border border-white/10 shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 sm:animate-in zoom-in-95 duration-300 flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-b from-card to-card/95 backdrop-blur-sm border-b border-white/10 p-4 sm:p-6">
+        <div className="flex-shrink-0 bg-gradient-to-b from-card to-card/95 backdrop-blur-sm border-b border-white/10 p-4 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="text-xl sm:text-2xl font-black text-white mb-1 sm:mb-2 truncate">
@@ -96,8 +96,8 @@ function GameListDialog({
           </div>
         </div>
 
-        {/* Game List */}
-        <div className="overflow-y-auto max-h-[calc(90vh-200px)] sm:max-h-[calc(85vh-220px)] p-4 sm:p-6">
+        {/* Game List - scrollable */}
+        <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
             {games.map((gameItem, index) => {
               const game = gameItem.game;
@@ -143,7 +143,7 @@ function GameListDialog({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-gradient-to-t from-card to-card/95 backdrop-blur-sm border-t border-white/10 p-4 sm:p-6">
+        <div className="flex-shrink-0 bg-gradient-to-t from-card to-card/95 backdrop-blur-sm border-t border-white/10 p-4 sm:p-6">
           <button
             onClick={() => onProceedToCheckout(bundle)}
             className="w-full bg-white/10 hover:bg-white text-white hover:text-black font-bold py-3.5 sm:py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"

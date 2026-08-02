@@ -323,43 +323,45 @@ export async function getCombos() {
 
     const comboIds = comboData.map((c: any) => c.id);
 
-    const { data: cgData, error: cgError } = await supabase
-        .from('combo_games')
-        .select(`
-            id,
-            combo_id,
-            game_id,
-            display_order
-        `)
-        .in('combo_id', comboIds)
-        .order('display_order', { ascending: true });
+    // Fetch combo_games with joined game data in a single query to avoid data loss.
+    // Use .range() to explicitly bypass Supabase's default 1000-row limit.
+    const allComboGames: any[] = [];
+    const PAGE_SIZE = 1000;
+    let offset = 0;
+    let hasMore = true;
 
-    if (cgError) {
-        return { data: [], error: cgError.message };
-    }
+    while (hasMore) {
+        const { data: pageData, error: cgError } = await supabase
+            .from('combo_games')
+            .select(`
+                id,
+                combo_id,
+                game_id,
+                display_order,
+                game:games(id, title, slug, image_url, steam_app_id, visible)
+            `)
+            .in('combo_id', comboIds)
+            .order('display_order', { ascending: true })
+            .range(offset, offset + PAGE_SIZE - 1);
 
-    const gameIds = [...new Set((cgData || []).map((cg: any) => cg.game_id))];
-    const gameMap = new Map<string, any>();
-
-    if (gameIds.length > 0) {
-        const { data: gameData, error: gameError } = await supabase
-            .from('games')
-            .select('id, title, slug, image_url, steam_app_id, visible')
-            .in('id', gameIds);
-
-        if (gameError) {
-            return { data: [], error: gameError.message };
+        if (cgError) {
+            return { data: [], error: cgError.message };
         }
-        for (const g of gameData || []) {
-            gameMap.set(g.id, g);
+
+        if (pageData && pageData.length > 0) {
+            allComboGames.push(...pageData);
+            offset += PAGE_SIZE;
+            hasMore = pageData.length === PAGE_SIZE;
+        } else {
+            hasMore = false;
         }
     }
 
     const now = new Date().toISOString();
 
     const gamesByCombo = new Map<string, ComboGame[]>();
-    for (const cg of cgData || []) {
-        const game = gameMap.get(cg.game_id);
+    for (const cg of allComboGames) {
+        const game = cg.game;
         if (!game) continue;
         const entry: ComboGame = {
             id: cg.id,
@@ -400,43 +402,49 @@ export async function getComboById(id: string) {
         return { data: null, error: "Combo not found" };
     }
 
-    const { data: cgData, error: cgError } = await supabase
-        .from('combo_games')
-        .select('id, combo_id, game_id, display_order')
-        .eq('combo_id', id)
-        .order('display_order', { ascending: true });
+    // Use JOIN query with .range() to fetch all combo_games + game data
+    const allComboGames: any[] = [];
+    const PAGE_SIZE = 1000;
+    let offset = 0;
+    let hasMore = true;
 
-    if (cgError) {
-        return { data: null, error: cgError.message };
-    }
+    while (hasMore) {
+        const { data: pageData, error: cgError } = await supabase
+            .from('combo_games')
+            .select(`
+                id,
+                combo_id,
+                game_id,
+                display_order,
+                game:games(id, title, slug, image_url, steam_app_id, visible)
+            `)
+            .eq('combo_id', id)
+            .order('display_order', { ascending: true })
+            .range(offset, offset + PAGE_SIZE - 1);
 
-    const gameIds = [...new Set((cgData || []).map((cg: any) => cg.game_id))];
-    const gameMap = new Map<string, any>();
-
-    if (gameIds.length > 0) {
-        const { data: gameData, error: gameError } = await supabase
-            .from('games')
-            .select('id, title, slug, image_url, steam_app_id, visible')
-            .in('id', gameIds);
-
-        if (gameError) {
-            return { data: null, error: gameError.message };
+        if (cgError) {
+            return { data: null, error: cgError.message };
         }
-        for (const g of gameData || []) {
-            gameMap.set(g.id, g);
+
+        if (pageData && pageData.length > 0) {
+            allComboGames.push(...pageData);
+            offset += PAGE_SIZE;
+            hasMore = pageData.length === PAGE_SIZE;
+        } else {
+            hasMore = false;
         }
     }
 
     const combo: Combo = {
         ...data,
-        games: (cgData || [])
-            .filter((cg: any) => gameMap.has(cg.game_id))
+        games: allComboGames
+            .filter((cg: any) => cg.game)
             .map((cg: any) => ({
                 id: cg.id,
                 combo_id: cg.combo_id,
                 game_id: cg.game_id,
                 display_order: cg.display_order,
-                game: gameMap.get(cg.game_id),
+                game: cg.game,
             })),
     };
 
