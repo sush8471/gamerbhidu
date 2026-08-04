@@ -73,11 +73,12 @@ export default function AdminDashboardPage() {
       {/* Welcome + Quick Links */}
       <div className="space-y-4">
         <h3 className="text-lg font-bold text-white">Welcome, Administrator</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {[
             { label: "Games", desc: "Add, edit, hide, or delete listings", href: "/admin/games" },
             { label: "Homepage", desc: "Manage sections, games, and combos", href: "/admin/homepage" },
             { label: "Combos", desc: "Create and manage bundle deals", href: "/admin/combos" },
+            { label: "Social Proofs", desc: "Upload and manage Trusted By images", href: "/admin/proofs" },
           ].map((item) => (
             <Link
               key={item.label}

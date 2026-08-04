@@ -451,3 +451,30 @@ export async function getComboById(id: string) {
     return { data: combo, error: null };
 }
 
+export interface SocialProof {
+    id: string;
+    image_url: string;
+    label: string;
+    tag: string;
+    display_order: number;
+    visible: boolean;
+    created_at?: string;
+}
+
+/**
+ * Get all visible social proof images for the homepage carousel
+ */
+export async function getSocialProofs() {
+    const { data, error } = await supabase
+        .from('social_proofs')
+        .select('id, image_url, label, tag, display_order, visible, created_at')
+        .eq('visible', true)
+        .order('display_order', { ascending: true });
+
+    if (error) {
+        return { data: [] as SocialProof[], error: error.message };
+    }
+
+    return { data: (data || []) as SocialProof[], error: null };
+}
+

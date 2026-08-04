@@ -8,6 +8,7 @@ import {
   Gamepad2,
   Home,
   Layers,
+  BadgeCheck,
   LogOut,
   Loader2,
   Menu,
@@ -97,6 +98,7 @@ export default function AdminDashboardLayout({
     { href: "/admin/games", label: "Games Catalog", icon: Gamepad2 },
     { href: "/admin/homepage", label: "Homepage Sections", icon: Home },
     { href: "/admin/combos", label: "Value Combos", icon: Layers },
+    { href: "/admin/proofs", label: "Social Proofs", icon: BadgeCheck },
   ];
 
   const currentPageLabel =
