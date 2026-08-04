@@ -14,12 +14,8 @@ import {
   Menu,
   X,
   ChevronRight,
-  PanelLeftClose,
-  PanelLeft,
 } from "lucide-react";
 import Link from "next/link";
-
-const SIDEBAR_KEY = "admin-sidebar-collapsed";
 
 export default function AdminDashboardLayout({
   children,
@@ -31,7 +27,7 @@ export default function AdminDashboardLayout({
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {
     async function checkAuth() {
@@ -65,27 +61,18 @@ export default function AdminDashboardLayout({
     };
   }, [router]);
 
-  // Restore collapsed preference
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(SIDEBAR_KEY);
-      if (saved === "1") setCollapsed(true);
-    } catch {}
-  }, []);
-
   // Close mobile drawer on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
-  const toggleCollapsed = () => {
-    setCollapsed((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem(SIDEBAR_KEY, next ? "1" : "0");
-      } catch {}
-      return next;
-    });
+  // Hover-to-expand/collapse — desktop only (>=1024px). No effect on mobile.
+  const handleSidebarMouseEnter = () => {
+    if (window.matchMedia("(min-width: 1024px)").matches) setCollapsed(false);
+  };
+
+  const handleSidebarMouseLeave = () => {
+    if (window.matchMedia("(min-width: 1024px)").matches) setCollapsed(true);
   };
 
   const handleLogout = async () => {
@@ -127,6 +114,8 @@ export default function AdminDashboardLayout({
 
       {/* Sidebar */}
       <aside
+        onMouseEnter={handleSidebarMouseEnter}
+        onMouseLeave={handleSidebarMouseLeave}
         className={`
           fixed top-0 left-0 h-full z-50
           bg-[#111111] border-r border-[#262626]
@@ -195,18 +184,6 @@ export default function AdminDashboardLayout({
 
         {/* Footer */}
         <div className={`p-3 border-t border-[#262626] space-y-2 ${collapsed ? "lg:px-2" : ""}`}>
-          {/* Collapse toggle — desktop only */}
-          <button
-            onClick={toggleCollapsed}
-            className={`hidden lg:flex w-full items-center gap-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent transition-all cursor-pointer ${
-              collapsed ? "justify-center px-0 py-3" : "px-4 py-3"
-            }`}
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-            <span className={collapsed ? "lg:hidden" : ""}>Collapse</span>
-          </button>
-
           <div className={`px-3 py-2.5 bg-black/25 rounded-xl border border-[#262626]/50 ${collapsed ? "lg:hidden" : ""}`}>
             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-0.5">
               Logged in as
