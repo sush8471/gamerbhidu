@@ -83,18 +83,16 @@ function GameListDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-lg max-h-[80vh] bg-card rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
         {/* Header */}
-        <div className="flex-shrink-0 bg-gradient-to-b from-card to-card/95 backdrop-blur-sm border-b border-white/10 p-4">
-          <div className="flex items-start justify-between gap-3">
+        <div className="flex-shrink-0 border-b border-white/10 px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <h2 className="text-lg font-black text-white mb-1 leading-snug">
+              <h2 className="text-base font-black text-white leading-snug truncate">
                 {bundle.title}
               </h2>
-              <p className="text-muted-foreground text-xs">
-                {gameCount} games included
-              </p>
-              <div className="mt-2 inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-2.5 py-1">
-                <span className="text-white font-black text-base">{bundle.price.discounted}</span>
-                <span className="text-muted-foreground text-[10px]">Only</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-muted-foreground text-[11px]">{gameCount} games</span>
+                <span className="text-muted-foreground text-[11px]">•</span>
+                <span className="text-white font-bold text-sm">{bundle.price.discounted}</span>
               </div>
             </div>
             <button
