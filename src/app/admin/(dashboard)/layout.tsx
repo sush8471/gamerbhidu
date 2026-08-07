@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Gamepad2,
   Home,
-  Layers,
   BadgeCheck,
   LogOut,
   Loader2,
@@ -83,8 +82,7 @@ export default function AdminDashboardLayout({
   const navItems = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/games", label: "Games Catalog", icon: Gamepad2 },
-    { href: "/admin/homepage", label: "Homepage Sections", icon: Home },
-    { href: "/admin/combos", label: "Value Combos", icon: Layers },
+    { href: "/admin/homepage", label: "Sections", icon: Home },
     { href: "/admin/proofs", label: "Social Proofs", icon: BadgeCheck },
   ];
 

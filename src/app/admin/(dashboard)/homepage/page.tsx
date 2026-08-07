@@ -691,7 +691,7 @@ export default function AdminHomepageSectionsPage() {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Section Tabs - Desktop */}
-      <div className="hidden md:block relative max-w-fit">
+      <div className="hidden md:flex items-center justify-between">
         <div className="flex p-1 bg-[#050505]/60 border border-[#262626] rounded-xl overflow-x-auto max-w-fit">
           {sections.map((section) => {
             const isActive = !showCombos && activeSectionId === section.id;
@@ -721,16 +721,23 @@ export default function AdminHomepageSectionsPage() {
             Value Combos
           </button>
         </div>
+        <button
+          onClick={() => setSectionsPanelOpen(true)}
+          className="flex items-center gap-2 px-3 py-2 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-colors cursor-pointer"
+          title="Open sections panel"
+        >
+          <PanelRightOpen className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Section Selector - Mobile */}
-      <div className="md:hidden">
+      <div className="md:hidden flex justify-end">
         <button
           onClick={() => setSectionsPanelOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#111111] border border-[#262626] rounded-xl text-sm font-bold text-white cursor-pointer"
+          className="flex items-center gap-2 px-3 py-2 bg-[#111111] border border-[#262626] rounded-xl text-sm font-bold text-white cursor-pointer"
         >
-          <PanelRightOpen className="w-4 h-4 text-muted-foreground" />
           {showCombos ? "Value Combos" : sections.find(s => s.id === activeSectionId)?.name || "Select Section"}
+          <PanelRightOpen className="w-4 h-4 text-muted-foreground" />
         </button>
       </div>
 
