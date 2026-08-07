@@ -81,7 +81,7 @@ function GameListDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg max-h-[80vh] bg-card rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
+      <div className="relative w-full max-w-lg max-h-[96vh] bg-card rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
         {/* Header */}
         <div className="flex-shrink-0 border-b border-white/10 px-4 py-3">
           <div className="flex items-center justify-between gap-3">
@@ -146,7 +146,7 @@ function GameListDialog({
               onClick={() => setShowAll(!showAll)}
               className="w-full mt-3 flex items-center justify-center gap-1 py-1 text-muted-foreground hover:text-white transition-colors text-xs font-medium cursor-pointer"
             >
-              {showAll ? "Show Less" : `Show All ${gameCount} Games`}
+              {showAll ? "Show Less" : "More"}
             </button>
           )}
         </div>
