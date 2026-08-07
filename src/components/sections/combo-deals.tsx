@@ -81,7 +81,7 @@ function GameListDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg max-h-[96vh] bg-card rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
+      <div className={`relative w-full max-w-lg bg-card rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col ${showAll ? "max-h-[80vh]" : "max-h-[96vh]"}`}>
         {/* Header */}
         <div className="flex-shrink-0 border-b border-white/10 px-4 py-3">
           <div className="flex items-center justify-between gap-3">
