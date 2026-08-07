@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Instagram, ArrowUp } from "lucide-react"
+import { Instagram } from "lucide-react"
 import { FaWhatsapp } from "react-icons/fa"
 
 const socialLinks = [
@@ -56,10 +56,6 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 }
 
 export function FooterSection() {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
-
   return (
     <footer className="relative border-t border-white/10 bg-background text-white transition-colors duration-300">
       {/* Main Footer Grid */}
@@ -100,17 +96,6 @@ export function FooterSection() {
               <FooterLink key={link.label} href={link.href} label={link.label} />
             ))}
           </FooterColumn>
-
-          {/* Back to Top */}
-          <div className="flex items-start justify-start md:justify-end">
-            <button
-              onClick={scrollToTop}
-              className="w-9 h-9 rounded-full border border-white/15 bg-white/5 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-200"
-              aria-label="Back to top"
-            >
-              <ArrowUp className="w-4 h-4" />
-            </button>
-          </div>
 
         </div>
       </div>
