@@ -155,16 +155,9 @@ function GameListDialog({
           {hasMore && (
             <button
               onClick={() => setShowAll(!showAll)}
-              className="w-full mt-3 flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-muted-foreground hover:text-white text-xs font-medium cursor-pointer"
+              className="w-full mt-3 flex items-center justify-center gap-1 py-1 text-muted-foreground hover:text-white transition-colors text-xs font-medium cursor-pointer"
             >
-              {showAll ? (
-                <>Show Less</>
-              ) : (
-                <>
-                  Show All {gameCount} Games
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </>
-              )}
+              {showAll ? "Show Less" : `Show All ${gameCount} Games`}
             </button>
           )}
         </div>
