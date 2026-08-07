@@ -169,9 +169,6 @@ function GameListDialog({
             <span className="text-sm">Proceed to Checkout</span>
             <ArrowRight className="w-4 h-4" />
           </button>
-          <p className="text-center text-muted-foreground text-[10px] mt-2">
-            Instant delivery • Original Steam games • 24/7 support
-          </p>
         </div>
       </div>
     </div>
