@@ -105,24 +105,15 @@ function GameListDialog({
         </div>
 
         {/* Game List - scrollable */}
-        <div className="flex-1 overflow-y-auto min-h-0 p-4">
-          <div className="grid grid-cols-1 gap-1.5">
+        <div className="flex-1 overflow-y-auto min-h-0 px-4 py-2">
+          <div className="grid grid-cols-1 gap-0.5">
             {visibleGames.map((gameItem, index) => {
               const game = gameItem.game;
               const isGTAV = game?.title === "Grand Theft Auto V";
               const Content = (
-                <>
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
-                    {isGTAV ? (
-                      <ExternalLink className="w-3 h-3 text-white/60" />
-                    ) : (
-                      <Check className="w-3 h-3 text-white/60" />
-                    )}
-                  </div>
-                  <span className="text-muted-foreground text-xs group-hover:text-white transition-colors truncate">
-                    {game?.title || "Unknown Game"}
-                  </span>
-                </>
+                <span className="text-muted-foreground text-xs group-hover:text-white transition-colors truncate">
+                  {game?.title || "Unknown Game"}
+                </span>
               );
 
               if (isGTAV && game?.slug) {
@@ -131,7 +122,7 @@ function GameListDialog({
                     key={index}
                     href={`/games/${game.slug}`}
                     onClick={handleClose}
-                    className="flex items-center gap-2.5 p-2.5 rounded-lg bg-background/50 border border-white/5 hover:border-white/10 hover:bg-card transition-all duration-200 group cursor-pointer"
+                    className="flex items-center py-1.5 px-1 rounded hover:bg-white/5 transition-all duration-200 group cursor-pointer"
                   >
                     {Content}
                   </Link>
@@ -141,7 +132,7 @@ function GameListDialog({
               return (
                 <div
                   key={index}
-                  className="flex items-center gap-2.5 p-2.5 rounded-lg bg-background/50 border border-white/5 transition-all duration-200 group"
+                  className="flex items-center py-1.5 px-1 rounded transition-all duration-200 group"
                 >
                   {Content}
                 </div>
