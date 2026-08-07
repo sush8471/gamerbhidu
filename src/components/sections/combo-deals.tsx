@@ -144,7 +144,7 @@ function GameListDialog({
           {hasMore && (
             <button
               onClick={() => setShowAll(!showAll)}
-              className="w-full mt-3 flex items-center justify-center gap-1 py-1 text-muted-foreground hover:text-white transition-colors text-xs font-medium cursor-pointer"
+              className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 text-white/70 hover:text-white transition-colors text-xs font-semibold cursor-pointer"
             >
               {showAll ? "Show Less" : "More"}
             </button>
