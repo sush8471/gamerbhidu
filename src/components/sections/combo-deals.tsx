@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { X, Check, ExternalLink, Clock, ArrowRight } from "lucide-react";
+import { X, Check, ExternalLink, Clock, ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { getCombos, Combo, ComboGame } from "@/lib/local-db";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -64,31 +64,41 @@ function GameListDialog({
   bundle: ComboData | null;
   onProceedToCheckout: (bundle: ComboData) => void;
 }) {
+  const [showAll, setShowAll] = useState(false);
+
   if (!isOpen || !bundle) return null;
 
   const games = bundle.games || [];
   const gameCount = games.length;
+  const INITIAL_COUNT = 8;
+  const visibleGames = showAll ? games : games.slice(0, INITIAL_COUNT);
+  const hasMore = games.length > INITIAL_COUNT;
+
+  const handleClose = () => {
+    setShowAll(false);
+    onClose();
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full sm:max-w-2xl h-[95vh] sm:h-auto sm:max-h-[90vh] bg-card sm:rounded-xl rounded-t-xl border border-white/10 shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 sm:animate-in zoom-in-95 duration-300 flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg max-h-[80vh] bg-card rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
         {/* Header */}
-        <div className="flex-shrink-0 bg-gradient-to-b from-card to-card/95 backdrop-blur-sm border-b border-white/10 p-3 sm:p-6">
-          <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="flex-shrink-0 bg-gradient-to-b from-card to-card/95 backdrop-blur-sm border-b border-white/10 p-4">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <h2 className="text-lg sm:text-2xl font-black text-white mb-1 sm:mb-2 line-clamp-2">
+              <h2 className="text-lg font-black text-white mb-1 leading-snug">
                 {bundle.title}
               </h2>
-              <p className="text-muted-foreground text-xs sm:text-sm">
+              <p className="text-muted-foreground text-xs">
                 {gameCount} games included
               </p>
-              <div className="mt-2 sm:mt-3 inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-2.5 sm:px-3 py-1 sm:py-1.5">
-                <span className="text-white font-black text-base sm:text-lg">{bundle.price.discounted}</span>
-                <span className="text-muted-foreground text-[10px] sm:text-xs">Only</span>
+              <div className="mt-2 inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-2.5 py-1">
+                <span className="text-white font-black text-base">{bundle.price.discounted}</span>
+                <span className="text-muted-foreground text-[10px]">Only</span>
               </div>
             </div>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="p-2 rounded-lg bg-background border border-border hover:border-white/30 transition-colors flex-shrink-0"
             >
               <X className="w-5 h-5 text-muted-foreground" />
@@ -97,9 +107,9 @@ function GameListDialog({
         </div>
 
         {/* Game List - scrollable */}
-        <div className="flex-1 overflow-y-auto min-h-0 p-3 sm:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
-            {games.map((gameItem, index) => {
+        <div className="flex-1 overflow-y-auto min-h-0 p-4">
+          <div className="grid grid-cols-1 gap-1.5">
+            {visibleGames.map((gameItem, index) => {
               const game = gameItem.game;
               const isGTAV = game?.title === "Grand Theft Auto V";
               const Content = (
@@ -111,7 +121,7 @@ function GameListDialog({
                       <Check className="w-3 h-3 text-white/60" />
                     )}
                   </div>
-                  <span className="text-muted-foreground text-xs sm:text-sm group-hover:text-white transition-colors truncate">
+                  <span className="text-muted-foreground text-xs group-hover:text-white transition-colors truncate">
                     {game?.title || "Unknown Game"}
                   </span>
                 </>
@@ -122,8 +132,8 @@ function GameListDialog({
                   <Link
                     key={index}
                     href={`/games/${game.slug}`}
-                    onClick={onClose}
-                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-background/50 border border-white/5 hover:border-white/10 hover:bg-card transition-all duration-200 group cursor-pointer"
+                    onClick={handleClose}
+                    className="flex items-center gap-2.5 p-2.5 rounded-lg bg-background/50 border border-white/5 hover:border-white/10 hover:bg-card transition-all duration-200 group cursor-pointer"
                   >
                     {Content}
                   </Link>
@@ -133,25 +143,42 @@ function GameListDialog({
               return (
                 <div
                   key={index}
-                  className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-background/50 border border-white/5 transition-all duration-200 group"
+                  className="flex items-center gap-2.5 p-2.5 rounded-lg bg-background/50 border border-white/5 transition-all duration-200 group"
                 >
                   {Content}
                 </div>
               );
             })}
           </div>
+
+          {/* Show More / Show Less */}
+          {hasMore && (
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="w-full mt-3 flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-muted-foreground hover:text-white text-xs font-medium cursor-pointer"
+            >
+              {showAll ? (
+                <>Show Less</>
+              ) : (
+                <>
+                  Show All {gameCount} Games
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </>
+              )}
+            </button>
+          )}
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 bg-gradient-to-t from-card to-card/95 backdrop-blur-sm border-t border-white/10 p-4 sm:p-6">
+        <div className="flex-shrink-0 bg-gradient-to-t from-card to-card/95 backdrop-blur-sm border-t border-white/10 p-4">
           <button
             onClick={() => onProceedToCheckout(bundle)}
-            className="w-full bg-white/10 hover:bg-white text-white hover:text-black font-bold py-3.5 sm:py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+            className="w-full bg-white/10 hover:bg-white text-white hover:text-black font-bold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
           >
-            <span className="text-sm sm:text-base">Proceed to Checkout</span>
+            <span className="text-sm">Proceed to Checkout</span>
             <ArrowRight className="w-4 h-4" />
           </button>
-          <p className="text-center text-muted-foreground text-[10px] sm:text-xs mt-2.5 sm:mt-3">
+          <p className="text-center text-muted-foreground text-[10px] mt-2">
             Instant delivery • Original Steam games • 24/7 support
           </p>
         </div>
