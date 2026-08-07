@@ -73,10 +73,10 @@ function GameListDialog({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full sm:max-w-2xl h-[95vh] sm:h-auto sm:max-h-[90vh] bg-card sm:rounded-xl rounded-t-xl border border-white/10 shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 sm:animate-in zoom-in-95 duration-300 flex flex-col">
         {/* Header */}
-        <div className="flex-shrink-0 bg-gradient-to-b from-card to-card/95 backdrop-blur-sm border-b border-white/10 p-4 sm:p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-xl sm:text-2xl font-black text-white mb-1 sm:mb-2 truncate">
+        <div className="flex-shrink-0 bg-gradient-to-b from-card to-card/95 backdrop-blur-sm border-b border-white/10 p-3 sm:p-6">
+          <div className="flex items-start justify-between gap-2 sm:gap-3">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg sm:text-2xl font-black text-white mb-1 sm:mb-2 line-clamp-2">
                 {bundle.title}
               </h2>
               <p className="text-muted-foreground text-xs sm:text-sm">
@@ -97,8 +97,8 @@ function GameListDialog({
         </div>
 
         {/* Game List - scrollable */}
-        <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
+        <div className="flex-1 overflow-y-auto min-h-0 p-3 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
             {games.map((gameItem, index) => {
               const game = gameItem.game;
               const isGTAV = game?.title === "Grand Theft Auto V";
@@ -123,7 +123,7 @@ function GameListDialog({
                     key={index}
                     href={`/games/${game.slug}`}
                     onClick={onClose}
-                    className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-lg bg-background/50 border border-white/5 hover:border-white/10 hover:bg-card transition-all duration-200 group cursor-pointer"
+                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-background/50 border border-white/5 hover:border-white/10 hover:bg-card transition-all duration-200 group cursor-pointer"
                   >
                     {Content}
                   </Link>
@@ -133,7 +133,7 @@ function GameListDialog({
               return (
                 <div
                   key={index}
-                  className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-lg bg-background/50 border border-white/5 transition-all duration-200 group"
+                  className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-background/50 border border-white/5 transition-all duration-200 group"
                 >
                   {Content}
                 </div>
