@@ -230,6 +230,32 @@ export default function AdminHomepageSectionsPage() {
   // Drag-and-drop reorder
   const dragItemRef = useRef<number | null>(null);
 
+  // Touch drag state for mobile
+  const [touchDragIndex, setTouchDragIndex] = useState<number | null>(null);
+  const [touchCurrentIndex, setTouchCurrentIndex] = useState<number | null>(null);
+  const touchStartY = useRef<number>(0);
+  const touchItemHeight = useRef<number>(0);
+  const touchCardRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
+  const persistOrder = async (newMappings: GameMapping[]) => {
+    const updates = newMappings.map((m, i) => ({
+      id: m.id,
+      display_order: (i + 1) * 10,
+    }));
+    try {
+      const results = await Promise.all(
+        updates.map((u) =>
+          supabase.from("section_games").update({ display_order: u.display_order }).eq("id", u.id)
+        )
+      );
+      const error = results.find((r) => r.error)?.error;
+      if (error) throw error;
+    } catch (err) {
+      console.error("Failed to persist reorder:", err);
+      if (activeSectionId) loadSectionMappings(activeSectionId);
+    }
+  };
+
   const handleDragStart = (index: number) => {
     dragItemRef.current = index;
   };
@@ -250,24 +276,65 @@ export default function AdminHomepageSectionsPage() {
 
   const handleDragEnd = async () => {
     dragItemRef.current = null;
-    // Persist the new order to the database
-    const updates = mappings.map((m, i) => ({
-      id: m.id,
-      display_order: (i + 1) * 10,
-    }));
-    try {
-      const results = await Promise.all(
-        updates.map((u) =>
-          supabase.from("section_games").update({ display_order: u.display_order }).eq("id", u.id)
-        )
-      );
-      const error = results.find((r) => r.error)?.error;
-      if (error) throw error;
-    } catch (err) {
-      console.error("Failed to persist reorder:", err);
-      if (activeSectionId) loadSectionMappings(activeSectionId);
+    await persistOrder(mappings);
+  };
+
+  // Touch drag handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent, index: number) => {
+    if (searchQuery) return;
+    const touch = e.touches[0];
+    touchStartY.current = touch.clientY;
+    setTouchDragIndex(index);
+    setTouchCurrentIndex(index);
+
+    // Get the card height for calculating swap position
+    const card = touchCardRefs.current.get(index);
+    if (card) {
+      touchItemHeight.current = card.offsetHeight;
     }
   };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchDragIndex === null || searchQuery) return;
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    const deltaY = touch.clientY - touchStartY.current;
+    const cardHeight = touchItemHeight.current;
+
+    if (cardHeight === 0) return;
+
+    // Calculate how many positions we've moved
+    const positionDelta = Math.round(deltaY / cardHeight);
+    const newIndex = Math.max(0, Math.min(mappings.length - 1, touchDragIndex + positionDelta));
+
+    if (newIndex !== touchCurrentIndex) {
+      setTouchCurrentIndex(newIndex);
+    }
+  };
+
+  const handleTouchEnd = async () => {
+    if (touchDragIndex === null || touchCurrentIndex === null || touchDragIndex === touchCurrentIndex) {
+      setTouchDragIndex(null);
+      setTouchCurrentIndex(null);
+      return;
+    }
+
+    // Apply the reorder
+    const updated = [...mappings];
+    const [moved] = updated.splice(touchDragIndex, 1);
+    updated.splice(touchCurrentIndex, 0, moved);
+    setMappings(updated);
+
+    setTouchDragIndex(null);
+    setTouchCurrentIndex(null);
+
+    await persistOrder(updated);
+  };
+
+  const isMobileDragging = (index: number) => touchDragIndex === index;
+  const isMobileDropTarget = (index: number) =>
+    touchDragIndex !== null && touchCurrentIndex === index && touchDragIndex !== index;
 
   // Add Game Mapping
   const handleAddGame = async (e: React.FormEvent) => {
@@ -827,71 +894,99 @@ export default function AdminHomepageSectionsPage() {
 
                 {/* Mobile cards */}
                 <div className="md:hidden divide-y divide-[#262626]/60">
-                  {paginatedMappings.map((mapping) => (
-                    <div key={mapping.id} className="flex items-center gap-3 p-3">
-                      <div className="relative w-12 h-16 flex-shrink-0 bg-black/30 rounded-md border border-[#262626] overflow-hidden shadow-sm">
-                        <Image
-                          src={mapping.image_url}
-                          alt={mapping.title}
-                          fill
-                          sizes="48px"
-                          className="object-cover object-center"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0 space-y-1">
-                        <p className="text-white font-bold text-xs leading-tight truncate">{mapping.title}</p>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</span>
-                          {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
-                            <span className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</span>
-                          )}
-                          {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
-                            <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">-{mapping.discount_percentage}%</span>
+                  {paginatedMappings.map((mapping) => {
+                    const fullIndex = mappings.findIndex((m) => m.id === mapping.id);
+                    const isDragging = isMobileDragging(fullIndex);
+                    const isDropTarget = isMobileDropTarget(fullIndex);
+                    return (
+                      <div
+                        key={mapping.id}
+                        ref={(el) => {
+                          if (el) touchCardRefs.current.set(fullIndex, el);
+                          else touchCardRefs.current.delete(fullIndex);
+                        }}
+                        className={`flex items-center gap-2 p-3 transition-all duration-150 ${
+                          isDragging
+                            ? "opacity-50 scale-[0.98] bg-primary/5"
+                            : isDropTarget
+                              ? "bg-primary/10 border-t-2 border-t-primary"
+                              : ""
+                        }`}
+                      >
+                        <div
+                          onTouchStart={(e) => handleTouchStart(e, fullIndex)}
+                          onTouchMove={handleTouchMove}
+                          onTouchEnd={handleTouchEnd}
+                          className={`flex-shrink-0 touch-none ${
+                            searchQuery ? "opacity-30 pointer-events-none" : "cursor-grab active:cursor-grabbing"
+                          }`}
+                        >
+                          <GripVertical className="w-5 h-5 text-muted-foreground/50" />
+                        </div>
+                        <div className="relative w-12 h-16 flex-shrink-0 bg-black/30 rounded-md border border-[#262626] overflow-hidden shadow-sm">
+                          <Image
+                            src={mapping.image_url}
+                            alt={mapping.title}
+                            fill
+                            sizes="48px"
+                            className="object-cover object-center"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <p className="text-white font-bold text-xs leading-tight truncate">{mapping.title}</p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-xs font-black text-white">₹{mapping.selling_price ?? 0}</span>
+                            {mapping.original_price != null && mapping.original_price > (mapping.selling_price ?? 0) && (
+                              <span className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</span>
+                            )}
+                            {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
+                              <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">-{mapping.discount_percentage}%</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center flex-shrink-0 relative">
+                          <button
+                            type="button"
+                            onClick={() => setOpenMenuId(openMenuId === mapping.id ? null : mapping.id)}
+                            className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+                            title="More actions"
+                          >
+                            <MoreVertical className="w-5 h-5" />
+                          </button>
+                          {openMenuId === mapping.id && (
+                            <>
+                              <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
+                              <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
+                                <button
+                                  onClick={() => { handleDirectToggleVisible(mapping); setOpenMenuId(null); }}
+                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                                >
+                                  {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
+                                  {mapping.visible ? "Hide from Store" : "Show on Store"}
+                                </button>
+                                <button
+                                  onClick={() => { openEditModal(mapping); setOpenMenuId(null); }}
+                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+                                >
+                                  <Edit2 className="w-4 h-4 text-muted-foreground" />
+                                  Edit Game
+                                </button>
+                                <div className="border-t border-[#262626] my-1" />
+                                <button
+                                  disabled={actionLoading}
+                                  onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); setOpenMenuId(null); }}
+                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Remove
+                                </button>
+                              </div>
+                            </>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center flex-shrink-0 relative">
-                        <button
-                          type="button"
-                          onClick={() => setOpenMenuId(openMenuId === mapping.id ? null : mapping.id)}
-                          className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
-                          title="More actions"
-                        >
-                          <MoreVertical className="w-5 h-5" />
-                        </button>
-                        {openMenuId === mapping.id && (
-                          <>
-                            <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                            <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
-                              <button
-                                onClick={() => { handleDirectToggleVisible(mapping); setOpenMenuId(null); }}
-                                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-                              >
-                                {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
-                                {mapping.visible ? "Hide from Store" : "Show on Store"}
-                              </button>
-                              <button
-                                onClick={() => { openEditModal(mapping); setOpenMenuId(null); }}
-                                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-                              >
-                                <Edit2 className="w-4 h-4 text-muted-foreground" />
-                                Edit Game
-                              </button>
-                              <div className="border-t border-[#262626] my-1" />
-                              <button
-                                disabled={actionLoading}
-                                onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); setOpenMenuId(null); }}
-                                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Remove
-                              </button>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Pagination */}
