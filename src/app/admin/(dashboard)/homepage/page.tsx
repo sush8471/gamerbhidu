@@ -4,7 +4,8 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { 
   Home, Plus, GripVertical, Loader2, AlertTriangle, CheckCircle, Layers,
-  Trash2, Eye, EyeOff, X, Edit2, Search, ChevronLeft, ChevronRight, MoreVertical
+  Trash2, Eye, EyeOff, X, Edit2, Search, ChevronLeft, ChevronRight, MoreVertical,
+  PanelRightOpen
 } from "lucide-react";
 import Image from "next/image";
 import CombosTab from "@/components/admin/combos-tab";
@@ -75,6 +76,9 @@ export default function AdminHomepageSectionsPage() {
 
   // 3-dot menu state
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
+  // Mobile sections panel
+  const [sectionsPanelOpen, setSectionsPanelOpen] = useState(false);
 
   // Edit game modal
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -686,8 +690,8 @@ export default function AdminHomepageSectionsPage() {
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Tab Selectors (Segmented Control style) */}
-      <div className="relative max-w-fit">
+      {/* Section Tabs - Desktop */}
+      <div className="hidden md:block relative max-w-fit">
         <div className="flex p-1 bg-[#050505]/60 border border-[#262626] rounded-xl overflow-x-auto max-w-fit">
           {sections.map((section) => {
             const isActive = !showCombos && activeSectionId === section.id;
@@ -695,7 +699,7 @@ export default function AdminHomepageSectionsPage() {
               <button
                 key={section.id}
                 onClick={() => { setShowCombos(false); setActiveSectionId(section.id); }}
-                className={`px-4 py-2 text-xs lg:text-sm font-bold tracking-wide transition-all rounded-lg cursor-pointer whitespace-nowrap ${
+                className={`px-4 py-2 text-sm font-bold tracking-wide transition-all rounded-lg cursor-pointer whitespace-nowrap ${
                   isActive
                     ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_12px_rgba(0,210,255,0.05)]"
                     : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
@@ -707,7 +711,7 @@ export default function AdminHomepageSectionsPage() {
           })}
           <button
             onClick={() => { setShowCombos(true); setActiveSectionId(null); }}
-            className={`px-4 py-2 text-xs lg:text-sm font-bold tracking-wide transition-all rounded-lg cursor-pointer whitespace-nowrap ${
+            className={`px-4 py-2 text-sm font-bold tracking-wide transition-all rounded-lg cursor-pointer whitespace-nowrap ${
               showCombos
                 ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_12px_rgba(0,210,255,0.05)]"
                 : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
@@ -717,9 +721,74 @@ export default function AdminHomepageSectionsPage() {
             Value Combos
           </button>
         </div>
-        {/* Right-edge overflow indicator */}
-        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#050505] to-transparent rounded-r-xl lg:hidden" />
       </div>
+
+      {/* Section Selector - Mobile */}
+      <div className="md:hidden">
+        <button
+          onClick={() => setSectionsPanelOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#111111] border border-[#262626] rounded-xl text-sm font-bold text-white cursor-pointer"
+        >
+          <PanelRightOpen className="w-4 h-4 text-muted-foreground" />
+          {showCombos ? "Value Combos" : sections.find(s => s.id === activeSectionId)?.name || "Select Section"}
+        </button>
+      </div>
+
+      {/* Mobile Sections Side Panel */}
+      {sectionsPanelOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setSectionsPanelOpen(false)} />
+          <div className="absolute right-0 top-0 bottom-0 w-72 bg-[#111111] border-l border-[#262626] shadow-2xl flex flex-col animate-in slide-in-from-right duration-200">
+            <div className="flex items-center justify-between p-4 border-b border-[#262626]">
+              <h3 className="text-sm font-bold text-white">Sections</h3>
+              <button
+                onClick={() => setSectionsPanelOpen(false)}
+                className="p-1.5 text-muted-foreground hover:text-white rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2">
+              {sections.map((section) => {
+                const isActive = !showCombos && activeSectionId === section.id;
+                return (
+                  <button
+                    key={section.id}
+                    onClick={() => {
+                      setShowCombos(false);
+                      setActiveSectionId(section.id);
+                      setSectionsPanelOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    {section.name}
+                  </button>
+                );
+              })}
+              <div className="border-t border-[#262626] my-2" />
+              <button
+                onClick={() => {
+                  setShowCombos(true);
+                  setActiveSectionId(null);
+                  setSectionsPanelOpen(false);
+                }}
+                className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+                  showCombos
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5 inline-block mr-2 -mt-0.5" />
+                Value Combos
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showCombos ? (
         <CombosTab />
