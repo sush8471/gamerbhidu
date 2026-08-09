@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Rocket } from "lucide-react";
@@ -9,6 +9,8 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import GameCardRowSkeleton from "@/components/ui/game-card-row-skeleton";
 import { WishlistButton } from "@/components/ui/wishlist-button";
+import { useStorefrontSync } from "@/hooks/use-storefront-sync";
+const SECTION_TABLES = ["section_games", "games", "homepage_sections"];
 
 type Game = {
   id: string;
@@ -25,21 +27,23 @@ export default function RecentlyLaunched() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadGames() {
-      try {
-        const { data } = await getGamesBySection("recently-launched");
-        if (data) {
-          setGames(data);
-        }
-      } catch (err) {
-        console.error("Failed to load recently launched:", err);
-      } finally {
-        setLoading(false);
-      }
+  const loadGames = useCallback(async (isInitial = false) => {
+    if (isInitial) setLoading(true);
+    try {
+      const { data } = await getGamesBySection("recently-launched");
+      if (data) setGames(data);
+    } catch (err) {
+      console.error("Failed to load recently launched:", err);
+    } finally {
+      if (isInitial) setLoading(false);
     }
-    loadGames();
   }, []);
+
+  useEffect(() => {
+    void loadGames(true);
+  }, [loadGames]);
+
+  useStorefrontSync(() => loadGames(false), { tables: SECTION_TABLES });
 
   if (loading) {
     return (
@@ -67,7 +71,7 @@ export default function RecentlyLaunched() {
           <CarouselNav scrollRef={scrollContainerRef} itemCount={games.length} show={games.length > 1} />
         </div>
 
-        <div ref={scrollContainerRef} className="overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
+        <div ref={scrollContainerRef} className="overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:-mx-6 md:px-6 lg:mx-0 lg:px-0">
           {games.map((game) => {
             const hasDiscount = !!game.discount_percentage;
 

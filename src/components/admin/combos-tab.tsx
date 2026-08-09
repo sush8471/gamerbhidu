@@ -10,6 +10,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import GamePicker from "@/components/admin/games/GamePicker";
+import MobileActionSheet from "@/components/admin/MobileActionSheet";
 
 type DbCombo = {
   id: string;
@@ -49,6 +50,7 @@ export default function CombosTab() {
 
   const [pendingToggleId, setPendingToggleId] = useState<string | null>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [mobileActionCombo, setMobileActionCombo] = useState<DbCombo | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -476,44 +478,16 @@ export default function CombosTab() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center flex-shrink-0 relative">
-                    <button
-                      onClick={() => setOpenMenuId(openMenuId === combo.id ? null : combo.id)}
-                      className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
-                      title="More actions"
-                    >
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
-                    {openMenuId === combo.id && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                        <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
-                          <button
-                            onClick={() => { openEditModal(combo); setOpenMenuId(null); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-                          >
-                            <Edit2 className="w-4 h-4 text-muted-foreground" />
-                            Edit Combo
-                          </button>
-                          <button
-                            onClick={() => { handleDirectToggleVisible(combo); setOpenMenuId(null); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-                          >
-                            {combo.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
-                            {combo.visible ? "Hide from Store" : "Show on Store"}
-                          </button>
-                          <div className="border-t border-[#262626] my-1" />
-                          <button
-                            onClick={() => { setComboToDelete(combo); setDeleteError(null); setDeleteOpen(true); setOpenMenuId(null); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
+                    <div className="flex items-center flex-shrink-0">
+                      <button
+                        onClick={() => setMobileActionCombo(combo)}
+                        className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+                        title="More actions"
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                    </div>
+
                 </div>
               ))}
             </div>
@@ -812,6 +786,41 @@ export default function CombosTab() {
           </div>
         </div>
       )}
+
+      {/* Mobile Action Sheet */}
+      <MobileActionSheet
+        open={!!mobileActionCombo}
+        onOpenChange={(open) => !open && setMobileActionCombo(null)}
+        title={mobileActionCombo?.title ?? ""}
+        actions={[
+          {
+            label: "Edit Combo",
+            icon: <Edit2 className="w-4 h-4" />,
+            onClick: () => {
+              if (mobileActionCombo) openEditModal(mobileActionCombo);
+            },
+          },
+          {
+            label: mobileActionCombo?.visible ? "Hide from Store" : "Show on Store",
+            icon: mobileActionCombo?.visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />,
+            variant: "muted",
+            onClick: () => {
+              if (mobileActionCombo) handleDirectToggleVisible(mobileActionCombo);
+            },
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="w-4 h-4" />,
+            variant: "destructive",
+            disabled: actionLoading,
+            onClick: () => {
+              if (mobileActionCombo) setComboToDelete(mobileActionCombo);
+              setDeleteError(null);
+              setDeleteOpen(true);
+            },
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -19,6 +19,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import GameDetailSkeleton from "@/components/ui/game-detail-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 
 
 // FAQ Item Component
@@ -89,56 +90,54 @@ export default function GameDetailPage() {
     }
   };
 
-  // Fetch game from local database
-  useEffect(() => {
-    async function fetchGame() {
-      console.log('🔍 Fetching game with slug:', slug);
-      const { data, error } = await getGameBySlug(slug);
-      console.log('📦 Game fetch result:', { data, error });
+  const loadGame = useCallback(async (isInitial = false) => {
+    if (isInitial) setLoading(true);
+    const { data, error } = await getGameBySlug(slug);
 
-      if (data) {
-        console.log('✅ Game found:', data.title);
-        setGame(data);
+    if (data) {
+      setGame(data);
 
-        // Fetch similar games based on genre and tags
-        const { data: allGames } = await getGames({
-          genre: data.genre,
-          limit: 100
-        });
+      const { data: allGames } = await getGames({
+        genre: data.genre,
+        limit: 100,
+      });
 
-        if (allGames) {
-          // Calculate similarity score
-          const scored = allGames
-            .filter(g => g.id !== data.id)
-            .map(g => {
-              let score = 0;
-              if (data.series && g.series === data.series) score += 10;
-              const matchingTags = g.tags.filter(t => data.tags.includes(t)).length;
-              score += matchingTags * 2;
-              const commonGenres = g.genre.filter(gen => data.genre.includes(gen)).length;
-              score += commonGenres;
-              return { game: g, score };
-            })
-            .filter(item => item.score > 0)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 6)
-            .map(item => item.game);
+      if (allGames) {
+        const scored = allGames
+          .filter((g) => g.id !== data.id)
+          .map((g) => {
+            let score = 0;
+            if (data.series && g.series === data.series) score += 10;
+            const matchingTags = g.tags.filter((t) => data.tags.includes(t)).length;
+            score += matchingTags * 2;
+            const commonGenres = g.genre.filter((gen) => data.genre.includes(gen)).length;
+            score += commonGenres;
+            return { game: g, score };
+          })
+          .filter((item) => item.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 6)
+          .map((item) => item.game);
 
-          setSimilarGames(scored);
-        }
-      } else {
-        console.error('❌ Game not found or error:', error);
+        setSimilarGames(scored);
       }
-      setLoading(false);
+    } else if (isInitial) {
+      console.error("Game not found or error:", error);
     }
-    fetchGame();
+    if (isInitial) setLoading(false);
+  }, [slug]);
+
+  useEffect(() => {
+    void loadGame(true);
 
     const handleScroll = () => {
       setShowStickyNav(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [slug]);
+  }, [loadGame]);
+
+  useStorefrontSync(() => loadGame(false), { tables: ["games"] });
 
   // Fetch Steam data when game is loaded
   useEffect(() => {

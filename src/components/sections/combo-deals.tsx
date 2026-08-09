@@ -9,6 +9,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import ComboDealSkeleton from "@/components/ui/combo-deal-skeleton";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 import { CheckoutModal } from "@/components/ui/checkout-modal";
 import { useAuth } from "@/context/AuthContext";
 
@@ -199,26 +200,33 @@ export default function ComboDealSection() {
   const [comboCheckoutEmail, setComboCheckoutEmail] = useState("");
   const [checkoutBundle, setCheckoutBundle] = useState<ComboData | null>(null);
 
-  const loadCombos = useCallback(async () => {
+  const loadCombos = useCallback(async (isInitial = false) => {
+    if (isInitial) setLoading(true);
     try {
       const { data, error: fetchError } = await getCombos();
       if (fetchError) throw new Error(fetchError);
       if (data && data.length > 0) {
         setCombos(data.map(transformCombo));
+        setError(null);
       } else {
+        setCombos([]);
         setError("No combos found");
       }
     } catch (err: any) {
       console.error("Failed to load combos:", err);
       setError(err?.message || "Failed to load combos");
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    loadCombos();
+    void loadCombos(true);
   }, [loadCombos]);
+
+  useStorefrontSync(() => loadCombos(false), {
+    tables: ["combos", "combo_games", "games"],
+  });
 
   const handleComboClick = (combo: ComboData) => {
     if (combo.hasGameList) {
@@ -333,7 +341,7 @@ export default function ComboDealSection() {
 
           <div 
             ref={scrollContainerRef} 
-            className="lg:grid lg:grid-cols-3 lg:gap-4 overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0"
+            className="lg:grid lg:grid-cols-3 lg:gap-4 overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:-mx-6 md:px-6 lg:mx-0 lg:px-0"
           >
             {combos.map((combo) => {
               const ownedInBundle = (combo.games || []).filter(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
@@ -9,6 +9,8 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import GameCardRowSkeleton from "@/components/ui/game-card-row-skeleton";
 import { WishlistButton } from "@/components/ui/wishlist-button";
+import { useStorefrontSync } from "@/hooks/use-storefront-sync";
+const SECTION_TABLES = ["section_games", "games", "homepage_sections"];
 
 type Game = {
   id: string;
@@ -23,21 +25,23 @@ export default function UpcomingGames() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadGames() {
-      try {
-        const { data } = await getGamesBySection("upcoming-games");
-        if (data) {
-          setGames(data);
-        }
-      } catch (err) {
-        console.error("Failed to load upcoming games:", err);
-      } finally {
-        setLoading(false);
-      }
+  const loadGames = useCallback(async (isInitial = false) => {
+    if (isInitial) setLoading(true);
+    try {
+      const { data } = await getGamesBySection("upcoming-games");
+      if (data) setGames(data);
+    } catch (err) {
+      console.error("Failed to load upcoming games:", err);
+    } finally {
+      if (isInitial) setLoading(false);
     }
-    loadGames();
   }, []);
+
+  useEffect(() => {
+    void loadGames(true);
+  }, [loadGames]);
+
+  useStorefrontSync(() => loadGames(false), { tables: SECTION_TABLES });
 
   if (loading) {
     return (
@@ -61,7 +65,7 @@ export default function UpcomingGames() {
           <CarouselNav scrollRef={scrollContainerRef} itemCount={games.length} show={games.length > 1} />
         </div>
 
-        <div ref={scrollContainerRef} className="overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
+        <div ref={scrollContainerRef} className="overflow-x-auto flex gap-3 pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:-mx-6 md:px-6 lg:mx-0 lg:px-0">
           {games.length === 0 ? (
             // Empty state
             <div className="w-full text-center py-12">
@@ -80,7 +84,7 @@ export default function UpcomingGames() {
                       alt={game.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105 opacity-80 group-hover:opacity-100"
-                      sizes="(max-width: 768px) 60vw, 16vw"
+                      sizes="(max-width: 768px) 70vw, 16vw"
                     />
 
                     <div className="absolute top-2 right-2 bg-white/15 text-white text-xs font-bold px-2 py-1 rounded-md backdrop-blur-sm flex items-center gap-1">

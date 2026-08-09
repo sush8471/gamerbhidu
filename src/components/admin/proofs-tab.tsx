@@ -9,6 +9,7 @@ import {
 import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import MobileActionSheet from "@/components/admin/MobileActionSheet";
 
 type DbProof = {
   id: string;
@@ -41,6 +42,7 @@ export default function ProofsTab() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [mobileActionProof, setMobileActionProof] = useState<DbProof | null>(null);
 
   const [formData, setFormData] = useState({
     label: "",
@@ -357,44 +359,16 @@ export default function ProofsTab() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center flex-shrink-0 relative">
-                    <button
-                      onClick={() => setOpenMenuId(openMenuId === proof.id ? null : proof.id)}
-                      className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
-                      title="More actions"
-                    >
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
-                    {openMenuId === proof.id && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                        <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
-                          <button
-                            onClick={() => { openEditModal(proof); setOpenMenuId(null); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-                          >
-                            <Edit2 className="w-4 h-4 text-muted-foreground" />
-                            Edit Proof
-                          </button>
-                          <button
-                            onClick={() => { handleDirectToggleVisible(proof); setOpenMenuId(null); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-                          >
-                            {proof.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
-                            {proof.visible ? "Hide from Homepage" : "Show on Homepage"}
-                          </button>
-                          <div className="border-t border-[#262626] my-1" />
-                          <button
-                            onClick={() => { setProofToDelete(proof); setDeleteError(null); setDeleteOpen(true); setOpenMenuId(null); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
+                    <div className="flex items-center flex-shrink-0">
+                      <button
+                        onClick={() => setMobileActionProof(proof)}
+                        className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+                        title="More actions"
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                    </div>
+
                 </div>
               ))}
             </div>
@@ -706,6 +680,40 @@ export default function ProofsTab() {
           </div>
         </div>
       )}
+
+      {/* Mobile Action Sheet */}
+      <MobileActionSheet
+        open={!!mobileActionProof}
+        onOpenChange={(open) => !open && setMobileActionProof(null)}
+        title={mobileActionProof?.label ?? ""}
+        actions={[
+          {
+            label: "Edit Proof",
+            icon: <Edit2 className="w-4 h-4" />,
+            onClick: () => {
+              if (mobileActionProof) openEditModal(mobileActionProof);
+            },
+          },
+          {
+            label: mobileActionProof?.visible ? "Hide from Homepage" : "Show on Homepage",
+            icon: mobileActionProof?.visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />,
+            variant: "muted",
+            onClick: () => {
+              if (mobileActionProof) handleDirectToggleVisible(mobileActionProof);
+            },
+          },
+          {
+            label: "Delete",
+            icon: <Trash2 className="w-4 h-4" />,
+            variant: "destructive",
+            onClick: () => {
+              if (mobileActionProof) setProofToDelete(mobileActionProof);
+              setDeleteError(null);
+              setDeleteOpen(true);
+            },
+          },
+        ]}
+      />
     </div>
   );
 }

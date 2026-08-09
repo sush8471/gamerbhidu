@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSteam } from "@/context/SteamContext";
@@ -10,6 +10,7 @@ import { CarouselNav } from "@/components/ui/carousel-nav";
 import { WishlistButton } from "@/components/ui/wishlist-button";
 import { SteamOwnedBadge } from "@/components/ui/steam-owned-badge";
 import { Sparkles, Gamepad2 } from "lucide-react";
+import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 
 export default function SteamRecommendations() {
   const { steamProfile, ownedAppIds, isGameOwned } = useSteam();
@@ -18,72 +19,77 @@ export default function SteamRecommendations() {
   const [loading, setLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    async function calculateRecommendations() {
-      if (!steamProfile || ownedAppIds.length === 0) {
-        setLoading(false);
+  const calculateRecommendations = useCallback(async (isInitial = false) => {
+    if (!steamProfile || ownedAppIds.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      if (isInitial) setLoading(true);
+      const { data: allGames } = await getGames({ limit: 200 });
+
+      if (!allGames || allGames.length === 0) {
+        if (isInitial) setLoading(false);
         return;
       }
 
-      try {
-        setLoading(true);
-        const { data: allGames } = await getGames({ limit: 200 });
+      // 1. Identify owned games in our database
+      const ownedGamesInDb = allGames.filter(
+        (g) => g.steam_app_id && ownedAppIds.includes(g.steam_app_id)
+      );
 
-        if (!allGames || allGames.length === 0) {
-          setLoading(false);
-          return;
-        }
-
-        // 1. Identify owned games in our database
-        const ownedGamesInDb = allGames.filter(
-          (g) => g.steam_app_id && ownedAppIds.includes(g.steam_app_id)
-        );
-
-        // 2. Tally genres from user's owned games
-        const genreCounts: Record<string, number> = {};
-        ownedGamesInDb.forEach((g) => {
-          (g.genre || []).forEach((genre) => {
-            genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-          });
+      // 2. Tally genres from user's owned games
+      const genreCounts: Record<string, number> = {};
+      ownedGamesInDb.forEach((g) => {
+        (g.genre || []).forEach((genre) => {
+          genreCounts[genre] = (genreCounts[genre] || 0) + 1;
         });
+      });
 
-        // Get top 3 favorite genres (default to Action/RPG if no matching games in DB)
-        const sortedGenres = Object.keys(genreCounts).sort(
-          (a, b) => genreCounts[b] - genreCounts[a]
-        );
-        const topGenres = sortedGenres.slice(0, 3);
-        setFavoriteGenres(topGenres);
+      // Get top 3 favorite genres (default to Action/RPG if no matching games in DB)
+      const sortedGenres = Object.keys(genreCounts).sort(
+        (a, b) => genreCounts[b] - genreCounts[a]
+      );
+      const topGenres = sortedGenres.slice(0, 3);
+      setFavoriteGenres(topGenres);
 
-        // 3. Filter catalog for games user DOES NOT own yet, matching top genres
-        const unownedGames = allGames.filter(
-          (g) => !g.steam_app_id || !ownedAppIds.includes(g.steam_app_id)
-        );
+      // 3. Filter catalog for games user DOES NOT own yet, matching top genres
+      const unownedGames = allGames.filter(
+        (g) => !g.steam_app_id || !ownedAppIds.includes(g.steam_app_id)
+      );
 
-        // Score unowned games by genre overlap
-        const scoredGames = unownedGames
-          .map((g) => {
-            let score = 0;
-            (g.genre || []).forEach((genre) => {
-              if (topGenres.includes(genre)) {
-                score += 2;
-              }
-            });
-            return { game: g, score };
-          })
-          .filter((item) => item.score > 0)
-          .sort((a, b) => b.score - a.score)
-          .map((item) => item.game);
+      // Score unowned games by genre overlap
+      const scoredGames = unownedGames
+        .map((g) => {
+          let score = 0;
+          (g.genre || []).forEach((genre) => {
+            if (topGenres.includes(genre)) {
+              score += 2;
+            }
+          });
+          return { game: g, score };
+        })
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map((item) => item.game);
 
-        setRecommendedGames(scoredGames.slice(0, 8));
-      } catch (err) {
-        console.error("Failed to generate Steam recommendations:", err);
-      } finally {
-        setLoading(false);
-      }
+      setRecommendedGames(scoredGames.slice(0, 8));
+    } catch (err) {
+      console.error("Failed to generate Steam recommendations:", err);
+    } finally {
+      if (isInitial) setLoading(false);
     }
-
-    calculateRecommendations();
   }, [steamProfile, ownedAppIds]);
+
+  useEffect(() => {
+    void calculateRecommendations(true);
+  }, [calculateRecommendations]);
+
+  useStorefrontSync(() => calculateRecommendations(false), {
+    tables: ["games"],
+    enabled: !!steamProfile && ownedAppIds.length > 0,
+  });
 
   if (!steamProfile || recommendedGames.length === 0) {
     return null;
@@ -114,7 +120,7 @@ export default function SteamRecommendations() {
 
         <div
           ref={scrollRef}
-          className="overflow-x-auto flex gap-4 pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0"
+          className="overflow-x-auto flex gap-4 pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:-mx-6 md:px-6 lg:mx-0 lg:px-0"
         >
           {recommendedGames.map((game) => {
             const isOwned = isGameOwned(game.steam_app_id);

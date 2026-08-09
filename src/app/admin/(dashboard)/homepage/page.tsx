@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import GamePicker from "@/components/admin/games/GamePicker";
 import GameFormModal from "@/components/admin/games/GameFormModal";
+import MobileActionSheet from "@/components/admin/MobileActionSheet";
 import type { GameFormData } from "@/types/game";
 
 type Section = {
@@ -79,6 +80,9 @@ export default function AdminHomepageSectionsPage() {
 
   // Mobile sections panel
   const [sectionsPanelOpen, setSectionsPanelOpen] = useState(false);
+
+  // Mobile action sheet
+  const [mobileActionMapping, setMobileActionMapping] = useState<GameMapping | null>(null);
 
   // Edit game modal
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -1020,46 +1024,16 @@ export default function AdminHomepageSectionsPage() {
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center flex-shrink-0 relative">
-                          <button
-                            type="button"
-                            onClick={() => setOpenMenuId(openMenuId === mapping.id ? null : mapping.id)}
-                            className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
-                            title="More actions"
-                          >
-                            <MoreVertical className="w-5 h-5" />
-                          </button>
-                          {openMenuId === mapping.id && (
-                            <>
-                              <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                              <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
-                                <button
-                                  onClick={() => { handleDirectToggleVisible(mapping); setOpenMenuId(null); }}
-                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-                                >
-                                  {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
-                                  {mapping.visible ? "Hide from Store" : "Show on Store"}
-                                </button>
-                                <button
-                                  onClick={() => { openEditModal(mapping); setOpenMenuId(null); }}
-                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
-                                >
-                                  <Edit2 className="w-4 h-4 text-muted-foreground" />
-                                  Edit Game
-                                </button>
-                                <div className="border-t border-[#262626] my-1" />
-                                <button
-                                  disabled={actionLoading}
-                                  onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); setOpenMenuId(null); }}
-                                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Remove
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
+                         <div className="flex items-center flex-shrink-0">
+                           <button
+                             type="button"
+                             onClick={() => setMobileActionMapping(mapping)}
+                             className="p-2.5 text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all cursor-pointer"
+                             title="More actions"
+                           >
+                             <MoreVertical className="w-5 h-5" />
+                           </button>
+                         </div>
                       </div>
                     );
                   })}
@@ -1132,6 +1106,37 @@ export default function AdminHomepageSectionsPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile Action Sheet */}
+      <MobileActionSheet
+        open={!!mobileActionMapping}
+        onOpenChange={(open) => { if (!open) setMobileActionMapping(null); }}
+        title={mobileActionMapping?.title ?? ""}
+        description={`ID: ${mobileActionMapping?.id?.slice(0, 8)}`}
+        actions={
+          mobileActionMapping
+            ? [
+                {
+                  label: mobileActionMapping.visible ? "Hide from Store" : "Show on Store",
+                  icon: mobileActionMapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />,
+                  onClick: () => handleDirectToggleVisible(mobileActionMapping),
+                },
+                {
+                  label: "Edit Game",
+                  icon: <Edit2 className="w-4 h-4 text-muted-foreground" />,
+                  onClick: () => openEditModal(mobileActionMapping),
+                },
+                {
+                  label: "Remove",
+                  icon: <Trash2 className="w-4 h-4" />,
+                  variant: "destructive" as const,
+                  disabled: actionLoading,
+                  onClick: () => { setGameToDelete(mobileActionMapping); setDeleteModalOpen(true); },
+                },
+              ]
+            : []
+        }
+      />
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && gameToDelete && (

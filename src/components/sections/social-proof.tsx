@@ -7,6 +7,7 @@ import { GlareCard } from "@/components/ui/glare-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import { getSocialProofs, SocialProof } from "@/lib/local-db";
+import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 
 const FALLBACK_PROOFS: SocialProof[] = [
   {
@@ -87,29 +88,24 @@ export default function SocialProof() {
   const [proofImages, setProofImages] = useState<SocialProof[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      const { data, error } = await getSocialProofs();
-      if (cancelled) return;
-
-      // Use DB when the table exists (even if empty). Fall back only on fetch failure
-      // so the section still works before the migration is applied.
-      if (error) {
-        setProofImages(FALLBACK_PROOFS);
-      } else {
-        setProofImages(data);
-      }
-      setLoading(false);
+  const loadProofs = useCallback(async (isInitial = false) => {
+    if (isInitial) setLoading(true);
+    const { data, error } = await getSocialProofs();
+    // Use DB when the table exists (even if empty). Fall back only on fetch failure
+    // so the section still works before the migration is applied.
+    if (error) {
+      setProofImages(FALLBACK_PROOFS);
+    } else {
+      setProofImages(data);
     }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
+    if (isInitial) setLoading(false);
   }, []);
+
+  useEffect(() => {
+    void loadProofs(true);
+  }, [loadProofs]);
+
+  useStorefrontSync(() => loadProofs(false), { tables: ["social_proofs"] });
 
   const goNext = useCallback(() => {
     setSelectedIndex((prev) =>

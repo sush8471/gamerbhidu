@@ -22,6 +22,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { getGames } from "@/lib/local-db";
 import { Suspense } from "react";
 import GamesPageSkeleton from "@/components/ui/games-page-skeleton";
+import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Sheet,
@@ -296,8 +297,9 @@ function BrowsePageInner() {
   const totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
 
   // ── Fetch games ──
-  const fetchGames = useCallback(async () => {
-    setLoading(true);
+  const fetchGames = useCallback(async (opts?: { silent?: boolean }) => {
+    const silent = opts?.silent === true;
+    if (!silent) setLoading(true);
     try {
       const params: Parameters<typeof getGames>[0] = {
         limit: ITEMS_PER_PAGE,
@@ -328,13 +330,15 @@ function BrowsePageInner() {
     } catch (err) {
       console.error("Failed to fetch games:", err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [currentPage, selectedGenres, selectedPriceRange, onSaleOnly, searchQuery]);
 
   useEffect(() => {
-    fetchGames();
+    void fetchGames();
   }, [fetchGames]);
+
+  useStorefrontSync(() => fetchGames({ silent: true }), { tables: ["games"] });
 
   // ── Load genres once ──
   useEffect(() => {
