@@ -72,9 +72,6 @@ export default function AdminHomepageSectionsPage() {
   const [selectedGameId, setSelectedGameId] = useState("");
   const [addModalOpen, setAddModalOpen] = useState(false);
 
-  // Visibility toggle (2-tap confirm)
-  const [pendingToggleId, setPendingToggleId] = useState<string | null>(null);
-
   // 3-dot menu state
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
@@ -405,34 +402,6 @@ export default function AdminHomepageSectionsPage() {
     }
   };
 
-  // Visibility toggle (2-tap confirm) — kept for potential future inline use
-  const handleToggleVisible = async (mapping: GameMapping) => {
-    if (pendingToggleId === mapping.game_id) {
-      setPendingToggleId(null);
-      const updated = !mapping.visible;
-      setMappings((prev) =>
-        prev.map((m) => (m.game_id === mapping.game_id ? { ...m, visible: updated } : m))
-      );
-      try {
-        const { error } = await supabase
-          .from("games")
-          .update({ visible: updated })
-          .eq("id", mapping.game_id);
-        if (error) throw error;
-        toast.success(updated ? "Game is now visible on storefront" : "Game is now hidden from storefront");
-      } catch {
-        setMappings((prev) =>
-          prev.map((m) => (m.game_id === mapping.game_id ? { ...m, visible: mapping.visible } : m))
-        );
-        toast.error("Failed to update visibility");
-      }
-    } else {
-      setPendingToggleId(mapping.game_id);
-      setTimeout(() => setPendingToggleId((prev) => (prev === mapping.game_id ? null : prev)), 3000);
-    }
-  };
-
-  // Direct visibility toggle — instant, used from 3-dot menu
   const handleDirectToggleVisible = async (mapping: GameMapping) => {
     const updated = !mapping.visible;
     setMappings((prev) =>
@@ -696,7 +665,7 @@ export default function AdminHomepageSectionsPage() {
     <div className="space-y-6 animate-fadeIn">
       {/* Section Tabs - Desktop */}
       <div className="hidden md:flex items-center justify-between">
-        <div className="flex p-1 bg-[#050505]/60 border border-[#262626] rounded-xl overflow-x-auto max-w-fit">
+        <div className="flex p-1 bg-background/60 border border-border rounded-xl overflow-x-auto max-w-fit">
           {sections.map((section) => {
             const isActive = !showCombos && activeSectionId === section.id;
             return (
@@ -738,7 +707,7 @@ export default function AdminHomepageSectionsPage() {
       <div className="md:hidden flex justify-end">
         <button
           onClick={() => setSectionsPanelOpen(true)}
-          className="flex items-center gap-2 px-3 py-2 bg-[#111111] border border-[#262626] rounded-xl text-sm font-bold text-white cursor-pointer"
+          className="flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-xl text-sm font-bold text-white cursor-pointer"
         >
           {showCombos ? "Value Combos" : sections.find(s => s.id === activeSectionId)?.name || "Select Section"}
           <PanelRightOpen className="w-4 h-4 text-muted-foreground" />
@@ -749,8 +718,8 @@ export default function AdminHomepageSectionsPage() {
       {sectionsPanelOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setSectionsPanelOpen(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-72 bg-[#111111] border-l border-[#262626] shadow-2xl flex flex-col animate-in slide-in-from-right duration-200">
-            <div className="flex items-center justify-between p-4 border-b border-[#262626]">
+          <div className="absolute right-0 top-0 bottom-0 w-72 bg-card border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200">
+            <div className="flex items-center justify-between p-4 border-b border-border">
               <h3 className="text-sm font-bold text-white">Sections</h3>
               <button
                 onClick={() => setSectionsPanelOpen(false)}
@@ -780,7 +749,7 @@ export default function AdminHomepageSectionsPage() {
                   </button>
                 );
               })}
-              <div className="border-t border-[#262626] my-2" />
+              <div className="border-t border-border my-2" />
               <button
                 onClick={() => {
                   setShowCombos(true);
@@ -806,7 +775,7 @@ export default function AdminHomepageSectionsPage() {
       ) : (
         <div className="space-y-4">
           {/* Toolbar — matches Value Combos layout */}
-          <div className="bg-[#111111] border border-[#262626] p-3 lg:p-4 rounded-xl space-y-3">
+          <div className="bg-card border border-border p-3 lg:p-4 rounded-xl space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
@@ -814,7 +783,7 @@ export default function AdminHomepageSectionsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search games in this section..."
-                className="w-full bg-[#050505]/50 border border-[#262626] focus:border-primary rounded-lg pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10"
+                className="w-full bg-background/50 border border-border focus:border-primary rounded-lg pl-10 pr-10 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10"
               />
               {searchQuery && (
                 <button
@@ -837,7 +806,7 @@ export default function AdminHomepageSectionsPage() {
           </div>
 
           {/* Full-width table */}
-          <div className="bg-[#111111] border border-[#262626] rounded-xl overflow-hidden shadow-xl">
+          <div className="bg-card border border-border rounded-xl overflow-hidden shadow-xl">
             {mappingsLoading ? (
               <div className="h-72 flex flex-col items-center justify-center gap-2">
                 <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -869,7 +838,7 @@ export default function AdminHomepageSectionsPage() {
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-[#262626] bg-black/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                      <tr className="border-b border-border bg-black/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
                         <th className="py-4 px-6 w-12"></th>
                         <th className="py-4 px-6 w-20">Image</th>
                         <th className="py-4 px-6">Title</th>
@@ -878,7 +847,7 @@ export default function AdminHomepageSectionsPage() {
                         <th className="py-4 px-6 w-28 text-center">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#262626]/60 text-sm">
+                    <tbody className="divide-y divide-border/60 text-sm">
                       {paginatedMappings.map((mapping) => {
                         const fullIndex = mappings.findIndex((m) => m.id === mapping.id);
                         return (
@@ -896,7 +865,7 @@ export default function AdminHomepageSectionsPage() {
                               </div>
                             </td>
                             <td className="py-3 px-6">
-                              <div className="relative w-11 h-14 bg-black/30 rounded-md border border-[#262626] overflow-hidden shadow-sm">
+                              <div className="relative w-11 h-14 bg-black/30 rounded-md border border-border overflow-hidden shadow-sm">
                                 <Image
                                   src={mapping.image_url}
                                   alt={mapping.title}
@@ -936,7 +905,7 @@ export default function AdminHomepageSectionsPage() {
                                 {openMenuId === mapping.id && (
                                   <>
                                     <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                                    <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
+                                    <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-card border border-border rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
                                       <button
                                         onClick={() => { openEditModal(mapping); setOpenMenuId(null); }}
                                         className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
@@ -951,7 +920,7 @@ export default function AdminHomepageSectionsPage() {
                                         {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
                                         {mapping.visible ? "Hide from Store" : "Show on Store"}
                                       </button>
-                                      <div className="border-t border-[#262626] my-1" />
+                                      <div className="border-t border-border my-1" />
                                       <button
                                         disabled={actionLoading}
                                         onClick={() => { setGameToDelete(mapping); setDeleteModalOpen(true); setOpenMenuId(null); }}
@@ -973,7 +942,7 @@ export default function AdminHomepageSectionsPage() {
                 </div>
 
                 {/* Mobile cards */}
-                <div className="md:hidden divide-y divide-[#262626]/60">
+                <div className="md:hidden divide-y divide-border/60">
                   {paginatedMappings.map((mapping) => {
                     const fullIndex = mappings.findIndex((m) => m.id === mapping.id);
                     const isDragging = isMobileDragging(fullIndex);
@@ -1003,7 +972,7 @@ export default function AdminHomepageSectionsPage() {
                         >
                           <GripVertical className="w-5 h-5 text-muted-foreground/50" />
                         </div>
-                        <div className="relative w-12 h-16 flex-shrink-0 bg-black/30 rounded-md border border-[#262626] overflow-hidden shadow-sm">
+                        <div className="relative w-12 h-16 flex-shrink-0 bg-black/30 rounded-md border border-border overflow-hidden shadow-sm">
                           <Image
                             src={mapping.image_url}
                             alt={mapping.title}
@@ -1041,14 +1010,14 @@ export default function AdminHomepageSectionsPage() {
 
                 {/* Pagination */}
                 {filteredMappings.length > 0 && (
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#262626] px-4 py-3 bg-black/5">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-border px-4 py-3 bg-black/5">
                     <p className="text-xs text-muted-foreground">
                       Showing <span className="font-semibold text-white">{(currentPage - 1) * itemsPerPage + 1}</span>–<span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, filteredMappings.length)}</span> of <span className="font-semibold text-white">{filteredMappings.length}</span>
                     </p>
                     <div className="flex items-center gap-2">
-                      <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2.5 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
+                      <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2.5 border border-border rounded-lg bg-background/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
                       <span className="text-xs text-muted-foreground min-w-[80px] text-center">Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}</span>
-                      <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2.5 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
+                      <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2.5 border border-border rounded-lg bg-background/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
                     </div>
                   </div>
                 )}
@@ -1061,8 +1030,8 @@ export default function AdminHomepageSectionsPage() {
       {/* Add Game Modal */}
       {addModalOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="w-full sm:max-w-md bg-[#111111] border border-[#262626] sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
-            <div className="px-6 py-4 border-b border-[#262626] flex items-center justify-between flex-shrink-0">
+          <div className="w-full sm:max-w-md bg-card border border-border sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
               <h3 className="text-lg font-bold text-white">Add Game to Section</h3>
               <button onClick={() => setAddModalOpen(false)} className="p-1 text-muted-foreground hover:text-white transition-colors cursor-pointer">
                 <X className="w-5 h-5" />
@@ -1094,7 +1063,7 @@ export default function AdminHomepageSectionsPage() {
                   </div>
                 )}
               </div>
-              <div className="border-t border-[#262626] p-4 bg-[#111111] flex justify-end gap-3 flex-shrink-0">
+              <div className="border-t border-border p-4 bg-card flex justify-end gap-3 flex-shrink-0">
                 <Button type="button" variant="outline" onClick={() => setAddModalOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={actionLoading || !selectedGameId} className="font-black active:scale-[0.98]">
                   {actionLoading && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -1141,7 +1110,7 @@ export default function AdminHomepageSectionsPage() {
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && gameToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-md bg-[#111111] border border-red-500/20 rounded-2xl shadow-2xl p-6 space-y-6 animate-scale-in">
+          <div className="w-full max-w-md bg-card border border-red-500/20 rounded-2xl shadow-2xl p-6 space-y-6 animate-scale-in">
             <div className="flex items-start gap-4">
               <div className="p-3 bg-red-500/10 text-red-400 rounded-lg">
                 <Trash2 className="w-6 h-6" />

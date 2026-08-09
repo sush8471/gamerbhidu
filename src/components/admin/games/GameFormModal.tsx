@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import GenreSelector from "@/components/admin/genre-selector";
 import type { GameFormData } from "@/types/game";
 
 type Props = {
@@ -183,41 +184,10 @@ export default function GameFormModal({
             {/* Genre */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground">Genre *</label>
-              <select
+              <GenreSelector
                 value={formData.genre}
-                onChange={(e) => onFormDataChange((prev) => ({ ...prev, genre: e.target.value }))}
-                className="w-full bg-background border border-border focus:border-primary rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none cursor-pointer"
-              >
-                <option value="">Select genre</option>
-                <option value="Action">Action</option>
-                <option value="Adventure">Adventure</option>
-                <option value="RPG">RPG</option>
-                <option value="Strategy">Strategy</option>
-                <option value="Simulation">Simulation</option>
-                <option value="Sports">Sports</option>
-                <option value="Racing">Racing</option>
-                <option value="Fighting">Fighting</option>
-                <option value="Shooter">Shooter</option>
-                <option value="Puzzle">Puzzle</option>
-                <option value="Platformer">Platformer</option>
-                <option value="Stealth">Stealth</option>
-                <option value="Survival">Survival</option>
-                <option value="Horror">Horror</option>
-                <option value="Open World">Open World</option>
-                <option value="MMO">MMO</option>
-                <option value="Battle Royale">Battle Royale</option>
-                <option value="Roguelike">Roguelike</option>
-                <option value="Metroidvania">Metroidvania</option>
-                <option value="Soulslike">Soulslike</option>
-                <option value="Sandbox">Sandbox</option>
-                <option value="Visual Novel">Visual Novel</option>
-                <option value="Tower Defense">Tower Defense</option>
-                <option value="Turn-Based">Turn-Based</option>
-                <option value="Card Game">Card Game</option>
-                <option value="Rhythm">Rhythm</option>
-                <option value="Party">Party</option>
-                <option value="Educational">Educational</option>
-              </select>
+                onChange={(genre) => onFormDataChange((prev) => ({ ...prev, genre }))}
+              />
             </div>
 
             {/* Publishing */}

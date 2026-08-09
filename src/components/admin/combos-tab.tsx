@@ -540,7 +540,7 @@ export default function CombosTab() {
                           {openMenuId === combo.id && (
                             <>
                               <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
-                              <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-[#1a1a1a] border border-[#262626] rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
+                              <div className="absolute right-0 top-full mt-1 z-50 w-44 bg-card border-border rounded-xl shadow-2xl py-1 overflow-hidden animate-slide-down">
                                 <button
                                   onClick={() => { openEditModal(combo); setOpenMenuId(null); }}
                                   className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"

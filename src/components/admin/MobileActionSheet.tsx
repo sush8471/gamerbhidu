@@ -46,7 +46,7 @@ export default function MobileActionSheet({
         className="bg-card border-t border-border rounded-t-2xl shadow-2xl p-0 md:hidden"
       >
         <SheetHeader className="px-5 py-4 border-b border-border text-left">
-          <SheetTitle className="text-white text-sm font-bold truncate">
+          <SheetTitle className="text-foreground text-sm font-bold truncate">
             {title}
           </SheetTitle>
           {description && (

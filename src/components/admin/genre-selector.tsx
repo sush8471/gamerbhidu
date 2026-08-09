@@ -86,7 +86,7 @@ export default function GenreSelector({
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer select-none active:scale-[0.97] ${
                 isChecked
                   ? "bg-primary/10 border-primary text-primary shadow-[0_0_12px_rgba(0,210,255,0.1)]"
-                  : "bg-[#050505]/30 border-[#262626] text-muted-foreground hover:border-gray-500 hover:text-white"
+                  : "bg-background/30 border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground"
               }`}
             >
               <input
@@ -104,7 +104,7 @@ export default function GenreSelector({
           <button
             type="button"
             onClick={() => setShowAll((p) => !p)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#262626] text-xs font-bold text-muted-foreground hover:text-white hover:border-gray-500 transition-all cursor-pointer"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-border text-xs font-bold text-muted-foreground hover:text-foreground hover:border-muted-foreground transition-all cursor-pointer"
           >
             {showAll ? (
               <><ChevronUp className="w-3 h-3" /><span>Show less</span></>
@@ -120,7 +120,7 @@ export default function GenreSelector({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Or enter custom genres manually (comma-separated, e.g. Platformer, VR)"
-        className="w-full bg-[#050505]/50 border border-[#262626] focus:border-primary rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600 font-mono"
+        className="w-full bg-background/50 border border-border focus:border-primary rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-muted-foreground/50 font-mono"
       />
     </div>
   );
