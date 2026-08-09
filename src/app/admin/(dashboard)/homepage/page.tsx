@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { 
   Home, Plus, GripVertical, Loader2, AlertTriangle, CheckCircle, Layers,
   Trash2, Eye, EyeOff, X, Edit2, Search, ChevronLeft, ChevronRight, MoreVertical,
-  PanelRightOpen
+  PanelRightOpen, Rocket
 } from "lucide-react";
 import Image from "next/image";
 import CombosTab from "@/components/admin/combos-tab";
@@ -80,6 +80,12 @@ export default function AdminHomepageSectionsPage() {
 
   // Mobile action sheet
   const [mobileActionMapping, setMobileActionMapping] = useState<GameMapping | null>(null);
+
+  // Check if current section is upcoming-games
+  const isUpcomingSection = useMemo(() => {
+    const activeSection = sections.find(s => s.id === activeSectionId);
+    return activeSection?.slug === "upcoming-games";
+  }, [sections, activeSectionId]);
 
   // Edit game modal
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -419,6 +425,85 @@ export default function AdminHomepageSectionsPage() {
         prev.map((m) => (m.game_id === mapping.game_id ? { ...m, visible: mapping.visible } : m))
       );
       toast.error("Failed to update visibility");
+    }
+  };
+
+  // Move game from upcoming-games to recently-launched section
+  const handleMoveToRecentlyLaunched = async (mapping: GameMapping) => {
+    setActionLoading(true);
+    try {
+      // 1. Find the "recently-launched" section ID
+      const { data: targetSection, error: sectionError } = await supabase
+        .from("homepage_sections")
+        .select("id")
+        .eq("slug", "recently-launched")
+        .single();
+
+      if (sectionError || !targetSection) {
+        throw new Error("Could not find Recently Launched section");
+      }
+
+      // 2. Check if game already exists in recently-launched
+      const { data: existingMapping } = await supabase
+        .from("section_games")
+        .select("id")
+        .eq("section_id", targetSection.id)
+        .eq("game_id", mapping.game_id)
+        .single();
+
+      if (existingMapping) {
+        toast.info("Game is already in Recently Launched section");
+        // Still remove from upcoming
+        await supabase.from("section_games").delete().eq("id", mapping.id);
+        if (activeSectionId) loadSectionMappings(activeSectionId);
+        setActionLoading(false);
+        return;
+      }
+
+      // 3. Get the next display_order for the target section
+      const { data: existingGames } = await supabase
+        .from("section_games")
+        .select("display_order")
+        .eq("section_id", targetSection.id)
+        .order("display_order", { ascending: false })
+        .limit(1);
+
+      const nextOrder = existingGames && existingGames.length > 0
+        ? existingGames[0].display_order + 10
+        : 10;
+
+      // 4. Insert into recently-launched
+      const { error: insertError } = await supabase
+        .from("section_games")
+        .insert([{
+          section_id: targetSection.id,
+          game_id: mapping.game_id,
+          display_order: nextOrder,
+        }]);
+
+      if (insertError) throw insertError;
+
+      // 5. Remove from upcoming-games
+      const { error: deleteError } = await supabase
+        .from("section_games")
+        .delete()
+        .eq("id", mapping.id);
+
+      if (deleteError) throw deleteError;
+
+      // 6. Update game's release_status to "released"
+      await supabase
+        .from("games")
+        .update({ release_status: "released" })
+        .eq("id", mapping.game_id);
+
+      toast.success(`${mapping.title} moved to Recently Launched`);
+      if (activeSectionId) loadSectionMappings(activeSectionId);
+    } catch (err: any) {
+      console.error("Failed to move game:", err);
+      toast.error(err?.message || "Failed to move game to Recently Launched");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -920,6 +1005,16 @@ export default function AdminHomepageSectionsPage() {
                                         {mapping.visible ? <Eye className="w-4 h-4 text-emerald-400" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
                                         {mapping.visible ? "Hide from Store" : "Show on Store"}
                                       </button>
+                                      {isUpcomingSection && (
+                                        <button
+                                          disabled={actionLoading}
+                                          onClick={() => { handleMoveToRecentlyLaunched(mapping); setOpenMenuId(null); }}
+                                          className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+                                        >
+                                          <Rocket className="w-4 h-4" />
+                                          Move to Recently Launched
+                                        </button>
+                                      )}
                                       <div className="border-t border-border my-1" />
                                       <button
                                         disabled={actionLoading}
@@ -1095,6 +1190,11 @@ export default function AdminHomepageSectionsPage() {
                   icon: <Edit2 className="w-4 h-4 text-muted-foreground" />,
                   onClick: () => openEditModal(mobileActionMapping),
                 },
+                ...(isUpcomingSection ? [{
+                  label: "Move to Recently Launched",
+                  icon: <Rocket className="w-4 h-4 text-emerald-400" />,
+                  onClick: () => handleMoveToRecentlyLaunched(mobileActionMapping),
+                }] : []),
                 {
                   label: "Remove",
                   icon: <Trash2 className="w-4 h-4" />,
