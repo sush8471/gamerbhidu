@@ -204,7 +204,12 @@ export default function ComboDealSection() {
     if (isInitial) setLoading(true);
     try {
       const { data, error: fetchError } = await getCombos();
-      if (fetchError) throw new Error(fetchError);
+      if (fetchError) {
+        console.error("Failed to load combos:", fetchError);
+        setCombos([]);
+        setError(fetchError);
+        return;
+      }
       if (data && data.length > 0) {
         setCombos(data.map(transformCombo));
         setError(null);
@@ -214,6 +219,7 @@ export default function ComboDealSection() {
       }
     } catch (err: any) {
       console.error("Failed to load combos:", err);
+      setCombos([]);
       setError(err?.message || "Failed to load combos");
     } finally {
       if (isInitial) setLoading(false);

@@ -812,7 +812,7 @@ export default function CombosTab() {
             label: "Delete",
             icon: <Trash2 className="w-4 h-4" />,
             variant: "destructive",
-            disabled: actionLoading,
+            disabled: deleteLoading,
             onClick: () => {
               if (mobileActionCombo) setComboToDelete(mobileActionCombo);
               setDeleteError(null);
