@@ -69,11 +69,11 @@ export default function Home() {
         </Suspense>
       </div>
 
+      <SocialProof />
+
       <Suspense fallback={null}>
         <SteamRecommendations />
       </Suspense>
-
-      <SocialProof />
 
       <div id="recently-launched">
         <Suspense fallback={
