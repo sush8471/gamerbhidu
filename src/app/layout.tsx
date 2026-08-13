@@ -7,7 +7,6 @@ import { SteamProvider } from "@/context/SteamContext";
 import { SearchProvider } from "@/context/SearchContext";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
-import { SignInPrompt } from "@/components/ui/sign-in-prompt";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://gamerbhidu.vercel.app";
@@ -75,7 +74,6 @@ export default function RootLayout({
                       },
                     }}
                   />
-                  <SignInPrompt />
                   <ScrollToTop />
                 </SearchProvider>
               </SteamProvider>
