@@ -297,6 +297,8 @@ export interface ComboGame {
         id: string;
         title: string;
         slug: string;
+        selling_price: number | string;
+        original_price?: number | null;
         image_url: string;
         steam_app_id?: number | null;
         visible?: boolean;
@@ -339,7 +341,7 @@ export async function getCombos() {
                 combo_id,
                 game_id,
                 display_order,
-                game:games(id, title, slug, image_url, steam_app_id, visible)
+                game:games(id, title, slug, selling_price, original_price, image_url, steam_app_id, visible)
             `)
             .in('combo_id', comboIds)
             .order('display_order', { ascending: true })
@@ -417,7 +419,7 @@ export async function getComboById(id: string) {
                 combo_id,
                 game_id,
                 display_order,
-                game:games(id, title, slug, image_url, steam_app_id, visible)
+                game:games(id, title, slug, selling_price, original_price, image_url, steam_app_id, visible)
             `)
             .eq('combo_id', id)
             .order('display_order', { ascending: true })

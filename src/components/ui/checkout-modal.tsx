@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, ShieldCheck, Copy, Check, ChevronDown, Maximize2 } from "lucide-react";
+import { X, CheckCircle2, ShieldCheck, Copy, Check, ChevronDown, Maximize2, ArrowLeft, ArrowRight } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import type { CartItem } from "@/context/CartContext";
 
@@ -39,10 +39,11 @@ export function CheckoutModal({
   whatsappMessageBuilder,
   copyMessageBuilder,
 }: CheckoutModalProps) {
+  const [step, setStep] = useState<"summary" | "payment">("summary");
   const [utrNumber, setUtrNumber] = useState("");
   const [copied, setCopied] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
-  const [orderExpanded, setOrderExpanded] = useState(false);
+  const [orderExpanded, setOrderExpanded] = useState(true);
   const [qrFullscreen, setQrFullscreen] = useState(false);
 
   const itemCount = items.length;
@@ -50,6 +51,16 @@ export function CheckoutModal({
 
   // Validate UTR: must be exactly 12 numeric digits
   const isValidUtr = /^\d{12}$/.test(utrNumber.trim());
+
+  // Pricing breakdown: subtotal is the sum of individual item prices; the
+  // difference to totalPrice is the combo discount (₹0 for regular carts).
+  const subtotal = items.reduce((sum, item) => sum + (item.price || 0), 0);
+  const discount = Math.max(0, subtotal - totalPrice);
+  const discountPct = discount > 0 && subtotal > 0 ? (discount / subtotal) * 100 : 0;
+  const discountPctRounded = Math.round(discountPct * 10) / 10;
+  const discountPctLabel = Number.isInteger(discountPctRounded)
+    ? `${discountPctRounded}%`
+    : `${discountPctRounded.toFixed(1)}%`;
 
   // Lock background scroll while modal is open (iOS-safe)
   useEffect(() => {
@@ -81,11 +92,13 @@ export function CheckoutModal({
     };
   }, [open]);
 
-  // Close fullscreen QR on escape; reset when modal closes
+  // Reset view state when the modal closes
   useEffect(() => {
     if (!open) {
+      setStep("summary");
       setQrFullscreen(false);
-      setOrderExpanded(false);
+      setOrderExpanded(true);
+      setUtrNumber("");
     }
   }, [open]);
 
@@ -201,9 +214,11 @@ export function CheckoutModal({
                 </div>
                 <div className="min-w-0">
                   <h2 id="checkout-modal-title" className="text-sm sm:text-base font-bold text-white leading-tight">
-                    Complete Payment
+                    {step === "summary" ? "Order Summary" : "Complete Payment"}
                   </h2>
-                  <p className="text-[11px] sm:text-xs text-muted-foreground">Scan QR to pay via UPI</p>
+                  <p className="text-[11px] sm:text-xs text-muted-foreground">
+                    {step === "summary" ? "Review your order before paying" : "Scan QR to pay via UPI"}
+                  </p>
                 </div>
               </div>
               <button
@@ -215,184 +230,235 @@ export function CheckoutModal({
               </button>
             </div>
 
-            {/* Scrollable body */}
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
-              {/* Customer info */}
-              {(userName || userEmail) && (
-                <div className="rounded-xl bg-white/[0.03] border border-white/5 px-3 py-2.5 space-y-1.5 text-xs sm:text-sm">
-                  {userName && (
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="text-muted-foreground shrink-0">Name</span>
-                      <span className="text-white font-medium text-right truncate">{userName}</span>
+            {/* Scrollable body — conditionally rendered per step */}
+            {step === "summary" ? (
+              <>
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
+                  {/* Customer info */}
+                  {(userName || userEmail) && (
+                    <div className="rounded-xl bg-white/[0.03] border border-white/5 px-3 py-2.5 space-y-1.5 text-xs sm:text-sm">
+                      {userName && (
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="text-muted-foreground shrink-0">Name</span>
+                          <span className="text-white font-medium text-right truncate">{userName}</span>
+                        </div>
+                      )}
+                      {userEmail && (
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="text-muted-foreground shrink-0">Email</span>
+                          <span className="text-white font-medium text-right break-all">{userEmail}</span>
+                        </div>
+                      )}
                     </div>
                   )}
-                  {userEmail && (
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="text-muted-foreground shrink-0">Email</span>
-                      <span className="text-white font-medium text-right break-all">{userEmail}</span>
-                    </div>
-                  )}
-                </div>
-              )}
 
-              {/* Order summary */}
-              <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setOrderExpanded((v) => !v)}
-                  className="w-full flex items-center justify-between gap-3 px-3 py-3 cursor-pointer select-none hover:bg-white/[0.02] transition-colors"
-                  aria-expanded={orderExpanded}
-                >
-                  <span className="text-sm font-semibold text-white">
-                    Order
-                    <span className="ml-1.5 text-muted-foreground font-normal">
-                      ({itemCount} game{itemCount !== 1 ? "s" : ""})
-                    </span>
-                  </span>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-sm font-bold text-white tabular-nums">₹{totalPrice}</span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-300 ${
-                        orderExpanded ? "rotate-180" : ""
-                      }`}
-                    />
-                  </div>
-                </button>
-
-                <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    orderExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-                  }`}
-                >
-                  <div className="px-3 pb-3 space-y-2 border-t border-white/5 pt-2.5">
-                    {items.map((item) => (
-                      <div key={item.id} className="flex justify-between gap-3 text-xs sm:text-sm">
-                        <span className="text-muted-foreground truncate">{item.name}</span>
-                        <span className="text-white font-medium shrink-0 tabular-nums">₹{item.price}</span>
+                  {/* Order summary */}
+                  <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setOrderExpanded((v) => !v)}
+                      className="w-full flex items-center justify-between gap-3 px-3 py-3 cursor-pointer select-none hover:bg-white/[0.02] transition-colors"
+                      aria-expanded={orderExpanded}
+                    >
+                      <span className="text-sm font-semibold text-white">
+                        Order
+                        <span className="ml-1.5 text-muted-foreground font-normal">
+                          ({itemCount} game{itemCount !== 1 ? "s" : ""})
+                        </span>
+                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-sm font-bold text-white tabular-nums">₹{totalPrice.toLocaleString()}</span>
+                        <ChevronDown
+                          className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-300 ${
+                            orderExpanded ? "rotate-180" : ""
+                          }`}
+                        />
                       </div>
-                    ))}
-                    <div className="flex justify-between items-center pt-2 border-t border-white/10">
-                      <span className="text-xs font-semibold text-white">Total</span>
-                      <span className="text-base font-bold text-white tabular-nums">₹{totalPrice}</span>
+                    </button>
+
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                        orderExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+                      }`}
+                    >
+                      <div className="px-3 pb-3 space-y-2 border-t border-white/5 pt-2.5">
+                        {items.map((item) => (
+                          <div key={item.id} className="flex justify-between gap-3 text-xs sm:text-sm">
+                            <span className="text-muted-foreground truncate">{item.name}</span>
+                            <span className="text-white font-medium shrink-0 tabular-nums">₹{(item.price || 0).toLocaleString()}</span>
+                          </div>
+                        ))}
+                        <div className="pt-2 border-t border-white/10 space-y-1.5">
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs text-muted-foreground">Subtotal</span>
+                            <span className={`text-xs text-muted-foreground tabular-nums ${discount > 0 ? "line-through" : ""}`}>
+                              ₹{subtotal.toLocaleString()}
+                            </span>
+                          </div>
+                          {discount > 0 && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-emerald-400 font-semibold">Combo Discount</span>
+                              <span className="text-xs text-emerald-400 font-semibold tabular-nums">{discountPctLabel} off</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center pt-1.5 border-t border-white/10">
+                            <span className="text-sm font-semibold text-white">You Pay</span>
+                            <span className="text-base font-bold text-white tabular-nums">₹{totalPrice.toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Copy order */}
-              <div className="flex justify-center">
-                <button
-                  onClick={handleCopyOrder}
-                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 hover:bg-white/10 text-white/90 transition-all active:scale-[0.98]"
+                {/* Sticky footer CTA — proceed to payment */}
+                <div
+                  className="shrink-0 border-t border-white/5 px-4 sm:px-5 pt-3 bg-card/95 backdrop-blur-md"
+                  style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
                 >
-                  {copied ? (
-                    <>
-                      <Check className="h-3 w-3 text-green-400" />
-                      <span className="text-green-400">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3 w-3" />
-                      <span>Copy Order</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* QR Code */}
-              <div className="flex flex-col items-center gap-2.5 py-1">
-                <button
-                  type="button"
-                  onClick={() => setQrFullscreen(true)}
-                  className="relative bg-white p-2.5 sm:p-3 rounded-2xl shadow-lg active:scale-[0.98] transition-transform"
-                  aria-label="Enlarge QR code"
-                >
-                  <Image
-                    src="/payment-qr.png"
-                    alt="Payment QR Code"
-                    width={168}
-                    height={168}
-                    className="w-[148px] h-[148px] sm:w-[168px] sm:h-[168px] object-contain"
-                    priority
-                  />
-                  <span className="absolute top-2 right-2 bg-black/55 rounded-md p-1">
-                    <Maximize2 className="h-3 w-3 text-white" />
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCopyUpi}
-                  className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-mono text-muted-foreground hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-white/5"
-                >
-                  {upiCopied ? (
-                    <>
-                      <Check className="h-3 w-3 text-green-400" />
-                      <span className="text-green-400">UPI ID copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{upiId}</span>
-                      <Copy className="h-3 w-3 opacity-60" />
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {/* UTR input */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-white flex items-center gap-1.5">
-                  <ShieldCheck className="h-3.5 w-3.5 text-green-400" />
-                  12-Digit UTR / Ref No.
-                  <span className="text-red-400">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={12}
-                    value={utrNumber}
-                    onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
-                    placeholder="e.g. 420198273615"
-                    className="w-full bg-background border border-white/10 focus:border-green-500/50 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder:text-muted-foreground/40 focus:outline-none transition-all tracking-wider"
-                  />
-                  {isValidUtr && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-green-400">
-                      Valid ✓
-                    </span>
-                  )}
+                  <button
+                    onClick={() => setStep("payment")}
+                    className="w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 bg-white text-black hover:bg-white/90 shadow-lg active:scale-[0.99]"
+                  >
+                    Proceed to Payment
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
                 </div>
-                <p className="text-[11px] text-muted-foreground leading-snug">
-                  {!utrNumber
-                    ? "Find this in your GPay / PhonePe / Paytm transaction details."
-                    : isValidUtr
-                      ? <span className="text-green-400">Ready to submit!</span>
-                      : <span className="text-amber-400">{12 - utrNumber.length} more digit{12 - utrNumber.length !== 1 ? "s" : ""} needed</span>
-                  }
-                </p>
-              </div>
-            </div>
+              </>
+            ) : (
+              <>
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
+                  {/* Back to order */}
+                  <button
+                    onClick={() => setStep("summary")}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-white transition-colors"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    Back to Order
+                  </button>
 
-            {/* Sticky footer CTA */}
-            <div
-              className="shrink-0 border-t border-white/5 px-4 sm:px-5 pt-3 bg-card/95 backdrop-blur-md space-y-2"
-              style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
-            >
-              <button
-                onClick={handleWhatsApp}
-                disabled={!isValidUtr}
-                className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
-                  isValidUtr
-                    ? "bg-[#25D366] text-white hover:bg-[#20BA5A] shadow-lg shadow-green-500/15 active:scale-[0.99]"
-                    : "bg-white/10 text-muted-foreground cursor-not-allowed opacity-50"
-                }`}
-              >
-                <FaWhatsapp className="h-4 w-4" />
-                {isValidUtr ? "Submit Order on WhatsApp" : "Enter UTR to Proceed"}
-              </button>
-              <p className="text-[10px] sm:text-[11px] text-muted-foreground text-center leading-snug pb-0.5">
-                Order details & UTR are sent on WhatsApp for verification.
-              </p>
-            </div>
+                  {/* Total amount */}
+                  <div className="text-center">
+                    <p className="text-[11px] sm:text-xs text-muted-foreground">Amount to Pay</p>
+                    <p className="text-3xl sm:text-4xl font-black text-white tabular-nums">₹{totalPrice.toLocaleString()}</p>
+                  </div>
+
+                  {/* Copy order */}
+                  <div className="flex justify-center">
+                    <button
+                      onClick={handleCopyOrder}
+                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 hover:bg-white/10 text-white/90 transition-all active:scale-[0.98]"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="h-3 w-3 text-green-400" />
+                          <span className="text-green-400">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3 w-3" />
+                          <span>Copy Order</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* QR Code */}
+                  <div className="flex flex-col items-center gap-2.5 py-1">
+                    <button
+                      type="button"
+                      onClick={() => setQrFullscreen(true)}
+                      className="relative bg-white p-2.5 sm:p-3 rounded-2xl shadow-lg active:scale-[0.98] transition-transform"
+                      aria-label="Enlarge QR code"
+                    >
+                      <Image
+                        src="/payment-qr.png"
+                        alt="Payment QR Code"
+                        width={168}
+                        height={168}
+                        className="w-[148px] h-[148px] sm:w-[168px] sm:h-[168px] object-contain"
+                        priority
+                      />
+                      <span className="absolute top-2 right-2 bg-black/55 rounded-md p-1">
+                        <Maximize2 className="h-3 w-3 text-white" />
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCopyUpi}
+                      className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-mono text-muted-foreground hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-white/5"
+                    >
+                      {upiCopied ? (
+                        <>
+                          <Check className="h-3 w-3 text-green-400" />
+                          <span className="text-green-400">UPI ID copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>{upiId}</span>
+                          <Copy className="h-3 w-3 opacity-60" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* UTR input */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-white flex items-center gap-1.5">
+                      <ShieldCheck className="h-3.5 w-3.5 text-green-400" />
+                      12-Digit UTR / Ref No.
+                      <span className="text-red-400">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={12}
+                        value={utrNumber}
+                        onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
+                        placeholder="e.g. 420198273615"
+                        className="w-full bg-background border border-white/10 focus:border-green-500/50 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder:text-muted-foreground/40 focus:outline-none transition-all tracking-wider"
+                      />
+                      {isValidUtr && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-green-400">
+                          Valid ✓
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-snug">
+                      {!utrNumber
+                        ? "Find this in your GPay / PhonePe / Paytm transaction details."
+                        : isValidUtr
+                          ? <span className="text-green-400">Ready to submit!</span>
+                          : <span className="text-amber-400">{12 - utrNumber.length} more digit{12 - utrNumber.length !== 1 ? "s" : ""} needed</span>
+                      }
+                    </p>
+                  </div>
+                </div>
+
+                {/* Sticky footer CTA */}
+                <div
+                  className="shrink-0 border-t border-white/5 px-4 sm:px-5 pt-3 bg-card/95 backdrop-blur-md space-y-2"
+                  style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+                >
+                  <button
+                    onClick={handleWhatsApp}
+                    disabled={!isValidUtr}
+                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+                      isValidUtr
+                        ? "bg-[#25D366] text-white hover:bg-[#20BA5A] shadow-lg shadow-green-500/15 active:scale-[0.99]"
+                        : "bg-white/10 text-muted-foreground cursor-not-allowed opacity-50"
+                    }`}
+                  >
+                    <FaWhatsapp className="h-4 w-4" />
+                    {isValidUtr ? "Submit Order on WhatsApp" : "Enter UTR to Proceed"}
+                  </button>
+                  <p className="text-[10px] sm:text-[11px] text-muted-foreground text-center leading-snug pb-0.5">
+                    Order details & UTR are sent on WhatsApp for verification.
+                  </p>
+                </div>
+              </>
+            )}
           </motion.div>
 
           {/* Fullscreen QR viewer — stopPropagation so parent modal stays open */}

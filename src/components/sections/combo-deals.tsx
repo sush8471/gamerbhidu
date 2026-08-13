@@ -163,17 +163,33 @@ export default function ComboDealSection() {
 
   const buildComboWhatsAppMessage = useCallback(() => {
     if (!checkoutBundle) return "";
-    const gameNames = (checkoutBundle.games || []).map((g, i) => `${i + 1}. ${g.game?.title || "Unknown Game"}`);
+    const games = checkoutBundle.games || [];
+    const individualTotal = games.reduce(
+      (sum, g) => sum + (Number(g.game?.selling_price) || 0),
+      0
+    );
+    const comboDiscounted = parseInt(checkoutBundle.price.discounted.replace(/[₹,]/g, "")) || 0;
+    const saved = Math.max(0, individualTotal - comboDiscounted);
+    const comboPct = individualTotal > 0 ? ((individualTotal - comboDiscounted) / individualTotal) * 100 : 0;
+    const comboPctRounded = Math.round(comboPct * 10) / 10;
+    const comboPctLabel = Number.isInteger(comboPctRounded)
+      ? `${comboPctRounded}%`
+      : `${comboPctRounded.toFixed(1)}%`;
+    const gameLines = games.map(
+      (g, i) => `${i + 1}. ${g.game?.title || "Unknown Game"} — ₹${(Number(g.game?.selling_price) || 0).toLocaleString()}`
+    );
     return [
-      `🎮 *Gamer Bhidu - Combo Purchase*`,
+      `🎮 Gamer Bhidu - Combo Purchase`,
       "",
-      comboCheckoutName ? `👤 *Customer:* ${comboCheckoutName}` : null,
-      comboCheckoutEmail ? `📧 *Email:* ${comboCheckoutEmail}` : null,
+      comboCheckoutName ? `👤 Customer: ${comboCheckoutName}` : null,
+      comboCheckoutEmail ? `📧 Email: ${comboCheckoutEmail}` : null,
       "",
-      `📦 *Combo:* ${checkoutBundle.title} (${gameNames.length} games)`,
-      ...gameNames,
+      `📦 ${checkoutBundle.title} (${gameLines.length} games)`,
+      ...gameLines,
       "",
-      `💰 *Total Paid:* ${checkoutBundle.price.discounted}`,
+      saved > 0
+        ? `💰 Combo Price: ${checkoutBundle.price.discounted} (${comboPctLabel} off)`
+        : `💰 Combo Price: ${checkoutBundle.price.discounted}`,
       "",
       "I have completed the UPI payment. Please verify and confirm!",
     ].filter((l) => l !== null).join("\n");
@@ -181,17 +197,33 @@ export default function ComboDealSection() {
 
   const buildComboCopyMessage = useCallback(() => {
     if (!checkoutBundle) return "";
-    const gameNames = (checkoutBundle.games || []).map((g, i) => `${i + 1}. ${g.game?.title || "Unknown Game"}`);
+    const games = checkoutBundle.games || [];
+    const individualTotal = games.reduce(
+      (sum, g) => sum + (Number(g.game?.selling_price) || 0),
+      0
+    );
+    const comboDiscounted = parseInt(checkoutBundle.price.discounted.replace(/[₹,]/g, "")) || 0;
+    const saved = Math.max(0, individualTotal - comboDiscounted);
+    const comboPct = individualTotal > 0 ? ((individualTotal - comboDiscounted) / individualTotal) * 100 : 0;
+    const comboPctRounded = Math.round(comboPct * 10) / 10;
+    const comboPctLabel = Number.isInteger(comboPctRounded)
+      ? `${comboPctRounded}%`
+      : `${comboPctRounded.toFixed(1)}%`;
+    const gameLines = games.map(
+      (g, i) => `${i + 1}. ${g.game?.title || "Unknown Game"} — ₹${(Number(g.game?.selling_price) || 0).toLocaleString()}`
+    );
     return [
       `Gamer Bhidu - Combo Order`,
       "",
       comboCheckoutName ? `Name: ${comboCheckoutName}` : null,
       comboCheckoutEmail ? `Email: ${comboCheckoutEmail}` : null,
       "",
-      `Combo: ${checkoutBundle.title} (${gameNames.length} games)`,
-      ...gameNames,
+      `Combo: ${checkoutBundle.title} (${gameLines.length} games)`,
+      ...gameLines,
       "",
-      `Total: ${checkoutBundle.price.discounted}`,
+      saved > 0
+        ? `Combo Price: ${checkoutBundle.price.discounted} (${comboPctLabel} off)`
+        : `Combo Price: ${checkoutBundle.price.discounted}`,
     ].filter((l) => l !== null).join("\n");
   }, [checkoutBundle, comboCheckoutName, comboCheckoutEmail]);
 
@@ -315,7 +347,8 @@ export default function ComboDealSection() {
           items={(checkoutBundle.games || []).map((g, i) => ({
             id: g.game_id,
             name: g.game?.title || "Unknown Game",
-            price: 0,
+            price: Number(g.game?.selling_price) || 0,
+            originalPrice: Number(g.game?.selling_price) || 0,
             image: g.game?.image_url || "",
           }))}
           totalPrice={parseInt(checkoutBundle.price.discounted.replace(/[₹,]/g, "")) || 0}
