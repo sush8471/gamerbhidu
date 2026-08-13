@@ -44,7 +44,7 @@ export function CheckoutModal({
   const [utrNumber, setUtrNumber] = useState("");
   const [copied, setCopied] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
-  const [orderExpanded, setOrderExpanded] = useState(true);
+  const [orderExpanded, setOrderExpanded] = useState(false);
   const [qrFullscreen, setQrFullscreen] = useState(false);
 
   const itemCount = items.length;
@@ -94,7 +94,7 @@ export function CheckoutModal({
     if (!open) {
       setStep("summary");
       setQrFullscreen(false);
-      setOrderExpanded(true);
+      setOrderExpanded(false);
       setUtrNumber("");
     }
   }, [open]);
@@ -196,7 +196,7 @@ export function CheckoutModal({
             exit={{ y: 24, opacity: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md max-h-[92dvh] sm:max-h-[90vh] flex flex-col bg-card border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden"
+            className="w-full sm:max-w-md h-[100dvh] sm:h-auto sm:max-h-[90vh] flex flex-col bg-card border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden"
           >
             {/* Drag handle (mobile) */}
             <div className="sm:hidden flex justify-center pt-2.5 pb-1">
