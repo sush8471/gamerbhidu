@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { toLocalInputValue } from "@/lib/dates";
 import { Button } from "@/components/ui/button";
 import GamePicker from "@/components/admin/games/GamePicker";
 import MobileActionSheet from "@/components/admin/MobileActionSheet";
@@ -206,7 +207,7 @@ export default function CombosTab() {
     setModalMode("edit");
     setSelectedCombo(combo);
     const localExpiry = combo.deal_expires_at
-      ? new Date(combo.deal_expires_at).toISOString().slice(0, 16)
+      ? toLocalInputValue(combo.deal_expires_at)
       : "";
     setFormData({
       title: combo.title,

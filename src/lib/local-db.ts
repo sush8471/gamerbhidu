@@ -4,6 +4,7 @@
  */
 
 import { supabase } from "@/lib/supabase";
+import { parseDateTimeUtc } from "@/lib/dates";
 
 export interface Game {
     id: string;
@@ -357,7 +358,7 @@ export async function getCombos() {
         }
     }
 
-    const now = new Date().toISOString();
+    const now = Date.now();
 
     const gamesByCombo = new Map<string, ComboGame[]>();
     for (const cg of allComboGames) {
@@ -376,7 +377,7 @@ export async function getCombos() {
     }
 
     const combos: Combo[] = comboData
-        .filter((combo: any) => !combo.deal_expires_at || combo.deal_expires_at > now)
+        .filter((combo: any) => !combo.deal_expires_at || parseDateTimeUtc(combo.deal_expires_at) > now)
         .map((combo: any) => ({
             ...combo,
             games: gamesByCombo.get(combo.id) || [],

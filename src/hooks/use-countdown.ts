@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { parseDateTimeUtc } from "@/lib/dates";
 
 export function useCountdown(expiresAt: string | null) {
   const [remaining, setRemaining] = useState<{
@@ -18,7 +19,12 @@ export function useCountdown(expiresAt: string | null) {
       return;
     }
 
-    const target = new Date(expiresAt).getTime();
+    const target = parseDateTimeUtc(expiresAt);
+    if (Number.isNaN(target)) {
+      setRemaining(null);
+      setExpired(false);
+      return;
+    }
 
     const tick = () => {
       const diff = target - Date.now();
