@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
+import { formatComboDiscountBadge } from "@/lib/local-db";
 import {
   Layers, Search, Plus, Edit2, Trash2, Eye, EyeOff, X,
   Loader2, ChevronLeft, ChevronRight, AlertTriangle, Upload, FileImage, MoreVertical,
@@ -29,7 +30,7 @@ type DbCombo = {
   created_at: string;
 };
 
-type DbGame = { id: string; title: string };
+type DbGame = { id: string; title: string; selling_price?: number | null };
 
 export default function CombosTab() {
   const [combos, setCombos] = useState<DbCombo[]>([]);
@@ -72,7 +73,23 @@ export default function CombosTab() {
   const [games, setGames] = useState<DbGame[]>([]);
   const [selectedGameIds, setSelectedGameIds] = useState<string[]>([]);
 
+  const gamesById = useMemo(() => {
+    const map = new Map<string, DbGame>();
+    for (const g of games) map.set(g.id, g);
+    return map;
+  }, [games]);
+
+  const selectedGamesSum = useMemo(() => {
+    return selectedGameIds.reduce((s, id) => s + (Number(gamesById.get(id)?.selling_price) || 0), 0);
+  }, [selectedGameIds, gamesById]);
+
   const autoDiscountBadge = useMemo(() => {
+    if (selectedGamesSum > 0) {
+      const disc = parseFloat(formData.discounted_price);
+      if (!isNaN(disc) && disc > 0 && disc < selectedGamesSum) {
+        return formatComboDiscountBadge(selectedGamesSum, disc) ?? "";
+      }
+    }
     const orig = parseFloat(formData.original_price);
     const disc = parseFloat(formData.discounted_price);
     if (!isNaN(orig) && !isNaN(disc) && orig > disc && orig > 0) {
@@ -80,7 +97,19 @@ export default function CombosTab() {
       return pct > 0 ? `-${pct}%` : "";
     }
     return "";
-  }, [formData.original_price, formData.discounted_price]);
+  }, [selectedGamesSum, formData.original_price, formData.discounted_price]);
+
+  // Auto-fill Original Price with the sum of the selected games' selling prices
+  useEffect(() => {
+    if (selectedGameIds.length === 0 || gamesById.size === 0) return;
+    const sum = selectedGameIds.reduce((s, id) => s + (Number(gamesById.get(id)?.selling_price) || 0), 0);
+    if (sum > 0) {
+      setFormData(prev => {
+        if (Number(prev.original_price) === Math.round(sum)) return prev;
+        return { ...prev, original_price: String(Math.round(sum)) };
+      });
+    }
+  }, [selectedGameIds, gamesById]);
 
   const loadCombos = async () => {
     setLoading(true);
@@ -109,7 +138,7 @@ export default function CombosTab() {
       while (hasMore) {
         const { data } = await supabase
           .from("games")
-          .select("id, title")
+          .select("id, title, selling_price")
           .order("title", { ascending: true })
           .range(offset, offset + PAGE_SIZE - 1);
 
@@ -713,9 +742,14 @@ export default function CombosTab() {
                   <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">Discount Badge (auto)</label>
                   <input
                     type="text" disabled
-                    value={autoDiscountBadge || "Enter both prices to calculate"}
+                    value={autoDiscountBadge || "Add games or enter prices to calculate"}
                     className="w-full bg-card border border-border rounded-lg px-3 py-2 text-sm text-muted-foreground font-bold"
                   />
+                  {selectedGamesSum > 0 && (
+                    <p className="text-[10px] text-muted-foreground">
+                      Games value: ₹{selectedGamesSum.toLocaleString()} — Original Price auto-fills to this.
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-1.5">

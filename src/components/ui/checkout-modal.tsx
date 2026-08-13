@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, ShieldCheck, Copy, Check, ChevronDown, Maximize2, ArrowLeft, ArrowRight } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import type { CartItem } from "@/context/CartContext";
+import { formatDiscountPercent } from "@/lib/local-db";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -56,11 +57,7 @@ export function CheckoutModal({
   // difference to totalPrice is the combo discount (₹0 for regular carts).
   const subtotal = items.reduce((sum, item) => sum + (item.price || 0), 0);
   const discount = Math.max(0, subtotal - totalPrice);
-  const discountPct = discount > 0 && subtotal > 0 ? (discount / subtotal) * 100 : 0;
-  const discountPctRounded = Math.round(discountPct * 10) / 10;
-  const discountPctLabel = Number.isInteger(discountPctRounded)
-    ? `${discountPctRounded}%`
-    : `${discountPctRounded.toFixed(1)}%`;
+  const discountPctLabel = formatDiscountPercent(subtotal, totalPrice);
 
   // Lock background scroll while modal is open (iOS-safe)
   useEffect(() => {

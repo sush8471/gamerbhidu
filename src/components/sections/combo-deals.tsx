@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Clock } from "lucide-react";
-import { getCombos, Combo, ComboGame } from "@/lib/local-db";
+import { getCombos, Combo, ComboGame, formatComboDiscountBadge, formatDiscountPercent } from "@/lib/local-db";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
 import ComboDealSkeleton from "@/components/ui/combo-deal-skeleton";
@@ -33,9 +33,22 @@ interface ComboData {
 }
 
 function transformCombo(combo: Combo): ComboData {
-  const originalPrice = combo.original_price ? `₹${combo.original_price.toLocaleString()}` : undefined;
+  const sumSelling = (combo.games || []).reduce(
+    (sum, g) => sum + (Number(g.game?.selling_price) || 0),
+    0
+  );
+  const originalPrice =
+    sumSelling > 0
+      ? `₹${sumSelling.toLocaleString()}`
+      : combo.original_price
+        ? `₹${combo.original_price.toLocaleString()}`
+        : undefined;
   const discountedPrice = `₹${combo.discounted_price.toLocaleString()}`;
-  
+  const discountBadge =
+    sumSelling > 0
+      ? formatComboDiscountBadge(sumSelling, combo.discounted_price)
+      : combo.discount_details ?? null;
+
   return {
     id: combo.id,
     title: combo.title,
@@ -45,7 +58,7 @@ function transformCombo(combo: Combo): ComboData {
     price: {
       original: originalPrice,
       discounted: discountedPrice,
-      discountDetails: combo.discount_details ?? undefined,
+      discountDetails: discountBadge ?? undefined,
     },
     image: combo.image_url || "",
     hasGameList: (combo.games?.length || 0) > 0,
@@ -170,11 +183,7 @@ export default function ComboDealSection() {
     );
     const comboDiscounted = parseInt(checkoutBundle.price.discounted.replace(/[₹,]/g, "")) || 0;
     const saved = Math.max(0, individualTotal - comboDiscounted);
-    const comboPct = individualTotal > 0 ? ((individualTotal - comboDiscounted) / individualTotal) * 100 : 0;
-    const comboPctRounded = Math.round(comboPct * 10) / 10;
-    const comboPctLabel = Number.isInteger(comboPctRounded)
-      ? `${comboPctRounded}%`
-      : `${comboPctRounded.toFixed(1)}%`;
+    const comboPctLabel = formatDiscountPercent(individualTotal, comboDiscounted);
     const gameLines = games.map(
       (g, i) => `${i + 1}. ${g.game?.title || "Unknown Game"} — ₹${(Number(g.game?.selling_price) || 0).toLocaleString()}`
     );
@@ -204,11 +213,7 @@ export default function ComboDealSection() {
     );
     const comboDiscounted = parseInt(checkoutBundle.price.discounted.replace(/[₹,]/g, "")) || 0;
     const saved = Math.max(0, individualTotal - comboDiscounted);
-    const comboPct = individualTotal > 0 ? ((individualTotal - comboDiscounted) / individualTotal) * 100 : 0;
-    const comboPctRounded = Math.round(comboPct * 10) / 10;
-    const comboPctLabel = Number.isInteger(comboPctRounded)
-      ? `${comboPctRounded}%`
-      : `${comboPctRounded.toFixed(1)}%`;
+    const comboPctLabel = formatDiscountPercent(individualTotal, comboDiscounted);
     const gameLines = games.map(
       (g, i) => `${i + 1}. ${g.game?.title || "Unknown Game"} — ₹${(Number(g.game?.selling_price) || 0).toLocaleString()}`
     );

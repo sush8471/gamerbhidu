@@ -307,6 +307,30 @@ export interface ComboGame {
 }
 
 /**
+ * Combo discount helpers — computed from the sum of the games' individual
+ * selling prices vs the combo's discounted price so the badge, checkout
+ * summary and messages always agree.
+ */
+export function computeDiscountPercent(sumTotal: number, discounted: number): number {
+    if (!sumTotal || !discounted || discounted <= 0 || discounted >= sumTotal) return 0;
+    return ((sumTotal - discounted) / sumTotal) * 100;
+}
+
+export function formatDiscountPercent(sumTotal: number, discounted: number): string {
+    const pct = computeDiscountPercent(sumTotal, discounted);
+    const rounded = Math.round(pct * 10) / 10;
+    if (rounded <= 0) return "0%";
+    return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(1)}%`;
+}
+
+export function formatComboDiscountBadge(sumTotal: number, discounted: number): string | null {
+    const pct = computeDiscountPercent(sumTotal, discounted);
+    if (pct <= 0) return null;
+    const rounded = Math.round(pct * 10) / 10;
+    return Number.isInteger(rounded) ? `-${rounded}%` : `-${rounded.toFixed(1)}%`;
+}
+
+/**
  * Get all visible combos ordered by display_order, with their associated games
  */
 export async function getCombos() {
