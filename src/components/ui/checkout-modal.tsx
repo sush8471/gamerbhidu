@@ -237,16 +237,8 @@ export function CheckoutModal({
             </div>
 
             {/* Scrollable body — conditionally rendered per step */}
-            <AnimatePresence mode="sync" initial={false}>
             {step === "summary" ? (
-              <motion.div
-                key="summary"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15, ease: "easeInOut" }}
-                className="flex-1 min-h-0 flex flex-col"
-              >
+              <>
                 <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
                   {/* Customer info */}
                   {(userName || userEmail) && (
@@ -294,9 +286,9 @@ export function CheckoutModal({
                     {orderExpanded && (
                     <motion.div
                       key="order-list"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
+                      initial={{ height: 0 }}
+                      animate={{ height: "auto" }}
+                      exit={{ height: 0 }}
                       transition={{ type: "spring", damping: 28, stiffness: 280 }}
                       style={{ overflow: "hidden" }}
                       className="border-t border-white/5"
@@ -346,16 +338,9 @@ export function CheckoutModal({
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>
-              </motion.div>
+              </>
             ) : (
-              <motion.div
-                key="payment"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15, ease: "easeInOut" }}
-                className="flex-1 min-h-0 flex flex-col"
-              >
+              <>
                 <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
                   {/* Back to order */}
                   <button
@@ -486,9 +471,8 @@ export function CheckoutModal({
                     Order details & UTR are sent on WhatsApp for verification.
                   </p>
                 </div>
-              </motion.div>
+              </>
             )}
-            </AnimatePresence>
           </motion.div>
 
           {/* Fullscreen QR viewer — stopPropagation so parent modal stays open */}
