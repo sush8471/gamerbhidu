@@ -196,7 +196,9 @@ export function CheckoutModal({
             exit={{ y: 24, opacity: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md h-[100dvh] sm:h-auto sm:max-h-[90vh] flex flex-col bg-card border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden"
+            className={`w-full sm:max-w-md flex flex-col bg-card border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden sm:h-auto sm:max-h-[90vh] ${
+              step === "payment" ? "h-[100dvh]" : "max-h-[100dvh]"
+            }`}
           >
             {/* Drag handle (mobile) */}
             <div className="sm:hidden flex justify-center pt-2.5 pb-1">
