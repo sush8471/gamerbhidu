@@ -53,13 +53,33 @@ export default function ComboGameListDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, onClose]);
 
-  // Body scroll lock
+  // Body scroll lock (iOS-safe — mirrors checkout-modal pattern)
   useEffect(() => {
     if (!isOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+
+    const scrollY = window.scrollY;
+    const { body, documentElement } = document;
+    const prev = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+      htmlOverflow: documentElement.style.overflow,
+    };
+
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    documentElement.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = prev;
+      body.style.overflow = prev.overflow;
+      body.style.position = prev.position;
+      body.style.top = prev.top;
+      body.style.width = prev.width;
+      documentElement.style.overflow = prev.htmlOverflow;
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen]);
 

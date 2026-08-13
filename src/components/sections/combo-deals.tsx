@@ -151,19 +151,7 @@ export default function ComboDealSection() {
     setSelectedBundle(null);
   };
 
-  useEffect(() => {
-    if (!isDialogOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, [isDialogOpen]);
 
-  useEffect(() => {
-    if (!comboCheckoutOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, [comboCheckoutOpen]);
 
   const handleProceedToCheckout = (bundle: ComboData) => {
     setIsDialogOpen(false);
