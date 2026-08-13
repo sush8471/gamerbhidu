@@ -2,8 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { X, Check, ExternalLink, Clock, ArrowRight, ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { Clock } from "lucide-react";
 import { getCombos, Combo, ComboGame } from "@/lib/local-db";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
@@ -11,6 +10,7 @@ import ComboDealSkeleton from "@/components/ui/combo-deal-skeleton";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 import { CheckoutModal } from "@/components/ui/checkout-modal";
+import ComboGameListDialog from "@/components/ui/combo-game-list-dialog";
 import { useAuth } from "@/context/AuthContext";
 
 import { useSteam } from "@/context/SteamContext";
@@ -52,119 +52,6 @@ function transformCombo(combo: Combo): ComboData {
     dealExpiresAt: combo.deal_expires_at,
     games: combo.games,
   };
-}
-
-function GameListDialog({ 
-  isOpen, 
-  onClose, 
-  bundle,
-  onProceedToCheckout,
-}: { 
-  isOpen: boolean; 
-  onClose: () => void;
-  bundle: ComboData | null;
-  onProceedToCheckout: (bundle: ComboData) => void;
-}) {
-  const [showAll, setShowAll] = useState(false);
-
-  if (!isOpen || !bundle) return null;
-
-  const games = bundle.games || [];
-  const gameCount = games.length;
-  const INITIAL_COUNT = 8;
-  const visibleGames = showAll ? games : games.slice(0, INITIAL_COUNT);
-  const hasMore = games.length > INITIAL_COUNT;
-
-  const handleClose = () => {
-    setShowAll(false);
-    onClose();
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className={`relative w-full max-w-lg bg-card rounded-xl border border-white/10 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col ${showAll ? "max-h-[80vh]" : "max-h-[96vh]"}`}>
-        {/* Header */}
-        <div className="flex-shrink-0 border-b border-white/10 px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <h2 className="text-base font-black text-white leading-snug truncate">
-                {bundle.title}
-              </h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-muted-foreground text-[11px]">{gameCount} games</span>
-                <span className="text-muted-foreground text-[11px]">•</span>
-                <span className="text-white font-bold text-sm">{bundle.price.discounted}</span>
-              </div>
-            </div>
-            <button
-              onClick={handleClose}
-              className="p-2 rounded-lg bg-background border border-border hover:border-white/30 transition-colors flex-shrink-0"
-            >
-              <X className="w-5 h-5 text-muted-foreground" />
-            </button>
-          </div>
-        </div>
-
-        {/* Game List - scrollable */}
-        <div className="flex-1 overflow-y-auto min-h-0 px-4 py-2">
-          <div className="grid grid-cols-1 gap-0.5">
-            {visibleGames.map((gameItem, index) => {
-              const game = gameItem.game;
-              const isGTAV = game?.title === "Grand Theft Auto V";
-              const Content = (
-                <span className="text-muted-foreground text-xs group-hover:text-white transition-colors truncate">
-                  {game?.title || "Unknown Game"}
-                </span>
-              );
-
-              if (isGTAV && game?.slug) {
-                return (
-                  <Link
-                    key={index}
-                    href={`/games/${game.slug}`}
-                    onClick={handleClose}
-                    className="flex items-center py-1.5 px-1 rounded hover:bg-white/5 transition-all duration-200 group cursor-pointer"
-                  >
-                    {Content}
-                  </Link>
-                );
-              }
-
-              return (
-                <div
-                  key={index}
-                  className="flex items-center py-1.5 px-1 rounded transition-all duration-200 group"
-                >
-                  {Content}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Show More / Show Less */}
-          {hasMore && (
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 text-white/70 hover:text-white transition-colors text-xs font-semibold cursor-pointer"
-            >
-              {showAll ? "Show Less" : "More"}
-            </button>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex-shrink-0 bg-gradient-to-t from-card to-card/95 backdrop-blur-sm border-t border-white/10 p-4">
-          <button
-            onClick={() => onProceedToCheckout(bundle)}
-            className="w-full bg-white/10 hover:bg-white text-white hover:text-black font-bold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
-          >
-            <span className="text-sm">Proceed to Checkout</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 function CountdownBadge({ expiresAt }: { expiresAt: string | null }) {
@@ -419,7 +306,7 @@ export default function ComboDealSection() {
         </div>
       </section>
 
-      <GameListDialog isOpen={isDialogOpen} onClose={handleCloseDialog} bundle={selectedBundle} onProceedToCheckout={handleProceedToCheckout} />
+      <ComboGameListDialog isOpen={isDialogOpen} onClose={handleCloseDialog} bundle={selectedBundle} onProceedToCheckout={(bundle) => handleProceedToCheckout(bundle as ComboData)} />
 
       {checkoutBundle && (
         <CheckoutModal
