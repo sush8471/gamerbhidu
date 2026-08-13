@@ -63,13 +63,14 @@ export default function Home() {
       <div id="hot-deals">
         <GameCardsGridDiscover />
       </div>
+
+      <SocialProof />
+
       <div id="value-combos">
         <Suspense fallback={<ComboDealSkeleton />}>
           <ComboDealSection />
         </Suspense>
       </div>
-
-      <SocialProof />
 
       <Suspense fallback={null}>
         <SteamRecommendations />

@@ -6,7 +6,7 @@ import { X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { GlareCard } from "@/components/ui/glare-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { CarouselNav } from "@/components/ui/carousel-nav";
-import { getSocialProofs, SocialProof } from "@/lib/local-db";
+import { getSocialProofs, type SocialProof } from "@/lib/local-db";
 import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 
 const FALLBACK_PROOFS: SocialProof[] = [
@@ -91,9 +91,9 @@ export default function SocialProof() {
   const loadProofs = useCallback(async (isInitial = false) => {
     if (isInitial) setLoading(true);
     const { data, error } = await getSocialProofs();
-    // Use DB when the table exists (even if empty). Fall back only on fetch failure
-    // so the section still works before the migration is applied.
-    if (error) {
+    // Use DB when it returns rows. Fall back to static proofs when the
+    // fetch fails OR the table is empty so the section always renders.
+    if (error || !data || data.length === 0) {
       setProofImages(FALLBACK_PROOFS);
     } else {
       setProofImages(data);
