@@ -146,11 +146,11 @@ export default function ComboGameListDialog({
                     title={bundle.title}
                     text={`Check out ${bundle.title} on Gamer Bhidu!`}
                     size="sm"
-                    className="h-7 w-7 sm:h-8 sm:w-8"
+                    className="h-auto w-auto bg-transparent border-0 p-1 hover:bg-transparent"
                   />
                   <button
                     onClick={onClose}
-                    className="p-1.5 sm:p-2 rounded-lg bg-background border border-border hover:border-white/30 hover:text-white text-muted-foreground transition-colors flex-shrink-0 cursor-pointer"
+                    className="p-1 text-muted-foreground hover:text-white transition-colors flex-shrink-0 cursor-pointer"
                   >
                     <X className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
