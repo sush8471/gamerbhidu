@@ -41,6 +41,7 @@ export function CheckoutModal({
   copyMessageBuilder,
 }: CheckoutModalProps) {
   const [step, setStep] = useState<"summary" | "payment">("summary");
+  const [direction, setDirection] = useState<1 | -1>(1); // 1 = forward, -1 = back
   const [utrNumber, setUtrNumber] = useState("");
   const [copied, setCopied] = useState(false);
   const [upiCopied, setUpiCopied] = useState(false);
@@ -93,6 +94,7 @@ export function CheckoutModal({
   useEffect(() => {
     if (!open) {
       setStep("summary");
+      setDirection(1);
       setQrFullscreen(false);
       setOrderExpanded(false);
       setUtrNumber("");
@@ -228,243 +230,261 @@ export function CheckoutModal({
               </button>
             </div>
 
-            {/* Scrollable body — conditionally rendered per step */}
-            {step === "summary" ? (
-              <>
-                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
-                  {/* Customer info */}
-                  {(userName || userEmail) && (
-                    <div className="rounded-xl bg-white/[0.03] border border-white/5 px-3 py-2.5 space-y-1.5 text-xs sm:text-sm">
-                      {userName && (
-                        <div className="flex items-start justify-between gap-3">
-                          <span className="text-muted-foreground shrink-0">Name</span>
-                          <span className="text-white font-medium text-right truncate">{userName}</span>
-                        </div>
-                      )}
-                      {userEmail && (
-                        <div className="flex items-start justify-between gap-3">
-                          <span className="text-muted-foreground shrink-0">Email</span>
-                          <span className="text-white font-medium text-right break-all">{userEmail}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Order summary */}
-                  <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => setOrderExpanded((v) => !v)}
-                      className="w-full flex items-center justify-between gap-3 px-3 py-3 cursor-pointer select-none hover:bg-white/[0.02] transition-colors"
-                      aria-expanded={orderExpanded}
-                    >
-                      <span className="text-sm font-semibold text-white">
-                        Order
-                        <span className="ml-1.5 text-muted-foreground font-normal">
-                          ({itemCount} game{itemCount !== 1 ? "s" : ""})
-                        </span>
-                      </span>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-sm font-bold text-white tabular-nums">₹{totalPrice.toLocaleString()}</span>
-                        <ChevronDown
-                          className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-300 ${
-                            orderExpanded ? "rotate-180" : ""
-                          }`}
-                        />
-                      </div>
-                    </button>
-
-                    <AnimatePresence initial={false}>
-                    {orderExpanded && (
-                    <motion.div
-                      key="order-list"
-                      initial={{ height: 0 }}
-                      animate={{ height: "auto" }}
-                      exit={{ height: 0 }}
-                      transition={{ type: "spring", damping: 28, stiffness: 280 }}
-                      style={{ overflow: "hidden" }}
-                      className="border-t border-white/5"
-                    >
-                      <div className="px-3 pb-3 space-y-2 pt-2.5">
-                        {items.map((item) => (
-                          <div key={item.id} className="flex justify-between gap-3 text-xs sm:text-sm">
-                            <span className="text-muted-foreground truncate">{item.name}</span>
-                            <span className="text-white font-medium shrink-0 tabular-nums">₹{(item.price || 0).toLocaleString()}</span>
-                          </div>
-                        ))}
-                        <div className="pt-2 border-t border-white/10 space-y-1.5">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-muted-foreground">Subtotal</span>
-                            <span className={`text-xs text-muted-foreground tabular-nums ${discount > 0 ? "line-through" : ""}`}>
-                              ₹{subtotal.toLocaleString()}
-                            </span>
-                          </div>
-                          {discount > 0 && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs text-emerald-400 font-semibold">Combo Discount</span>
-                              <span className="text-xs text-emerald-400 font-semibold tabular-nums">{discountPctLabel} off</span>
-                            </div>
-                          )}
-                          <div className="flex justify-between items-center pt-1.5 border-t border-white/10">
-                            <span className="text-sm font-semibold text-white">You Pay</span>
-                            <span className="text-base font-bold text-white tabular-nums">₹{totalPrice.toLocaleString()}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                    )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-
-                {/* Sticky footer CTA — proceed to payment */}
-                <div
-                  className="shrink-0 border-t border-white/5 px-4 sm:px-5 pt-3 bg-card/95 backdrop-blur-md"
-                  style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+            {/* Step content with slide transition */}
+            <AnimatePresence mode="wait" custom={direction} initial={false}>
+              {step === "summary" ? (
+                <motion.div
+                  key="summary"
+                  custom={direction}
+                  initial={{ opacity: 0, x: direction * 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: direction * -40 }}
+                  transition={{ duration: 0.22, ease: [0.32, 0, 0.67, 0] }}
+                  className="flex flex-col flex-1 min-h-0 overflow-hidden"
                 >
-                  <button
-                    onClick={() => setStep("payment")}
-                    className="w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 bg-white text-black hover:bg-white/90 shadow-lg active:scale-[0.99]"
-                  >
-                    Proceed to Payment
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
-                  {/* Back to order */}
-                  <button
-                    onClick={() => setStep("summary")}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-white transition-colors"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5" />
-                    Back to Order
-                  </button>
+                  <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
+                    {/* Customer info */}
+                    {(userName || userEmail) && (
+                      <div className="rounded-xl bg-white/[0.03] border border-white/5 px-3 py-2.5 space-y-1.5 text-xs sm:text-sm">
+                        {userName && (
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="text-muted-foreground shrink-0">Name</span>
+                            <span className="text-white font-medium text-right truncate">{userName}</span>
+                          </div>
+                        )}
+                        {userEmail && (
+                          <div className="flex items-start justify-between gap-3">
+                            <span className="text-muted-foreground shrink-0">Email</span>
+                            <span className="text-white font-medium text-right break-all">{userEmail}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
-                  {/* Total amount */}
-                  <div className="text-center">
-                    <p className="text-[11px] sm:text-xs text-muted-foreground">Amount to Pay</p>
-                    <p className="text-3xl sm:text-4xl font-black text-white tabular-nums">₹{totalPrice.toLocaleString()}</p>
-                  </div>
-
-                  {/* Copy order */}
-                  <div className="flex justify-center">
-                    <button
-                      onClick={handleCopyOrder}
-                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 hover:bg-white/10 text-white/90 transition-all active:scale-[0.98]"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="h-3 w-3 text-green-400" />
-                          <span className="text-green-400">Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3" />
-                          <span>Copy Order</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* QR Code */}
-                  <div className="flex flex-col items-center gap-2.5 py-1">
-                    <button
-                      type="button"
-                      onClick={() => setQrFullscreen(true)}
-                      className="relative bg-white p-2.5 sm:p-3 rounded-2xl shadow-lg active:scale-[0.98] transition-transform"
-                      aria-label="Enlarge QR code"
-                    >
-                      <Image
-                        src="/payment-qr.png"
-                        alt="Payment QR Code"
-                        width={168}
-                        height={168}
-                        className="w-[148px] h-[148px] sm:w-[168px] sm:h-[168px] object-contain"
-                        priority
-                      />
-                      <span className="absolute top-2 right-2 bg-black/55 rounded-md p-1">
-                        <Maximize2 className="h-3 w-3 text-white" />
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCopyUpi}
-                      className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-mono text-muted-foreground hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-white/5"
-                    >
-                      {upiCopied ? (
-                        <>
-                          <Check className="h-3 w-3 text-green-400" />
-                          <span className="text-green-400">UPI ID copied</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>{upiId}</span>
-                          <Copy className="h-3 w-3 opacity-60" />
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* UTR input */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold text-white flex items-center gap-1.5">
-                      <ShieldCheck className="h-3.5 w-3.5 text-green-400" />
-                      12-Digit UTR / Ref No.
-                      <span className="text-red-400">*</span>
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={12}
-                        value={utrNumber}
-                        onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
-                        placeholder="e.g. 420198273615"
-                        className="w-full bg-background border border-white/10 focus:border-green-500/50 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder:text-muted-foreground/40 focus:outline-none transition-all tracking-wider"
-                      />
-                      {isValidUtr && (
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-green-400">
-                          Valid ✓
+                    {/* Order summary */}
+                    <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => setOrderExpanded((v) => !v)}
+                        className="w-full flex items-center justify-between gap-3 px-3 py-3 cursor-pointer select-none hover:bg-white/[0.02] transition-colors"
+                        aria-expanded={orderExpanded}
+                      >
+                        <span className="text-sm font-semibold text-white">
+                          Order
+                          <span className="ml-1.5 text-muted-foreground font-normal">
+                            ({itemCount} game{itemCount !== 1 ? "s" : ""})
+                          </span>
                         </span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-sm font-bold text-white tabular-nums">₹{totalPrice.toLocaleString()}</span>
+                          <ChevronDown
+                            className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-300 ${
+                              orderExpanded ? "rotate-180" : ""
+                            }`}
+                          />
+                        </div>
+                      </button>
+
+                      <AnimatePresence initial={false}>
+                      {orderExpanded && (
+                      <motion.div
+                        key="order-list"
+                        initial={{ height: 0 }}
+                        animate={{ height: "auto" }}
+                        exit={{ height: 0 }}
+                        transition={{ type: "spring", damping: 28, stiffness: 280 }}
+                        style={{ overflow: "hidden" }}
+                        className="border-t border-white/5"
+                      >
+                        <div className="px-3 pb-3 space-y-2 pt-2.5">
+                          {items.map((item) => (
+                            <div key={item.id} className="flex justify-between gap-3 text-xs sm:text-sm">
+                              <span className="text-muted-foreground truncate">{item.name}</span>
+                              <span className="text-white font-medium shrink-0 tabular-nums">₹{(item.price || 0).toLocaleString()}</span>
+                            </div>
+                          ))}
+                          <div className="pt-2 border-t border-white/10 space-y-1.5">
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-muted-foreground">Subtotal</span>
+                              <span className={`text-xs text-muted-foreground tabular-nums ${discount > 0 ? "line-through" : ""}`}>
+                                ₹{subtotal.toLocaleString()}
+                              </span>
+                            </div>
+                            {discount > 0 && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-xs text-emerald-400 font-semibold">Combo Discount</span>
+                                <span className="text-xs text-emerald-400 font-semibold tabular-nums">{discountPctLabel} off</span>
+                              </div>
+                            )}
+                            <div className="flex justify-between items-center pt-1.5 border-t border-white/10">
+                              <span className="text-sm font-semibold text-white">You Pay</span>
+                              <span className="text-base font-bold text-white tabular-nums">₹{totalPrice.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
                       )}
+                      </AnimatePresence>
                     </div>
-                    <p className="text-[11px] text-muted-foreground leading-snug">
-                      {!utrNumber
-                        ? "Find this in your GPay / PhonePe / Paytm transaction details."
-                        : isValidUtr
-                          ? <span className="text-green-400">Ready to submit!</span>
-                          : <span className="text-amber-400">{12 - utrNumber.length} more digit{12 - utrNumber.length !== 1 ? "s" : ""} needed</span>
-                      }
+                  </div>
+
+                  {/* Sticky footer CTA — proceed to payment */}
+                  <div
+                    className="shrink-0 border-t border-white/5 px-4 sm:px-5 pt-3 bg-card/95 backdrop-blur-md"
+                    style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+                  >
+                    <button
+                      onClick={() => { setDirection(1); setStep("payment"); }}
+                      className="w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 bg-white text-black hover:bg-white/90 shadow-lg active:scale-[0.99]"
+                    >
+                      Proceed to Payment
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="payment"
+                  custom={direction}
+                  initial={{ opacity: 0, x: direction * 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: direction * -40 }}
+                  transition={{ duration: 0.22, ease: [0.32, 0, 0.67, 0] }}
+                  className="flex flex-col overflow-hidden"
+                >
+                  <div className="overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
+                    {/* Back to order */}
+                    <button
+                      onClick={() => { setDirection(-1); setStep("summary"); }}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-white transition-colors"
+                    >
+                      <ArrowLeft className="h-3.5 w-3.5" />
+                      Back to Order
+                    </button>
+
+                    {/* Total amount */}
+                    <div className="text-center">
+                      <p className="text-[11px] sm:text-xs text-muted-foreground">Amount to Pay</p>
+                      <p className="text-3xl sm:text-4xl font-black text-white tabular-nums">₹{totalPrice.toLocaleString()}</p>
+                    </div>
+
+                    {/* Copy order */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={handleCopyOrder}
+                        className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 border border-white/10 hover:bg-white/10 text-white/90 transition-all active:scale-[0.98]"
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="h-3 w-3 text-green-400" />
+                            <span className="text-green-400">Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3 w-3" />
+                            <span>Copy Order</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* QR Code */}
+                    <div className="flex flex-col items-center gap-2.5 py-1">
+                      <button
+                        type="button"
+                        onClick={() => setQrFullscreen(true)}
+                        className="relative bg-white p-2.5 sm:p-3 rounded-2xl shadow-lg active:scale-[0.98] transition-transform"
+                        aria-label="Enlarge QR code"
+                      >
+                        <Image
+                          src="/payment-qr.png"
+                          alt="Payment QR Code"
+                          width={168}
+                          height={168}
+                          className="w-[148px] h-[148px] sm:w-[168px] sm:h-[168px] object-contain"
+                          priority
+                        />
+                        <span className="absolute top-2 right-2 bg-black/55 rounded-md p-1">
+                          <Maximize2 className="h-3 w-3 text-white" />
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCopyUpi}
+                        className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-mono text-muted-foreground hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-white/5"
+                      >
+                        {upiCopied ? (
+                          <>
+                            <Check className="h-3 w-3 text-green-400" />
+                            <span className="text-green-400">UPI ID copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>{upiId}</span>
+                            <Copy className="h-3 w-3 opacity-60" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* UTR input */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <ShieldCheck className="h-3.5 w-3.5 text-green-400" />
+                        12-Digit UTR / Ref No.
+                        <span className="text-red-400">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={12}
+                          value={utrNumber}
+                          onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ""))}
+                          placeholder="e.g. 420198273615"
+                          className="w-full bg-background border border-white/10 focus:border-green-500/50 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white placeholder:text-muted-foreground/40 focus:outline-none transition-all tracking-wider"
+                        />
+                        {isValidUtr && (
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-green-400">
+                            Valid ✓
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-snug">
+                        {!utrNumber
+                          ? "Find this in your GPay / PhonePe / Paytm transaction details."
+                          : isValidUtr
+                            ? <span className="text-green-400">Ready to submit!</span>
+                            : <span className="text-amber-400">{12 - utrNumber.length} more digit{12 - utrNumber.length !== 1 ? "s" : ""} needed</span>
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Sticky footer CTA */}
+                  <div
+                    className="shrink-0 border-t border-white/5 px-4 sm:px-5 pt-3 bg-card/95 backdrop-blur-md space-y-2"
+                    style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+                  >
+                    <button
+                      onClick={handleWhatsApp}
+                      disabled={!isValidUtr}
+                      className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
+                        isValidUtr
+                          ? "bg-[#25D366] text-white hover:bg-[#20BA5A] shadow-lg shadow-green-500/15 active:scale-[0.99]"
+                          : "bg-white/10 text-muted-foreground cursor-not-allowed opacity-50"
+                      }`}
+                    >
+                      <FaWhatsapp className="h-4 w-4" />
+                      {isValidUtr ? "Submit Order on WhatsApp" : "Enter UTR to Proceed"}
+                    </button>
+                    <p className="text-[10px] sm:text-[11px] text-muted-foreground text-center leading-snug pb-0.5">
+                      Order details & UTR are sent on WhatsApp for verification.
                     </p>
                   </div>
-                </div>
-
-                {/* Sticky footer CTA */}
-                <div
-                  className="shrink-0 border-t border-white/5 px-4 sm:px-5 pt-3 bg-card/95 backdrop-blur-md space-y-2"
-                  style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
-                >
-                  <button
-                    onClick={handleWhatsApp}
-                    disabled={!isValidUtr}
-                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
-                      isValidUtr
-                        ? "bg-[#25D366] text-white hover:bg-[#20BA5A] shadow-lg shadow-green-500/15 active:scale-[0.99]"
-                        : "bg-white/10 text-muted-foreground cursor-not-allowed opacity-50"
-                    }`}
-                  >
-                    <FaWhatsapp className="h-4 w-4" />
-                    {isValidUtr ? "Submit Order on WhatsApp" : "Enter UTR to Proceed"}
-                  </button>
-                  <p className="text-[10px] sm:text-[11px] text-muted-foreground text-center leading-snug pb-0.5">
-                    Order details & UTR are sent on WhatsApp for verification.
-                  </p>
-                </div>
-              </>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           {/* Fullscreen QR viewer — stopPropagation so parent modal stays open */}
