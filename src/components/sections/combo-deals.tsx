@@ -12,8 +12,6 @@ import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 import { CheckoutModal } from "@/components/ui/checkout-modal";
 import ComboGameListDialog from "@/components/ui/combo-game-list-dialog";
 import { useAuth } from "@/context/AuthContext";
-import { ShareButton } from "@/components/ui/share-button";
-import { getComboShareUrl } from "@/lib/share";
 
 import { useSteam } from "@/context/SteamContext";
 
@@ -258,7 +256,6 @@ export default function ComboDealSection() {
             <SectionHeader
               title="Value Combos"
               subtitle="Multiple games at unbeatable prices"
-              shareId="value-combos"
             />
           </div>
           <section className="text-center py-12 text-muted-foreground">
@@ -278,7 +275,6 @@ export default function ComboDealSection() {
             <SectionHeader
               title="Value Combos"
               subtitle="Multiple games at unbeatable prices"
-              shareId="value-combos"
             />
             <CarouselNav scrollRef={scrollContainerRef} itemCount={combos.length} show={combos.length > 1} />
           </div>
@@ -352,16 +348,9 @@ export default function ComboDealSection() {
                         <span className="text-white font-black text-xl">{combo.price.discounted}</span>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
-                        <ShareButton
-                          url={getComboShareUrl(combo.id)}
-                          text={`Check out ${combo.title} on Gamer Bhidu!`}
-                          tooltip="Share this combo"
-                        />
-                        <span className="text-white/60 text-xs font-semibold">
-                          {combo.hasGameList ? "View Games" : "Ask on WhatsApp"}
-                        </span>
-                      </div>
+                      <span className="text-white/60 text-xs font-semibold">
+                        {combo.hasGameList ? "View Games" : "Ask on WhatsApp"}
+                      </span>
                     </div>
                   </div>
                 </div>

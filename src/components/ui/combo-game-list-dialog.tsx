@@ -6,8 +6,11 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronDown, ChevronUp, Layers, X } from "lucide-react";
 import type { ComboGame } from "@/lib/local-db";
+import { ShareButton } from "@/components/ui/share-button";
+import { getComboShareUrl } from "@/lib/share";
 
 export interface ComboGameListBundle {
+  id: string;
   title: string;
   price: {
     discounted: string;
@@ -137,12 +140,21 @@ export default function ComboGameListDialog({
                     </span>
                   </div>
                 </div>
-                <button
-                  onClick={onClose}
-                  className="p-2 rounded-lg bg-background border border-border hover:border-white/30 hover:text-white text-muted-foreground transition-colors flex-shrink-0 cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <ShareButton
+                    url={getComboShareUrl(bundle.id)}
+                    title={bundle.title}
+                    text={`Check out ${bundle.title} on Gamer Bhidu!`}
+                    size="md"
+                    tooltip="Share this combo"
+                  />
+                  <button
+                    onClick={onClose}
+                    className="p-2 rounded-lg bg-background border border-border hover:border-white/30 hover:text-white text-muted-foreground transition-colors flex-shrink-0 cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
             </div>
 
