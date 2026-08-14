@@ -103,17 +103,15 @@ export default function ComboGameListDialog({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/80 sm:backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center px-3 py-[20vh] sm:p-4 bg-black/80 backdrop-blur-sm"
         >
           <motion.div
-            initial={{ opacity: 0, y: 32, scale: 0.97 }}
+            initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 32, scale: 0.97 }}
+            exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className={`relative w-full sm:max-w-lg bg-card border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col ${
-              showAll ? "max-h-[90vh]" : "max-h-[92vh]"
-            }`}
+            className="relative w-full sm:max-w-lg bg-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full"
           >
             {/* Header */}
             <div className="flex-shrink-0 border-b border-white/10 px-5 py-4">
@@ -147,7 +145,7 @@ export default function ComboGameListDialog({
                     url={getComboShareUrl(bundle.id)}
                     title={bundle.title}
                     text={`Check out ${bundle.title} on Gamer Bhidu!`}
-                    size="md"
+                    size="sm"
                   />
                   <button
                     onClick={onClose}
@@ -216,22 +214,24 @@ export default function ComboGameListDialog({
 
               {/* Show More / Show Less */}
               {hasMore && (
-                <button
-                  onClick={() => setShowAll((v) => !v)}
-                  className="w-full mt-4 flex items-center justify-center gap-1.5 py-2.5 text-white/70 hover:text-white transition-colors text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg cursor-pointer"
-                >
-                  {showAll ? (
-                    <>
-                      <ChevronUp className="w-3.5 h-3.5" />
-                      Show Less
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-3.5 h-3.5" />
-                      Show All Games ({hiddenCount} more)
-                    </>
-                  )}
-                </button>
+                <div className="mt-3 flex justify-center">
+                  <button
+                    onClick={() => setShowAll((v) => !v)}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-white/60 hover:text-white transition-colors text-[11px] font-semibold hover:bg-white/8 rounded-md cursor-pointer"
+                  >
+                    {showAll ? (
+                      <>
+                        <ChevronUp className="w-3 h-3" />
+                        Show Less
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-3 h-3" />
+                        Show All Games ({hiddenCount} more)
+                      </>
+                    )}
+                  </button>
+                </div>
               )}
             </div>
 

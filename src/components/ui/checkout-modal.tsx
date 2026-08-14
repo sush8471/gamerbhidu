@@ -182,7 +182,7 @@ export function CheckoutModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 sm:backdrop-blur-sm sm:p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm px-3 py-[20vh] sm:p-4"
           onClick={() => {
             if (!qrFullscreen) onClose();
           }}
@@ -191,9 +191,9 @@ export function CheckoutModal({
           aria-labelledby="checkout-modal-title"
         >
           <motion.div
-            initial={{ y: 64, opacity: 0 }}
+            initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 48, opacity: 0 }}
+            exit={{ y: 32, opacity: 0 }}
             transition={{
               type: "spring",
               damping: 32,
@@ -201,15 +201,11 @@ export function CheckoutModal({
               mass: 0.8,
             }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md flex flex-col bg-card border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden h-[100dvh] sm:h-auto sm:max-h-[90vh]"
+            className="w-full sm:max-w-md flex flex-col bg-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-full sm:max-h-[90vh]"
           >
-            {/* Drag handle (mobile) */}
-            <div className="sm:hidden flex justify-center pt-2.5 pb-1">
-              <div className="w-9 h-1 rounded-full bg-white/20" />
-            </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between gap-3 px-4 sm:px-5 pt-2 sm:pt-5 pb-3 border-b border-white/5 shrink-0">
+            <div className="flex items-center justify-between gap-3 px-4 sm:px-5 pt-4 sm:pt-5 pb-3 border-b border-white/5 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-8 h-8 bg-green-500/15 rounded-full flex items-center justify-center shrink-0">
                   <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -337,7 +333,7 @@ export function CheckoutModal({
               </>
             ) : (
               <>
-                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
+                <div className="overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
                   {/* Back to order */}
                   <button
                     onClick={() => setStep("summary")}
