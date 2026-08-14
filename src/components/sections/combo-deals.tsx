@@ -184,7 +184,7 @@ export default function ComboDealSection() {
     setCheckoutBundle(bundle);
     setComboCheckoutName(user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "");
     setComboCheckoutEmail(user?.email ?? "");
-    window.setTimeout(() => setComboCheckoutOpen(true), 260);
+    window.setTimeout(() => setComboCheckoutOpen(true), 180);
   };
 
   const buildComboWhatsAppMessage = useCallback(() => {

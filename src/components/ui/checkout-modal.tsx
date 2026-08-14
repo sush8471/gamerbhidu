@@ -193,15 +193,10 @@ export function CheckoutModal({
           aria-labelledby="checkout-modal-title"
         >
           <motion.div
-            initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 32, opacity: 0 }}
-            transition={{
-              type: "spring",
-              damping: 32,
-              stiffness: 380,
-              mass: 0.8,
-            }}
+            initial={{ scale: 0.94, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.94, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
             className="w-full sm:max-w-md flex flex-col bg-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-full sm:max-h-[90vh]"
           >
