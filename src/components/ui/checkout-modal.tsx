@@ -184,7 +184,7 @@ export function CheckoutModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm px-3 py-[8vh] sm:p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 sm:backdrop-blur-sm px-3 py-[8vh] sm:p-4"
           onClick={() => {
             if (!qrFullscreen) onClose();
           }}
@@ -193,12 +193,13 @@ export function CheckoutModal({
           aria-labelledby="checkout-modal-title"
         >
           <motion.div
-            initial={{ scale: 0.94, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.94, opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 14 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md flex flex-col bg-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-full sm:max-h-[90vh]"
+            style={{ willChange: 'transform, opacity' }}
+            className="w-full sm:max-w-md flex flex-col bg-card border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-full sm:max-h-[90vh]"
           >
 
             {/* Header */}
@@ -231,10 +232,11 @@ export function CheckoutModal({
                 <motion.div
                   key="summary"
                   custom={direction}
-                  initial={{ opacity: 0, x: direction * 40 }}
+                  initial={{ opacity: 0, x: direction * 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: direction * -40 }}
-                  transition={{ duration: 0.22, ease: [0.32, 0, 0.67, 0] }}
+                  exit={{ opacity: 0, x: direction * -16 }}
+                  transition={{ duration: 0.18, ease: [0.32, 0, 0.67, 0] }}
+                  style={{ willChange: 'transform, opacity' }}
                   className="flex flex-col flex-1 min-h-0 overflow-hidden"
                 >
                   <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">
@@ -341,10 +343,11 @@ export function CheckoutModal({
                 <motion.div
                   key="payment"
                   custom={direction}
-                  initial={{ opacity: 0, x: direction * 40 }}
+                  initial={{ opacity: 0, x: direction * 16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: direction * -40 }}
-                  transition={{ duration: 0.22, ease: [0.32, 0, 0.67, 0] }}
+                  exit={{ opacity: 0, x: direction * -16 }}
+                  transition={{ duration: 0.18, ease: [0.32, 0, 0.67, 0] }}
+                  style={{ willChange: 'transform, opacity' }}
                   className="flex flex-col overflow-hidden"
                 >
                   <div className="overflow-y-auto overscroll-contain px-4 sm:px-5 py-4 space-y-4">

@@ -101,17 +101,18 @@ export default function ComboGameListDialog({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.18 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-center justify-center px-3 py-[8vh] sm:p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center px-3 py-[8vh] sm:p-4 bg-black/80 sm:backdrop-blur-sm"
         >
           <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 24, scale: 0.97 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full sm:max-w-lg bg-card border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full"
+            style={{ willChange: 'transform, opacity' }}
+            className="relative w-full sm:max-w-lg bg-card border border-white/10 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-full"
           >
             {/* Header */}
             <div className="flex-shrink-0 border-b border-white/10 px-5 py-4">
@@ -163,7 +164,7 @@ export default function ComboGameListDialog({
               <motion.div
                 initial={showAll ? false : "hidden"}
                 animate="show"
-                variants={{ show: { transition: { staggerChildren: 0.035 } } }}
+                variants={{ show: { transition: { staggerChildren: 0.02 } } }}
                 className="grid grid-cols-3 gap-3"
               >
                   {visibleGames.map((gameItem, index) => {
