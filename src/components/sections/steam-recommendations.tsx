@@ -112,7 +112,6 @@ export default function SteamRecommendations() {
             <SectionHeader
               title={`Recommended for ${steamProfile.personaName}`}
               subtitle="Games from our catalog matching your Steam library taste"
-              shareId="steam-recommendations"
             />
           </div>
 

@@ -66,7 +66,6 @@ export default function RecentlyLaunched() {
           <SectionHeader
             title="Recently Launched"
             subtitle="Fresh arrivals - Get them now!"
-            shareId="recently-launched"
           />
 
           <CarouselNav scrollRef={scrollContainerRef} itemCount={games.length} show={games.length > 1} />

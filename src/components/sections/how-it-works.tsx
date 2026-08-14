@@ -28,7 +28,6 @@ export default function HowItWorks() {
         <SectionHeader
           title="How It Works"
           subtitle="Three simple steps to start gaming"
-          shareId="how-it-works"
           className="mb-12 md:mb-16"
         />
 

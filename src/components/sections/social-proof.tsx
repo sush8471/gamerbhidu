@@ -160,7 +160,6 @@ export default function SocialProof() {
             <SectionHeader
               title="Trusted by Indian Gamers"
               subtitle="Verified payments from real customers."
-              shareId="social-proof"
             />
             <CarouselNav
               scrollRef={scrollContainerRef}

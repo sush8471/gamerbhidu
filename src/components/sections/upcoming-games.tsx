@@ -60,7 +60,6 @@ export default function UpcomingGames() {
           <SectionHeader
             title="Upcoming Games"
             subtitle="New releases arriving soon"
-            shareId="upcoming-games"
           />
 
           <CarouselNav scrollRef={scrollContainerRef} itemCount={games.length} show={games.length > 1} />
