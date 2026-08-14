@@ -182,7 +182,7 @@ export function CheckoutModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm px-3 py-[20vh] sm:p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm px-3 py-[8vh] sm:p-4"
           onClick={() => {
             if (!qrFullscreen) onClose();
           }}

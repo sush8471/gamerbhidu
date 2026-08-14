@@ -103,7 +103,7 @@ export default function ComboGameListDialog({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-center justify-center px-3 py-[20vh] sm:p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center px-3 py-[8vh] sm:p-4 bg-black/80 backdrop-blur-sm"
         >
           <motion.div
             initial={{ opacity: 0, y: 24, scale: 0.97 }}
