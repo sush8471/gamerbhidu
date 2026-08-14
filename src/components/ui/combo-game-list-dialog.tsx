@@ -140,18 +140,19 @@ export default function ComboGameListDialog({
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                   <ShareButton
                     url={getComboShareUrl(bundle.id)}
                     title={bundle.title}
                     text={`Check out ${bundle.title} on Gamer Bhidu!`}
                     size="sm"
+                    className="h-7 w-7 sm:h-8 sm:w-8"
                   />
                   <button
                     onClick={onClose}
-                    className="p-2 rounded-lg bg-background border border-border hover:border-white/30 hover:text-white text-muted-foreground transition-colors flex-shrink-0 cursor-pointer"
+                    className="p-1.5 sm:p-2 rounded-lg bg-background border border-border hover:border-white/30 hover:text-white text-muted-foreground transition-colors flex-shrink-0 cursor-pointer"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
