@@ -176,12 +176,15 @@ export default function ComboDealSection() {
 
 
   const handleProceedToCheckout = (bundle: ComboData) => {
+    // Close the game-list dialog first and let its exit animation finish
+    // before mounting the checkout sheet — animating two full-screen
+    // overlays at once is the main cause of jank on mobile.
     setIsDialogOpen(false);
     setSelectedBundle(null);
     setCheckoutBundle(bundle);
     setComboCheckoutName(user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "");
     setComboCheckoutEmail(user?.email ?? "");
-    setComboCheckoutOpen(true);
+    window.setTimeout(() => setComboCheckoutOpen(true), 260);
   };
 
   const buildComboWhatsAppMessage = useCallback(() => {
@@ -300,14 +303,14 @@ export default function ComboDealSection() {
                       handleComboClick(combo);
                     }
                   }}
-                  className="group relative bg-card rounded-lg overflow-hidden border-0 transition-all duration-300 hover:scale-[1.01] text-left flex-shrink-0 w-[85vw] max-w-[380px] lg:w-full snap-start cursor-pointer"
+                  className="group relative bg-card rounded-lg overflow-hidden border-0 transition-transform duration-200 active:scale-[0.99] [@media(hover:hover)]:hover:scale-[1.01] text-left flex-shrink-0 w-[85vw] max-w-[380px] lg:w-full snap-start cursor-pointer"
                 >
                   <div className="relative aspect-[16/9] w-full overflow-hidden">
                     <Image
                       src={combo.image}
                       alt={combo.title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover [@media(hover:hover)]:group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 1024px) 85vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90" />

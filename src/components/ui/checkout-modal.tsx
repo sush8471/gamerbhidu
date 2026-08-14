@@ -182,7 +182,7 @@ export function CheckoutModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm sm:p-4"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 sm:backdrop-blur-sm sm:p-4"
           onClick={() => {
             if (!qrFullscreen) onClose();
           }}
@@ -191,7 +191,6 @@ export function CheckoutModal({
           aria-labelledby="checkout-modal-title"
         >
           <motion.div
-            layout
             initial={{ y: 64, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 48, opacity: 0 }}
@@ -200,12 +199,9 @@ export function CheckoutModal({
               damping: 32,
               stiffness: 380,
               mass: 0.8,
-              layout: { type: "spring", damping: 30, stiffness: 260 },
             }}
             onClick={(e) => e.stopPropagation()}
-            className={`w-full sm:max-w-md flex flex-col bg-card border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden sm:h-auto sm:max-h-[90vh] ${
-              step === "payment" ? "h-[100dvh]" : "max-h-[100dvh]"
-            }`}
+            className="w-full sm:max-w-md flex flex-col bg-card border border-white/10 rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden h-[100dvh] sm:h-auto sm:max-h-[90vh]"
           >
             {/* Drag handle (mobile) */}
             <div className="sm:hidden flex justify-center pt-2.5 pb-1">

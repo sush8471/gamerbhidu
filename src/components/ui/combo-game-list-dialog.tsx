@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { ArrowRight, ChevronDown, ChevronUp, Layers, X } from "lucide-react";
 import type { ComboGame } from "@/lib/local-db";
 import { ShareButton } from "@/components/ui/share-button";
@@ -28,9 +28,11 @@ interface ComboGameListDialogProps {
 
 const INITIAL_COUNT = 8;
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 16, scale: 0.95 },
-  show: { opacity: 1, y: 0, scale: 1 },
+// Opacity-only entrance. Transforms + layout animation are expensive on mobile
+// GPUs, especially when staggered across the whole grid.
+const cardVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.25, ease: "easeOut" } },
 };
 
 export default function ComboGameListDialog({
@@ -101,7 +103,7 @@ export default function ComboGameListDialog({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/80 sm:backdrop-blur-sm"
         >
           <motion.div
             initial={{ opacity: 0, y: 32, scale: 0.97 }}
@@ -160,12 +162,11 @@ export default function ComboGameListDialog({
             {/* Game grid - scrollable */}
             <div className="flex-1 overflow-y-auto min-h-0 px-4 sm:px-5 py-4">
               <motion.div
-                initial="hidden"
+                initial={showAll ? false : "hidden"}
                 animate="show"
-                variants={{ show: { transition: { staggerChildren: 0.04 } } }}
+                variants={{ show: { transition: { staggerChildren: 0.035 } } }}
                 className="grid grid-cols-3 gap-3"
               >
-                <AnimatePresence initial={false}>
                   {visibleGames.map((gameItem, index) => {
                     const game = gameItem.game;
                     const title = game?.title || "Unknown Game";
@@ -174,13 +175,7 @@ export default function ComboGameListDialog({
 
                     const card = (
                       <motion.div
-                        layout
-                        key={`${index}-${title}`}
                         variants={cardVariants}
-                        initial="hidden"
-                        animate="show"
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.25 }}
                         className="group relative aspect-[3/4] rounded-xl overflow-hidden bg-neutral-900 border border-white/5 shadow-lg cursor-pointer hover:border-emerald-500/40 hover:shadow-emerald-500/10 hover:shadow-xl"
                       >
                         {imageUrl ? (
@@ -217,7 +212,6 @@ export default function ComboGameListDialog({
                       <div key={`${index}-${title}`}>{card}</div>
                     );
                   })}
-                </AnimatePresence>
               </motion.div>
 
               {/* Show More / Show Less */}
