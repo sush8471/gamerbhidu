@@ -20,6 +20,9 @@ import { CarouselNav } from "@/components/ui/carousel-nav";
 import GameDetailSkeleton from "@/components/ui/game-detail-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStorefrontSync } from "@/hooks/use-storefront-sync";
+import { scrollToSectionIdWithRetry } from "@/lib/scroll-utils";
+import { shareOrCopy } from "@/lib/share";
+import { toast } from "sonner";
 
 
 // FAQ Item Component
@@ -139,6 +142,18 @@ export default function GameDetailPage() {
 
   useStorefrontSync(() => loadGame(false), { tables: ["games"] });
 
+  // Deep-link: scroll to a page subsection when opened via ?scroll=<id> or #id
+  useEffect(() => {
+    if (loading) return;
+    const params = new URLSearchParams(window.location.search);
+    const target =
+      params.get("scroll") || window.location.hash.replace(/^#/, "");
+    if (!target) return;
+    const valid = ["system-requirements", "faq", "similar-games"];
+    if (!valid.includes(target)) return;
+    return scrollToSectionIdWithRetry(target);
+  }, [loading]);
+
   // Fetch Steam data when game is loaded
   useEffect(() => {
     const steamAppId = game?.steam_app_id;
@@ -208,19 +223,13 @@ export default function GameDetailPage() {
   ];
 
   const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: game.title,
-          text: `Check out ${game.title} on Gamer Bhidu!`,
-          url: window.location.href,
-        });
-      } catch (err) {
-        console.log('Share cancelled');
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      // Optional: Add toast notification here
+    const result = await shareOrCopy({
+      title: game.title,
+      text: `Check out ${game.title} on Gamer Bhidu!`,
+      url: window.location.href,
+    });
+    if (result === "copied") {
+      toast.success("Link copied to clipboard");
     }
   };
 
@@ -330,11 +339,12 @@ export default function GameDetailPage() {
               {/* SYSTEM REQUIREMENTS - Collapsible */}
               {(minRequirements || recRequirements) && (
                 <motion.div
+                  id="system-requirements"
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, margin: "-50px" }}
                   variants={fadeInUp}
-                  className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl shadow-2xl mt-8 lg:mt-16 overflow-hidden"
+                  className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl shadow-2xl mt-8 lg:mt-16 overflow-hidden scroll-mt-20"
                 >
                   {/* Clickable Header */}
                   <button
@@ -458,11 +468,12 @@ export default function GameDetailPage() {
 
               {/* FAQ SECTION */}
               <motion.div
+                id="faq"
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 variants={fadeInUp}
-                className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16"
+                className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16 scroll-mt-20"
               >
                 <SectionHeader
                   title="Frequently Asked"
@@ -485,11 +496,12 @@ export default function GameDetailPage() {
               {/* SIMILAR GAMES */}
               {similarGames.length > 0 && (
                 <motion.div
+                  id="similar-games"
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, margin: "-50px" }}
                   variants={fadeInUp}
-                  className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16 mb-8 lg:mb-16"
+                  className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-none lg:rounded-3xl p-6 lg:p-12 shadow-2xl mt-8 lg:mt-16 mb-8 lg:mb-16 scroll-mt-20"
                 >
                   <div className="flex items-center justify-between gap-4 mb-4">
                     <SectionHeader

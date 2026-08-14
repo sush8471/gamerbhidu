@@ -9,6 +9,7 @@ import GamerBhiduNavbar from "@/components/sections/gamerbhidu-navbar";
 import { Typewriter } from "@/components/ui/typewriter-text";
 import ComboDealSkeleton from "@/components/ui/combo-deal-skeleton";
 import GameCardRowSkeleton from "@/components/ui/game-card-row-skeleton";
+import DeepLinkHandler from "@/components/deep-link-handler";
 
 // Lazy load non-critical sections for better initial load performance
 const ComboDealSection = lazy(() => import("@/components/sections/combo-deals"));
@@ -32,6 +33,9 @@ const GAME_POSTERS = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-background">
+      <Suspense fallback={null}>
+        <DeepLinkHandler />
+      </Suspense>
       <GamerBhiduNavbar />
       <AnimatedMarqueeHero
         tagline={
@@ -59,31 +63,37 @@ export default function Home() {
         images={GAME_POSTERS}
       />
 
-      <HowItWorks />
-      <div id="hot-deals">
+      <div id="how-it-works" className="scroll-mt-20">
+        <HowItWorks />
+      </div>
+      <div id="hot-deals" className="scroll-mt-20">
         <GameCardsGridDiscover />
       </div>
 
-      <SocialProof />
+      <div id="social-proof" className="scroll-mt-20">
+        <SocialProof />
+      </div>
 
-      <div id="value-combos">
+      <div id="value-combos" className="scroll-mt-20">
         <Suspense fallback={<ComboDealSkeleton />}>
           <ComboDealSection />
         </Suspense>
       </div>
 
       <Suspense fallback={null}>
-        <SteamRecommendations />
+        <div id="steam-recommendations" className="scroll-mt-20">
+          <SteamRecommendations />
+        </div>
       </Suspense>
 
-      <div id="recently-launched">
+      <div id="recently-launched" className="scroll-mt-20">
         <Suspense fallback={
           <GameCardRowSkeleton title="Recently Launched" subtitle="Fresh arrivals - Get them now!" count={6} />
         }>
           <RecentlyLaunched />
         </Suspense>
       </div>
-      <div id="upcoming-games">
+      <div id="upcoming-games" className="scroll-mt-20">
         <Suspense fallback={
           <GameCardRowSkeleton title="Upcoming Games" subtitle="New releases arriving soon" count={6} />
         }>

@@ -66,6 +66,7 @@ export default function GameCardsGridDiscover() {
           <SectionHeader
             title="Hot Deals"
             subtitle="Premium games at India's best prices"
+            shareId="hot-deals"
           />
 
           <CarouselNav scrollRef={scrollContainerRef} itemCount={games.length} />

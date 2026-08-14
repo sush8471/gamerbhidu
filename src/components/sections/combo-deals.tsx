@@ -12,6 +12,8 @@ import { useStorefrontSync } from "@/hooks/use-storefront-sync";
 import { CheckoutModal } from "@/components/ui/checkout-modal";
 import ComboGameListDialog from "@/components/ui/combo-game-list-dialog";
 import { useAuth } from "@/context/AuthContext";
+import { ShareButton } from "@/components/ui/share-button";
+import { getComboShareUrl } from "@/lib/share";
 
 import { useSteam } from "@/context/SteamContext";
 
@@ -99,6 +101,7 @@ export default function ComboDealSection() {
   const [comboCheckoutName, setComboCheckoutName] = useState("");
   const [comboCheckoutEmail, setComboCheckoutEmail] = useState("");
   const [checkoutBundle, setCheckoutBundle] = useState<ComboData | null>(null);
+  const [pendingComboId, setPendingComboId] = useState<string | null>(null);
 
   const loadCombos = useCallback(async (isInitial = false) => {
     if (isInitial) setLoading(true);
@@ -133,6 +136,27 @@ export default function ComboDealSection() {
   useStorefrontSync(() => loadCombos(false), {
     tables: ["combos", "combo_games", "games"],
   });
+
+  // Auto-open a combo that was shared via /?combo=<id>
+  useEffect(() => {
+    const pending = window.__pendingComboId;
+    if (pending) setPendingComboId(pending);
+    const handler = (e: Event) => {
+      setPendingComboId((e as CustomEvent<string>).detail);
+    };
+    window.addEventListener("gamerbhidu:open-combo", handler);
+    return () => window.removeEventListener("gamerbhidu:open-combo", handler);
+  }, []);
+
+  useEffect(() => {
+    if (combos.length === 0 || !pendingComboId) return;
+    const combo = combos.find((c) => c.id === pendingComboId);
+    if (!combo) return;
+    setSelectedBundle(combo);
+    setIsDialogOpen(true);
+    setPendingComboId(null);
+    window.__pendingComboId = undefined;
+  }, [combos, pendingComboId]);
 
   const handleComboClick = (combo: ComboData) => {
     if (combo.hasGameList) {
@@ -234,6 +258,7 @@ export default function ComboDealSection() {
             <SectionHeader
               title="Value Combos"
               subtitle="Multiple games at unbeatable prices"
+              shareId="value-combos"
             />
           </div>
           <section className="text-center py-12 text-muted-foreground">
@@ -253,6 +278,7 @@ export default function ComboDealSection() {
             <SectionHeader
               title="Value Combos"
               subtitle="Multiple games at unbeatable prices"
+              shareId="value-combos"
             />
             <CarouselNav scrollRef={scrollContainerRef} itemCount={combos.length} show={combos.length > 1} />
           </div>
@@ -267,10 +293,18 @@ export default function ComboDealSection() {
               ).length;
 
               return (
-                <button
+                <div
                   key={combo.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleComboClick(combo)}
-                  className="group relative bg-card rounded-lg overflow-hidden border-0 transition-all duration-300 hover:scale-[1.01] text-left flex-shrink-0 w-[85vw] max-w-[380px] lg:w-full snap-start"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleComboClick(combo);
+                    }
+                  }}
+                  className="group relative bg-card rounded-lg overflow-hidden border-0 transition-all duration-300 hover:scale-[1.01] text-left flex-shrink-0 w-[85vw] max-w-[380px] lg:w-full snap-start cursor-pointer"
                 >
                   <div className="relative aspect-[16/9] w-full overflow-hidden">
                     <Image
@@ -318,12 +352,19 @@ export default function ComboDealSection() {
                         <span className="text-white font-black text-xl">{combo.price.discounted}</span>
                       </div>
 
-                      <span className="text-white/60 text-xs font-semibold">
-                        {combo.hasGameList ? "View Games" : "Ask on WhatsApp"}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <ShareButton
+                          url={getComboShareUrl(combo.id)}
+                          text={`Check out ${combo.title} on Gamer Bhidu!`}
+                          tooltip="Share this combo"
+                        />
+                        <span className="text-white/60 text-xs font-semibold">
+                          {combo.hasGameList ? "View Games" : "Ask on WhatsApp"}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </button>
+                </div>
               );
             })}
 
