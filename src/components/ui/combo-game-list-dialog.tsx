@@ -146,7 +146,6 @@ export default function ComboGameListDialog({
                     title={bundle.title}
                     text={`Check out ${bundle.title} on Gamer Bhidu!`}
                     size="md"
-                    tooltip="Share this combo"
                   />
                   <button
                     onClick={onClose}
