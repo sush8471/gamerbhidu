@@ -187,7 +187,7 @@ export default function ComboDealSection() {
     window.setTimeout(() => setComboCheckoutOpen(true), 180);
   };
 
-  const buildComboWhatsAppMessage = useCallback(() => {
+  const buildComboWhatsAppMessage = useCallback((orderCode?: string) => {
     if (!checkoutBundle) return "";
     const games = checkoutBundle.games || [];
     const individualTotal = games.reduce(
@@ -202,6 +202,8 @@ export default function ComboDealSection() {
     );
     return [
       `🎮 Gamer Bhidu - Combo Purchase`,
+      orderCode ? `🧾 *ORDER BILL: ${orderCode}*` : null,
+      orderCode ? `🔑 *Verification Code: ${orderCode}*` : null,
       "",
       comboCheckoutName ? `👤 Customer: ${comboCheckoutName}` : null,
       comboCheckoutEmail ? `📧 Email: ${comboCheckoutEmail}` : null,
@@ -213,7 +215,7 @@ export default function ComboDealSection() {
         ? `💰 Combo Price: ${checkoutBundle.price.discounted} (${comboPctLabel} off)`
         : `💰 Combo Price: ${checkoutBundle.price.discounted}`,
       "",
-      "I have completed the UPI payment. Please verify and confirm!",
+      "I have completed the UPI payment. Please verify my bill code and deliver my games!",
     ].filter((l) => l !== null).join("\n");
   }, [checkoutBundle, comboCheckoutName, comboCheckoutEmail]);
 
@@ -378,6 +380,7 @@ export default function ComboDealSection() {
             image: g.game?.image_url || "",
           }))}
           totalPrice={parseInt(checkoutBundle.price.discounted.replace(/[₹,]/g, "")) || 0}
+          userId={user?.id}
           userName={comboCheckoutName || undefined}
           userEmail={comboCheckoutEmail || undefined}
           whatsappMessageBuilder={buildComboWhatsAppMessage}

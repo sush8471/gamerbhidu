@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   ChevronRight,
+  ShoppingCart,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -81,6 +82,7 @@ export default function AdminDashboardLayout({
 
   const navItems = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
     { href: "/admin/games", label: "Games Catalog", icon: Gamepad2 },
     { href: "/admin/homepage", label: "Sections", icon: Home },
     { href: "/admin/proofs", label: "Social Proofs", icon: BadgeCheck },

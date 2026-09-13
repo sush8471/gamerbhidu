@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, ShieldCheck, Copy, Check, ChevronDown, Maximize2, ArrowLeft, ArrowRight } from "lucide-react";
+import { X, CheckCircle2, ShieldCheck, Copy, Check, ChevronDown, Maximize2, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import type { CartItem } from "@/context/CartContext";
 import { formatDiscountPercent } from "@/lib/local-db";
+import { createOrder } from "@/lib/db/order-db";
+import { toast } from "sonner";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -18,12 +20,14 @@ interface CheckoutModalProps {
   items: CartItem[];
   totalPrice: number;
   /** Pre-filled from Google profile — optional */
+  userId?: string | null;
   userName?: string;
   userEmail?: string;
+  onOrderCreated?: (orderCode: string) => void;
   /** Override the default WhatsApp message — used for combo purchases */
-  whatsappMessageBuilder?: () => string;
+  whatsappMessageBuilder?: (orderCode?: string) => string;
   /** Override the default copy message — used for combo purchases */
-  copyMessageBuilder?: () => string;
+  copyMessageBuilder?: (orderCode?: string) => string;
 }
 
 // ---------------------------------------------------------------------------
@@ -35,11 +39,14 @@ export function CheckoutModal({
   onClose,
   items,
   totalPrice,
+  userId,
   userName,
   userEmail,
+  onOrderCreated,
   whatsappMessageBuilder,
   copyMessageBuilder,
 }: CheckoutModalProps) {
+  const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState<"summary" | "payment">("summary");
   const [direction, setDirection] = useState<1 | -1>(1); // 1 = forward, -1 = back
   const [utrNumber, setUtrNumber] = useState("");
@@ -101,9 +108,11 @@ export function CheckoutModal({
     }
   }, [open]);
 
-  const buildOrderMessage = () => {
+  const buildOrderMessage = (orderCode?: string) => {
     return [
       `🎮 *Gamer Bhidu Purchase*`,
+      orderCode ? `🧾 *ORDER BILL: ${orderCode}*` : null,
+      orderCode ? `🔑 *Verification Code: ${orderCode}*` : null,
       "",
       userName ? `👤 *Customer:* ${userName}` : null,
       userEmail ? `📧 *Email:* ${userEmail}` : null,
@@ -114,15 +123,17 @@ export function CheckoutModal({
       `💰 *Total Paid:* ₹${totalPrice}`,
       `💳 *UPI UTR / Ref No:* ${utrNumber.trim()}`,
       "",
-      "I have completed the UPI payment with UTR above. Please verify and confirm!",
+      "I have completed the UPI payment with UTR above. Please verify my bill code and deliver my games!",
     ]
       .filter((l) => l !== null)
       .join("\n");
   };
 
-  const buildCopyMessage = () => {
+  const buildCopyMessage = (orderCode?: string) => {
     return [
       `Gamer Bhidu - Order`,
+      orderCode ? `Order Bill: ${orderCode}` : null,
+      orderCode ? `Verification Code: ${orderCode}` : null,
       "",
       userName ? `Name: ${userName}` : null,
       userEmail ? `Email: ${userEmail}` : null,
@@ -167,14 +178,50 @@ export function CheckoutModal({
     });
   };
 
-  const handleWhatsApp = () => {
-    if (!isValidUtr) return;
-    const message = whatsappMessageBuilder ? whatsappMessageBuilder() : buildOrderMessage();
-    window.open(
-      `https://wa.me/917752805529?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
-    onClose();
+  const handleWhatsApp = async () => {
+    if (!isValidUtr || submitting) return;
+    setSubmitting(true);
+    try {
+      // 1. Create order record in Supabase
+      const createdOrder = await createOrder({
+        userId: userId || null,
+        customerName: userName || "Customer",
+        customerEmail: userEmail || "",
+        items,
+        total: totalPrice,
+        utrNumber: utrNumber.trim(),
+      });
+
+      const orderCode = createdOrder.order_code;
+      if (onOrderCreated) {
+        onOrderCreated(orderCode);
+      }
+
+      // 2. Open WhatsApp with the generated Order Code
+      const message = whatsappMessageBuilder
+        ? whatsappMessageBuilder(orderCode)
+        : buildOrderMessage(orderCode);
+
+      window.open(
+        `https://wa.me/917752805529?text=${encodeURIComponent(message)}`,
+        "_blank"
+      );
+      toast.success(`Order recorded! Bill Code: ${orderCode}`);
+      onClose();
+    } catch (err: any) {
+      console.error("Error submitting order:", err);
+      // Fallback: still open WhatsApp even if DB write encountered an issue
+      const message = whatsappMessageBuilder
+        ? whatsappMessageBuilder()
+        : buildOrderMessage();
+      window.open(
+        `https://wa.me/917752805529?text=${encodeURIComponent(message)}`,
+        "_blank"
+      );
+      onClose();
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -466,15 +513,24 @@ export function CheckoutModal({
                   >
                     <button
                       onClick={handleWhatsApp}
-                      disabled={!isValidUtr}
+                      disabled={!isValidUtr || submitting}
                       className={`w-full py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 ${
-                        isValidUtr
+                        isValidUtr && !submitting
                           ? "bg-[#25D366] text-white hover:bg-[#20BA5A] shadow-lg shadow-green-500/15 active:scale-[0.99]"
                           : "bg-white/10 text-muted-foreground cursor-not-allowed opacity-50"
                       }`}
                     >
-                      <FaWhatsapp className="h-4 w-4" />
-                      {isValidUtr ? "Submit Order on WhatsApp" : "Enter UTR to Proceed"}
+                      {submitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generating Bill & Code...
+                        </>
+                      ) : (
+                        <>
+                          <FaWhatsapp className="h-4 w-4" />
+                          {isValidUtr ? "Submit Order on WhatsApp" : "Enter UTR to Proceed"}
+                        </>
+                      )}
                     </button>
                     <p className="text-[10px] sm:text-[11px] text-muted-foreground text-center leading-snug pb-0.5">
                       Order details & UTR are sent on WhatsApp for verification.

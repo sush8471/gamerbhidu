@@ -13,7 +13,7 @@ import { ArrowLeft, ShoppingBag, Lock, Pencil, ChevronDown } from "lucide-react"
 import { motion } from "framer-motion";
 
 export default function CheckoutPage() {
-  const { cart, totalPrice, itemCount } = useCart();
+  const { cart, totalPrice, itemCount, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
 
   // Auto-fill from Google profile, user can edit
@@ -291,8 +291,10 @@ export default function CheckoutPage() {
         onClose={handleModalClose}
         items={cart}
         totalPrice={totalPrice}
+        userId={user?.id}
         userName={name || undefined}
         userEmail={email || undefined}
+        onOrderCreated={() => clearCart()}
       />
 
       <Footer />
