@@ -33,7 +33,7 @@ export default function GamePagination({
         <button
           disabled={currentPage === 1}
           onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
-          className="p-2.5 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+          className="p-2.5 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-white/30 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -43,7 +43,7 @@ export default function GamePagination({
         <button
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
-          className="p-2.5 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+          className="p-2.5 border border-[#262626] rounded-lg bg-[#050505]/50 text-muted-foreground hover:text-white hover:border-white/30 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
         >
           <ChevronRight className="w-4 h-4" />
         </button>

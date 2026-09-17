@@ -75,13 +75,13 @@ export default function GamePicker({
           {selectedTitles.map((game) => (
             <span
               key={game.id}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 border border-primary/20 text-primary text-xs font-semibold rounded-md"
+              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white/10 border border-white/15 text-white text-xs font-semibold rounded-md shadow-sm"
             >
               {game.title}
               <button
                 type="button"
                 onClick={() => remove(game.id)}
-                className="hover:text-primary-foreground transition-colors cursor-pointer"
+                className="text-zinc-400 hover:text-white transition-colors cursor-pointer ml-1"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -101,7 +101,7 @@ export default function GamePicker({
           }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="w-full bg-[#050505]/50 border border-[#262626] focus:border-primary rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary/10 placeholder:text-gray-600"
+          className="w-full bg-[#050505]/50 border border-[#262626] focus:border-white/40 rounded-lg pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/10 placeholder:text-gray-600"
         />
         {query && (
           <button
@@ -127,14 +127,14 @@ export default function GamePicker({
                     onClick={() => toggle(game.id)}
                     className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${
                       sel
-                        ? "bg-primary/10 border border-primary/20 text-white"
+                        ? "bg-white/10 border border-white/20 text-white font-semibold"
                         : "border border-transparent text-muted-foreground hover:bg-white/5 hover:text-white"
                     }`}
                   >
                     <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-all ${
-                      sel ? "bg-primary border-primary" : "border-[#262626] bg-[#050505]/50"
+                      sel ? "bg-white border-white text-black" : "border-[#262626] bg-[#050505]/50"
                     }`}>
-                      {sel && <Check className="w-2.5 h-2.5 text-primary-foreground" />}
+                      {sel && <Check className="w-2.5 h-2.5 text-black" />}
                     </div>
                     <span className="truncate">{game.title}</span>
                   </button>

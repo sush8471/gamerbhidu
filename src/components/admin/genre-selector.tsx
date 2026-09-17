@@ -85,8 +85,8 @@ export default function GenreSelector({
               key={g}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer select-none active:scale-[0.97] ${
                 isChecked
-                  ? "bg-primary/10 border-primary text-primary shadow-[0_0_12px_rgba(0,210,255,0.1)]"
-                  : "bg-background/30 border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground"
+                  ? "bg-white text-black border-white shadow-md font-black"
+                  : "bg-[#0d0d0d] border-[#262626] text-zinc-400 hover:border-zinc-600 hover:text-white"
               }`}
             >
               <input

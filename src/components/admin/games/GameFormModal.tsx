@@ -96,7 +96,7 @@ export default function GameFormModal({
                 type="button"
                 disabled={fetchingSteam || !formData.steam_app_id}
                 onClick={onFetchSteam}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-xs rounded-lg hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+                className="flex items-center gap-2 px-4 py-2 bg-white text-black font-bold disabled:opacity-40 disabled:cursor-not-allowed text-xs rounded-lg hover:bg-zinc-200 active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap shadow-md"
               >
                 {fetchingSteam ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
                 Autofill
@@ -194,16 +194,16 @@ export default function GameFormModal({
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
-                  <input type="radio" name="release_status" value="released" checked={formData.release_status === "released"} onChange={() => onFormDataChange((prev) => ({ ...prev, release_status: "released" }))} className="accent-primary" />
+                  <input type="radio" name="release_status" value="released" checked={formData.release_status === "released"} onChange={() => onFormDataChange((prev) => ({ ...prev, release_status: "released" }))} className="accent-white" />
                   Released
                 </label>
                 <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
-                  <input type="radio" name="release_status" value="upcoming" checked={formData.release_status === "upcoming"} onChange={() => onFormDataChange((prev) => ({ ...prev, release_status: "upcoming" }))} className="accent-primary" />
+                  <input type="radio" name="release_status" value="upcoming" checked={formData.release_status === "upcoming"} onChange={() => onFormDataChange((prev) => ({ ...prev, release_status: "upcoming" }))} className="accent-white" />
                   Upcoming
                 </label>
               </div>
               <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
-                <input type="checkbox" checked={formData.visible} onChange={(e) => onFormDataChange((prev) => ({ ...prev, visible: e.target.checked }))} className="w-4 h-4 rounded accent-primary" />
+                <input type="checkbox" checked={formData.visible} onChange={(e) => onFormDataChange((prev) => ({ ...prev, visible: e.target.checked }))} className="w-4 h-4 rounded accent-white" />
                 Visible
               </label>
             </div>
@@ -212,8 +212,8 @@ export default function GameFormModal({
           {/* Footer */}
           <div className="flex justify-end gap-3 px-5 py-3.5 border-t border-border bg-card">
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={formLoading} className="font-bold active:scale-[0.98]">
-              {formLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+            <Button type="submit" disabled={formLoading} className="font-bold active:scale-[0.98] bg-white text-black hover:bg-zinc-200">
+              {formLoading && <Loader2 className="w-4 h-4 animate-spin text-black" />}
               {mode === "add" ? "Save Game" : "Update Game"}
             </Button>
           </div>

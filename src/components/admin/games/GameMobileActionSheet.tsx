@@ -62,9 +62,9 @@ export default function GameMobileActionSheet({
 
               <button
                 onClick={() => { onEdit(game); onOpenChange(false); }}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-background border border-border rounded-lg text-xs font-bold text-white hover:border-primary/40 transition-all cursor-pointer"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-background border border-border rounded-lg text-xs font-bold text-white hover:border-white/30 transition-all cursor-pointer"
               >
-                <Edit2 className="w-3.5 h-3.5 text-primary" />
+                <Edit2 className="w-3.5 h-3.5 text-white" />
                 Edit
               </button>
 

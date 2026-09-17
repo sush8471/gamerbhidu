@@ -26,8 +26,9 @@ export default function GamesTab() {
   const [selectedVisibility, setSelectedVisibility] = useState(searchParams.get("visibility") || "All");
   const [selectedStatus, setSelectedStatus] = useState(searchParams.get("status") || "All");
   const [sortBy, setSortBy] = useState<"name" | "price" | "created">("name");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -497,9 +498,11 @@ export default function GamesTab() {
         }}
         onAdd={openAddModal}
         hasActiveFilters={hasActiveFilters}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
       />
 
-      <div className="bg-[#111111] border border-[#262626] rounded-xl overflow-hidden shadow-xl">
+      <div className="bg-[#111111] border border-[#262626] rounded-2xl overflow-hidden shadow-xl">
         <GamesTable
           loading={loading}
           error={error}
@@ -513,6 +516,7 @@ export default function GamesTab() {
           onOpenMobileActions={setMobileActionGame}
           onAdd={openAddModal}
           hasActiveFilters={hasActiveFilters}
+          viewMode={viewMode}
         />
 
         <GamePagination
