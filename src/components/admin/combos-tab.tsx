@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
@@ -504,7 +504,7 @@ export default function CombosTab() {
                         <span className="text-xs text-muted-foreground line-through">{"\u20B9"}{combo.original_price}</span>
                       )}
                       {combo.discount_details && (
-                        <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">{combo.discount_details}</span>
+                        <span className="text-[10px] font-black bg-white/15 text-white px-1.5 py-0.5 rounded border border-white/10">{combo.discount_details}</span>
                       )}
                     </div>
                   </div>
@@ -555,7 +555,7 @@ export default function CombosTab() {
                       </td>
                       <td className="py-3 px-6">
                         {combo.discount_details ? (
-                          <span className="text-xs font-black bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded border border-blue-500/20">{combo.discount_details}</span>
+                          <span className="text-xs font-black bg-white/15 text-white px-2.5 py-1 rounded border border-white/10">{combo.discount_details}</span>
                         ) : <span className="text-xs text-muted-foreground">-</span>}
                       </td>
                       <td className="py-3 px-6">
@@ -612,9 +612,9 @@ export default function CombosTab() {
               Showing <span className="font-semibold text-foreground">{showStart}</span>-<span className="font-semibold text-foreground">{showEnd}</span> of <span className="font-semibold text-foreground">{filteredCombos.length}</span>
             </p>
             <div className="flex items-center gap-2">
-              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2.5 border border-border rounded-lg bg-background text-muted-foreground hover:text-foreground hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
+              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2.5 border border-border rounded-lg bg-background text-muted-foreground hover:text-foreground hover:border-white/30 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
               <span className="text-xs text-muted-foreground min-w-[80px] text-center">Page <span className="font-bold text-foreground">{currentPage}</span> of {totalPages}</span>
-              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2.5 border border-border rounded-lg bg-background text-muted-foreground hover:text-foreground hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
+              <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2.5 border border-border rounded-lg bg-background text-muted-foreground hover:text-foreground hover:border-white/30 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
             </div>
           </div>
         )}
@@ -683,13 +683,13 @@ export default function CombosTab() {
                     onDragEnter={handleDrag} onDragOver={handleDrag} onDragLeave={handleDrag} onDrop={handleDrop}
                     onClick={() => document.getElementById("combo-file-upload")?.click()}
                     className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all cursor-pointer relative overflow-hidden h-36 bg-background/50 ${
-                      dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                      dragActive ? "border-white bg-white/5" : "border-border hover:border-white/30"
                     }`}
                   >
                     <input type="file" id="combo-file-upload" accept="image/*" onChange={handleFileInput} className="hidden" />
                     {uploadingImage ? (
                       <div className="flex flex-col items-center gap-2">
-                        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                        <Loader2 className="w-6 h-6 animate-spin text-white" />
                         <p className="text-[10px] text-muted-foreground">Uploading...</p>
                       </div>
                     ) : formData.image_url ? (
@@ -698,7 +698,7 @@ export default function CombosTab() {
                           <Image src={formData.image_url} alt="" fill className="object-cover" />
                         </div>
                         <div className="relative z-10 flex flex-col items-center gap-1">
-                          <FileImage className="w-6 h-6 text-primary" />
+                          <FileImage className="w-6 h-6 text-white" />
                           <p className="text-[10px] text-foreground font-bold bg-black/60 px-2 py-0.5 rounded-full border border-white/10">Click or drop to change</p>
                         </div>
                       </>
@@ -775,7 +775,7 @@ export default function CombosTab() {
 
                 <div className="border-t border-border pt-5">
                   <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
-                    <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData(prev => ({ ...prev, visible: e.target.checked }))} className="w-4 h-4 rounded border-border accent-primary" />
+                    <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData(prev => ({ ...prev, visible: e.target.checked }))} className="w-4 h-4 rounded border-border accent-white" />
                     <span>Visible on storefront</span>
                   </label>
                 </div>

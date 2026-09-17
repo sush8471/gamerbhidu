@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white gap-3">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <Loader2 className="w-10 h-10 animate-spin text-white" />
         <p className="text-sm font-medium tracking-wide text-muted-foreground">Loading...</p>
       </div>
     );
@@ -74,8 +74,8 @@ export default function AdminLoginPage() {
   return (
     <main className="min-h-screen bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Ambient Glows */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-white/[0.02] blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 rounded-full bg-white/[0.02] blur-[120px] pointer-events-none" />
 
       {/* Main Glassmorphic Panel */}
       <motion.div
@@ -89,10 +89,10 @@ export default function AdminLoginPage() {
           y: { duration: 0.5, ease: "easeOut" },
           x: { duration: 0.4 },
         }}
-        className="w-full max-w-md bg-[#111111]/60 backdrop-blur-xl border border-[#262626] rounded-2xl p-8 shadow-[0_0_50px_rgba(0,0,0,0.3)] relative z-10"
+        className="w-full max-w-md bg-[#111111]/80 backdrop-blur-xl border border-[#262626] rounded-2xl p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative z-10"
       >
         <div className="text-center space-y-2 mb-8">
-          <Link href="/" className="inline-block text-2xl font-black tracking-wider uppercase text-primary">
+          <Link href="/" className="inline-block text-2xl font-black tracking-wider uppercase text-white hover:text-zinc-300 transition-colors">
             Gamer Bhidu
           </Link>
           <h2 className="text-lg font-bold text-white tracking-wide">Administration Console</h2>
@@ -130,7 +130,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@gamerbhidu.com"
-                className="w-full bg-[#050505]/50 border border-[#262626] focus:border-primary focus:ring-1 focus:ring-primary/20 rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600"
+                className="w-full bg-[#050505]/50 border border-[#262626] focus:border-white/40 focus:ring-1 focus:ring-white/10 rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600"
               />
             </div>
           </div>
@@ -140,14 +140,14 @@ export default function AdminLoginPage() {
               Password
             </label>
             <div className="relative group">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-white transition-colors" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-[#050505]/50 border border-[#262626] focus:border-primary focus:ring-1 focus:ring-primary/20 rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600"
+                className="w-full bg-[#050505]/50 border border-[#262626] focus:border-white/40 focus:ring-1 focus:ring-white/10 rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600"
               />
             </div>
           </div>
@@ -155,10 +155,10 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground font-black text-sm py-3.5 rounded-lg hover:brightness-110 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 bg-white text-black font-black text-sm py-3.5 rounded-lg hover:bg-zinc-200 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-md"
           >
             {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin text-black" />
             ) : (
               <>
                 <span>Sign In</span>

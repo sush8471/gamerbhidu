@@ -759,7 +759,7 @@ export default function AdminHomepageSectionsPage() {
                 onClick={() => { setShowCombos(false); setActiveSectionId(section.id); }}
                 className={`px-4 py-2 text-sm font-bold tracking-wide transition-all rounded-lg cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_12px_rgba(0,210,255,0.05)]"
+                    ? "bg-white text-black font-black shadow-md border border-white"
                     : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
                 }`}
               >
@@ -771,7 +771,7 @@ export default function AdminHomepageSectionsPage() {
             onClick={() => { setShowCombos(true); setActiveSectionId(null); }}
             className={`px-4 py-2 text-sm font-bold tracking-wide transition-all rounded-lg cursor-pointer whitespace-nowrap ${
               showCombos
-                ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_12px_rgba(0,210,255,0.05)]"
+                ? "bg-white text-black font-black shadow-md border border-white"
                 : "text-muted-foreground hover:text-white hover:bg-white/5 border border-transparent"
             }`}
           >
@@ -826,7 +826,7 @@ export default function AdminHomepageSectionsPage() {
                     }}
                     className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all cursor-pointer ${
                       isActive
-                        ? "bg-primary/10 text-primary"
+                        ? "bg-white text-black font-black shadow-sm"
                         : "text-muted-foreground hover:text-white hover:bg-white/5"
                     }`}
                   >
@@ -843,7 +843,7 @@ export default function AdminHomepageSectionsPage() {
                 }}
                 className={`w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all cursor-pointer ${
                   showCombos
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-white text-black font-black shadow-sm"
                     : "text-muted-foreground hover:text-white hover:bg-white/5"
                 }`}
               >
@@ -972,7 +972,7 @@ export default function AdminHomepageSectionsPage() {
                             </td>
                             <td className="py-3 px-6">
                               {mapping.discount_percentage != null && mapping.discount_percentage > 0 ? (
-                                <span className="text-xs font-black bg-blue-500/10 text-blue-400 px-2.5 py-1 rounded border border-blue-500/20">
+                                <span className="text-xs font-black bg-white/15 text-white px-2.5 py-1 rounded border border-white/10 backdrop-blur-md">
                                   -{mapping.discount_percentage}%
                                 </span>
                               ) : <span className="text-xs text-muted-foreground">—</span>}
@@ -1051,9 +1051,9 @@ export default function AdminHomepageSectionsPage() {
                         }}
                         className={`flex items-center gap-2 p-3 transition-all duration-150 ${
                           isDragging
-                            ? "opacity-50 scale-[0.98] bg-primary/5"
+                            ? "opacity-50 scale-[0.98] bg-white/5"
                             : isDropTarget
-                              ? "bg-primary/10 border-t-2 border-t-primary"
+                              ? "bg-white/10 border-t-2 border-t-white"
                               : ""
                         }`}
                       >
@@ -1084,7 +1084,7 @@ export default function AdminHomepageSectionsPage() {
                               <span className="text-[10px] text-muted-foreground line-through">₹{mapping.original_price}</span>
                             )}
                             {mapping.discount_percentage != null && mapping.discount_percentage > 0 && (
-                              <span className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/20">-{mapping.discount_percentage}%</span>
+                              <span className="text-[10px] font-black bg-white/15 text-white px-1.5 py-0.5 rounded border border-white/10">-{mapping.discount_percentage}%</span>
                             )}
                           </div>
                         </div>
@@ -1110,9 +1110,9 @@ export default function AdminHomepageSectionsPage() {
                       Showing <span className="font-semibold text-white">{(currentPage - 1) * itemsPerPage + 1}</span>–<span className="font-semibold text-white">{Math.min(currentPage * itemsPerPage, filteredMappings.length)}</span> of <span className="font-semibold text-white">{filteredMappings.length}</span>
                     </p>
                     <div className="flex items-center gap-2">
-                      <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2.5 border border-border rounded-lg bg-background/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
+                      <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} className="p-2.5 border border-border rounded-lg bg-background/50 text-muted-foreground hover:text-white hover:border-white/30 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronLeft className="w-4 h-4" /></button>
                       <span className="text-xs text-muted-foreground min-w-[80px] text-center">Page <span className="font-bold text-white">{currentPage}</span> of {totalPages}</span>
-                      <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2.5 border border-border rounded-lg bg-background/50 text-muted-foreground hover:text-white hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
+                      <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} className="p-2.5 border border-border rounded-lg bg-background/50 text-muted-foreground hover:text-white hover:border-white/30 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"><ChevronRight className="w-4 h-4" /></button>
                     </div>
                   </div>
                 )}
@@ -1152,8 +1152,8 @@ export default function AdminHomepageSectionsPage() {
                   single
                 />
                 {unmappedGames.length === 0 && (
-                  <div className="flex items-start gap-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] p-3 rounded-lg leading-relaxed">
-                    <CheckCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5 bg-white/5 border border-white/10 text-zinc-300 text-[11px] p-3 rounded-lg leading-relaxed">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                     <span>All visible storefront listings are already assigned to this section.</span>
                   </div>
                 )}

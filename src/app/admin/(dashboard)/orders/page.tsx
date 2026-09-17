@@ -196,7 +196,7 @@ export default function AdminOrdersPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-3">
             Orders & Bill Verification
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white/10 text-white border border-white/15">
               Live Store
             </span>
           </h1>
@@ -216,9 +216,9 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* ── SECTION 1: WHATSAPP BILL CODE VERIFICATION & CUSTOMER DOSSIER ── */}
-      <div className="rounded-2xl border border-primary/30 bg-gradient-to-b from-primary/[0.08] to-card p-5 sm:p-6 shadow-xl relative overflow-hidden">
-        <div className="flex items-center gap-2.5 text-primary text-xs font-bold tracking-wider uppercase mb-3">
-          <Sparkles className="h-4 w-4" />
+      <div className="rounded-2xl border border-[#262626] bg-[#0d0d0d] p-5 sm:p-6 shadow-xl relative overflow-hidden">
+        <div className="flex items-center gap-2.5 text-zinc-300 text-xs font-bold tracking-wider uppercase mb-3">
+          <Sparkles className="h-4 w-4 text-white" />
           Instant WhatsApp Bill Lookup & Customer Dossier
         </div>
 
@@ -230,13 +230,13 @@ export default function AdminOrdersPage() {
               value={lookupQuery}
               onChange={(e) => setLookupQuery(e.target.value)}
               placeholder="Paste Bill Code (e.g. GB-8492) or 12-Digit UPI UTR..."
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-background/80 border border-white/15 text-white placeholder:text-muted-foreground text-sm font-mono tracking-wide focus:outline-none focus:border-primary transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-xl bg-background/80 border border-white/15 text-white placeholder:text-muted-foreground text-sm font-mono tracking-wide focus:outline-none focus:border-white/40 transition-all"
             />
           </div>
           <button
             type="submit"
             disabled={isVerifying || !lookupQuery.trim()}
-            className="px-6 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 shrink-0"
+            className="px-6 py-3 rounded-xl bg-white hover:bg-zinc-200 text-black font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 shrink-0 cursor-pointer"
           >
             {isVerifying ? (
               <>
@@ -303,7 +303,7 @@ export default function AdminOrdersPage() {
                 {verifiedResult.order.utr_number && (
                   <button
                     onClick={() => handleCopyUtr(verifiedResult.order.utr_number)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 text-xs font-bold transition-all"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/15 text-xs font-bold transition-all cursor-pointer"
                   >
                     {copiedUtr === verifiedResult.order.utr_number ? (
                       <>
@@ -378,7 +378,7 @@ export default function AdminOrdersPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-white font-bold text-sm">
-                    <User className="h-4 w-4 text-primary" />
+                    <User className="h-4 w-4 text-zinc-400" />
                     Customer Dossier
                   </div>
                   {verifiedResult.customerHistory.isRecurring ? (
@@ -455,9 +455,9 @@ export default function AdminOrdersPage() {
           <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/5 border border-white/10 self-start">
             <button
               onClick={() => setFilterStatus("all")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
                 filterStatus === "all"
-                  ? "bg-primary text-white shadow"
+                  ? "bg-white text-black font-black shadow"
                   : "text-muted-foreground hover:text-white"
               }`}
             >
@@ -501,7 +501,7 @@ export default function AdminOrdersPage() {
         {/* Orders Table / Cards */}
         {loading ? (
           <div className="p-12 text-center text-muted-foreground flex flex-col items-center gap-2">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
             <span className="text-sm">Loading orders database...</span>
           </div>
         ) : filteredOrders.length === 0 ? (
@@ -560,7 +560,7 @@ export default function AdminOrdersPage() {
                         {order.utr_number && (
                           <button
                             onClick={() => handleCopyUtr(order.utr_number)}
-                            className="text-primary hover:text-white"
+                            className="text-zinc-400 hover:text-white cursor-pointer"
                             title="Copy UTR"
                           >
                             {copiedUtr === order.utr_number ? (
@@ -678,7 +678,7 @@ export default function AdminOrdersPage() {
                 onChange={(e) => setEditDeliveryNotes(e.target.value)}
                 rows={3}
                 placeholder="e.g. Steam ID & Pass delivered via WhatsApp at 11:15 PM"
-                className="w-full bg-background border border-white/15 rounded-xl p-3 text-xs text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary"
+                className="w-full bg-background border border-white/15 rounded-xl p-3 text-xs text-white placeholder:text-muted-foreground/50 focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -686,7 +686,7 @@ export default function AdminOrdersPage() {
               <button
                 type="button"
                 onClick={() => setEditingOrder(null)}
-                className="px-4 py-2 rounded-xl text-xs text-muted-foreground hover:text-white"
+                className="px-4 py-2 rounded-xl text-xs text-muted-foreground hover:text-white cursor-pointer"
               >
                 Cancel
               </button>
@@ -694,7 +694,7 @@ export default function AdminOrdersPage() {
                 type="button"
                 onClick={handleSaveDelivery}
                 disabled={isSaving}
-                className="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50"
+                className="px-5 py-2 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-black transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
               >
                 {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
                 Save Changes

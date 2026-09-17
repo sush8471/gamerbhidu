@@ -478,7 +478,7 @@ export default function ProofsTab() {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                className="p-2.5 border border-border rounded-lg bg-background text-muted-foreground hover:text-foreground hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="p-2.5 border border-border rounded-lg bg-background text-muted-foreground hover:text-foreground hover:border-white/30 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -488,7 +488,7 @@ export default function ProofsTab() {
               <button
                 disabled={currentPage === totalPages}
                 onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                className="p-2.5 border border-border rounded-lg bg-background text-muted-foreground hover:text-foreground hover:border-primary disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                className="p-2.5 border border-border rounded-lg bg-background text-muted-foreground hover:text-foreground hover:border-white/30 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -532,7 +532,7 @@ export default function ProofsTab() {
                     onDrop={handleDrop}
                     onClick={() => document.getElementById("proof-file-upload")?.click()}
                     className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center gap-2 transition-all cursor-pointer relative overflow-hidden h-48 bg-background/50 ${
-                      dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                      dragActive ? "border-white bg-white/5" : "border-border hover:border-white/30"
                     }`}
                   >
                     <input
@@ -544,7 +544,7 @@ export default function ProofsTab() {
                     />
                     {uploadingImage ? (
                       <div className="flex flex-col items-center gap-2">
-                        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                        <Loader2 className="w-6 h-6 animate-spin text-white" />
                         <p className="text-[10px] text-muted-foreground">Uploading...</p>
                       </div>
                     ) : formData.image_url ? (
@@ -553,7 +553,7 @@ export default function ProofsTab() {
                           <Image src={formData.image_url} alt="" fill className="object-contain p-2" />
                         </div>
                         <div className="relative z-10 flex flex-col items-center gap-1 mt-auto mb-2">
-                          <FileImage className="w-5 h-5 text-primary drop-shadow" />
+                          <FileImage className="w-5 h-5 text-white drop-shadow" />
                           <p className="text-[10px] text-foreground font-bold bg-black/60 px-2 py-0.5 rounded-full border border-white/10">
                             Click or drop to change
                           </p>
@@ -615,7 +615,7 @@ export default function ProofsTab() {
                       type="checkbox"
                       checked={formData.visible}
                       onChange={(e) => setFormData((prev) => ({ ...prev, visible: e.target.checked }))}
-                      className="w-4 h-4 rounded border-border accent-primary"
+                      className="w-4 h-4 rounded border-border accent-white"
                     />
                     <span>Visible on homepage</span>
                   </label>
