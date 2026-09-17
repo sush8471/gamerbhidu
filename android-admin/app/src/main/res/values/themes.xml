@@ -1,0 +1,13 @@
+<resources>
+    <!--
+        Base application theme. Fully transparent/dark — actual theming
+        is done entirely in Jetpack Compose via GamerBhiduAdminTheme.
+    -->
+    <style name="Theme.GamerBhiduAdmin" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:statusBarColor">#050505</item>
+        <item name="android:navigationBarColor">#050505</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>
