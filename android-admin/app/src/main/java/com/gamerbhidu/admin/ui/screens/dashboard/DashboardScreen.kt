@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -188,17 +189,31 @@ private fun DashboardContent(
             )
         }
 
-        // ── 2. Stats Overview (horizontal scroll) ─────────────────────────────
-        item(key = "stats_row") {
-            StatsOverviewSection(stats = uiState.stats)
+        // ── 2. Welcome Banner (Matching Web Admin) ─────────────────────────────
+        item(key = "welcome_banner") {
+            WelcomeBannerSection()
         }
 
-        // ── 3. Quick Add CTA ──────────────────────────────────────────────────
-        item(key = "quick_add_cta") {
-            QuickAddSection(onNavigateToAddGame = onNavigateToAddGame)
+        // ── 3. Stats Overview (2x2 Grid Matching Web Admin) ───────────────────
+        item(key = "stats_grid") {
+            StatsGridSection(
+                stats = uiState.stats,
+                onNavigateToGames = onNavigateToGames,
+                onNavigateToProofs = onNavigateToProofs
+            )
         }
 
-        // ── 4. Quick Access Navigation List ───────────────────────────────────
+        // ── 4. Quick Action Tiles (Matching Web Admin) ─────────────────────────
+        item(key = "action_tiles") {
+            QuickActionTilesSection(
+                stats = uiState.stats,
+                onNavigateToAddGame = onNavigateToAddGame,
+                onNavigateToProofs = onNavigateToProofs,
+                onNavigateToOrders = onNavigateToOrders
+            )
+        }
+
+        // ── 5. Quick Access Navigation List ───────────────────────────────────
         item(key = "quick_access_list") {
             QuickAccessSection(
                 stats = uiState.stats,
@@ -413,285 +428,362 @@ private fun DashboardTopBar(
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// STATS OVERVIEW — HORIZONTAL SCROLLABLE CARDS
+// ═════════════════════════════════════════════════════════════════════════════
+// WELCOME BANNER (MATCHING WEB ADMIN)
 // ═════════════════════════════════════════════════════════════════════════════
 
-private data class StatCardData(
-    val label: String,
-    val value: String,
-    val icon: ImageVector,
-    val accentColor: Color,
-    val trend: String? = null,
-    val trendUp: Boolean = true
-)
+@Composable
+private fun WelcomeBannerSection() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(18.dp))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF141414),
+                        Color(0xFF0D0D0D),
+                        Color(0xFF070707)
+                    )
+                )
+            )
+            .border(
+                width = 1.dp,
+                color = Color(0xFF262626),
+                shape = RoundedCornerShape(18.dp)
+            )
+            .padding(18.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "WELCOME BACK",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFA1A1AA),
+                        fontSize = 10.sp,
+                        letterSpacing = 2.sp
+                    )
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .background(Color.White.copy(alpha = 0.06f), CircleShape)
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                ) {
+                    Icon(
+                        Icons.Outlined.AutoAwesome,
+                        contentDescription = null,
+                        tint = Color(0xFFA1A1AA),
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Text(
+                        text = "Play · Manage · Grow",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            color = Color(0xFFA1A1AA),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                }
+            }
+            Text(
+                text = "Manage Your Game Store",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Black,
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    letterSpacing = (-0.5).sp
+                )
+            )
+            Text(
+                text = "Everything you need, in one place.",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = Color(0xFFA1A1AA),
+                    fontSize = 12.sp
+                )
+            )
+        }
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// STATS OVERVIEW — 2x2 GRID (MATCHING WEB ADMIN)
+// ═════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun StatsOverviewSection(stats: DashboardStats) {
-    val cards = remember(stats) {
-        listOf(
-            StatCardData(
+private fun StatsGridSection(
+    stats: DashboardStats,
+    onNavigateToGames: () -> Unit,
+    onNavigateToProofs: () -> Unit
+) {
+    val activeGames = (stats.total - stats.hidden).coerceAtLeast(0)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        // Row 1: Active Games & Hidden
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            WebStatCard(
+                modifier = Modifier.weight(1f),
                 label = "Active Games",
-                value = stats.visible.toString(),
-                icon = Icons.Outlined.Visibility,
-                accentColor = Success,
-                trend = null
-            ),
-            StatCardData(
-                label = "Hidden / Drafts",
+                value = activeGames.toString(),
+                icon = Icons.Outlined.SportsEsports,
+                textColor = Success,
+                cardBg = Success.copy(alpha = 0.08f),
+                borderColor = Success.copy(alpha = 0.25f),
+                onClick = onNavigateToGames
+            )
+            WebStatCard(
+                modifier = Modifier.weight(1f),
+                label = "Hidden",
                 value = stats.hidden.toString(),
                 icon = Icons.Outlined.VisibilityOff,
-                accentColor = Warning,
-                trend = null
-            ),
-            StatCardData(
+                textColor = Warning,
+                cardBg = Warning.copy(alpha = 0.08f),
+                borderColor = Warning.copy(alpha = 0.25f),
+                onClick = onNavigateToGames
+            )
+        }
+
+        // Row 2: Social Proofs & Total Titles
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            WebStatCard(
+                modifier = Modifier.weight(1f),
                 label = "Social Proofs",
                 value = stats.socialProofs.toString(),
                 icon = Icons.Outlined.Verified,
-                accentColor = Color(0xFFE4E4E7),
-                trend = null
-            ),
-            StatCardData(
+                textColor = Color(0xFFE4E4E7),
+                cardBg = Color(0xFF18181B),
+                borderColor = Color(0xFF27272A),
+                onClick = onNavigateToProofs
+            )
+            WebStatCard(
+                modifier = Modifier.weight(1f),
                 label = "Total Titles",
                 value = stats.total.toString(),
-                icon = Icons.Outlined.SportsEsports,
-                accentColor = Color(0xFFA1A1AA),
-                trend = null
+                icon = Icons.AutoMirrored.Outlined.LibraryBooks,
+                textColor = Color.White,
+                cardBg = Color(0xFF18181B),
+                borderColor = Color(0xFF27272A),
+                onClick = onNavigateToGames
             )
-        )
+        }
     }
+}
 
+@Composable
+private fun WebStatCard(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    icon: ImageVector,
+    textColor: Color,
+    cardBg: Color,
+    borderColor: Color,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(cardBg)
+            .border(1.dp, borderColor, RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick)
+            .padding(14.dp)
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .background(cardBg, RoundedCornerShape(8.dp))
+                        .border(1.dp, borderColor, RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = textColor,
+                        modifier = Modifier.size(17.dp)
+                    )
+                }
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = textColor.copy(alpha = 0.5f),
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+
+            Text(
+                text = value,
+                style = MaterialTheme.typography.displaySmall.copy(
+                    fontWeight = FontWeight.Black,
+                    color = textColor,
+                    fontSize = 26.sp,
+                    lineHeight = 28.sp,
+                    letterSpacing = (-0.5).sp
+                )
+            )
+
+            Text(
+                text = label.uppercase(),
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = Color(0xFFA1A1AA),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.8.sp
+                )
+            )
+        }
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// QUICK ACTION TILES (MATCHING WEB ADMIN)
+// ═════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun QuickActionTilesSection(
+    stats: DashboardStats,
+    onNavigateToAddGame: () -> Unit,
+    onNavigateToProofs: () -> Unit,
+    onNavigateToOrders: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 4.dp, bottom = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Section header
+        Text(
+            text = "QUICK ACTIONS",
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFA1A1AA),
+                fontSize = 10.sp,
+                letterSpacing = 1.5.sp
+            ),
+            modifier = Modifier.padding(start = 2.dp, bottom = 2.dp)
+        )
+
+        // Tile 1: + Add Title via Steam
+        ActionTile(
+            title = "+ Add Title",
+            subtitle = "Instant Steam Fetch",
+            icon = Icons.Filled.Add,
+            iconBg = Color.White,
+            iconTint = Color.Black,
+            onClick = onNavigateToAddGame
+        )
+
+        // Tile 2: Social Proofs / Reviews
+        ActionTile(
+            title = "Reviews & Proofs",
+            subtitle = "${stats.socialProofs} published proofs",
+            icon = Icons.Outlined.Verified,
+            iconBg = Color.White.copy(alpha = 0.1f),
+            iconTint = Color.White,
+            onClick = onNavigateToProofs
+        )
+
+        // Tile 3: Store Orders / Ledger
+        ActionTile(
+            title = "Store Orders",
+            subtitle = "Track orders, payments & earnings",
+            icon = Icons.Outlined.ShoppingBag,
+            iconBg = Color.White.copy(alpha = 0.1f),
+            iconTint = Color.White,
+            onClick = onNavigateToOrders
+        )
+    }
+}
+
+@Composable
+private fun ActionTile(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    iconBg: Color,
+    iconTint: Color,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(Color(0xFF111111))
+            .border(1.dp, Color(0xFF262626), RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 12.dp)
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Storefront Overview",
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    color = GamerBhiduAdminTheme.colors.textPrimary,
-                    fontSize = 13.sp,
-                    letterSpacing = (-0.1).sp
-                )
-            )
-            Text(
-                text = "${stats.total} Total",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = GamerBhiduAdminTheme.colors.textTertiary,
-                    fontSize = 11.sp
-                )
-            )
-        }
-
-        Spacer(Modifier.height(10.dp))
-
-        // Horizontally scrollable stat cards
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            items(cards, key = { it.label }) { card ->
-                StatCard(card = card)
-            }
-        }
-    }
-}
-
-@Composable
-private fun StatCard(card: StatCardData) {
-    Box(
-        modifier = Modifier
-            .width(112.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(GamerBhiduAdminTheme.colors.surface)
-            .border(
-                width = 1.dp,
-                color = GamerBhiduAdminTheme.colors.borderSubtle,
-                shape = RoundedCornerShape(16.dp)
-            )
-    ) {
-        // Left accent bar
-        Box(
-            modifier = Modifier
-                .width(3.dp)
-                .height(56.dp)
-                .align(Alignment.CenterStart)
-                .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp, topEnd = 3.dp, bottomEnd = 3.dp))
-                .background(card.accentColor)
-        )
-
-        Column(
-            modifier = Modifier.padding(start = 12.dp, end = 10.dp, top = 12.dp, bottom = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            // Icon
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(card.accentColor.copy(alpha = 0.12f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = card.icon,
-                    contentDescription = null,
-                    tint = card.accentColor,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-
-            // Value
-            Text(
-                text = card.value,
-                style = MaterialTheme.typography.displaySmall.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = GamerBhiduAdminTheme.colors.textPrimary,
-                    fontSize = 26.sp,
-                    letterSpacing = (-0.5).sp,
-                    lineHeight = 28.sp
-                )
-            )
-
-            // Label
-            Text(
-                text = card.label,
-                style = MaterialTheme.typography.labelSmall.copy(
-                    color = GamerBhiduAdminTheme.colors.textTertiary,
-                    fontSize = 10.sp,
-                    lineHeight = 13.sp,
-                    letterSpacing = 0.2.sp
-                ),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
-
-// ═════════════════════════════════════════════════════════════════════════════
-// QUICK ADD — COMPACT PRIMARY CTA BUTTON
-// ═════════════════════════════════════════════════════════════════════════════
-
-@Composable
-private fun QuickAddSection(onNavigateToAddGame: () -> Unit) {
-    var isPressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.98f else 1f,
-        animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
-        label = "add_cta_scale"
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-    ) {
-        Text(
-            text = "Quick Operations",
-            style = MaterialTheme.typography.titleSmall.copy(
-                fontWeight = FontWeight.SemiBold,
-                color = GamerBhiduAdminTheme.colors.textPrimary,
-                fontSize = 13.sp,
-                letterSpacing = (-0.1).sp
-            )
-        )
-
-        Spacer(Modifier.height(10.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .scale(scale)
-                .clip(RoundedCornerShape(14.dp))
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            Color(0xFF18181B),
-                            Color(0xFF111111)
-                        )
-                    )
-                )
-                .border(
-                    width = 1.dp,
-                    color = Color.White.copy(alpha = 0.12f),
-                    shape = RoundedCornerShape(14.dp)
-                )
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onNavigateToAddGame
-                )
-                .padding(horizontal = 16.dp, vertical = 14.dp)
-        ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Filled.AddCircle,
-                            contentDescription = null,
-                            tint = Color.Black,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(
-                            text = "Add Game via Steam",
-                            style = MaterialTheme.typography.titleSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                        )
-                        Text(
-                            text = "Auto-fetch poster, pricing & metadata",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                color = GamerBhiduAdminTheme.colors.textSecondary,
-                                fontSize = 11.sp
-                            )
-                        )
-                    }
-                }
-
-                // Instant fetch chip
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(Color.White)
-                        .padding(horizontal = 9.dp, vertical = 4.dp)
+                        .size(38.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(iconBg),
+                    contentAlignment = Alignment.Center
                 ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconTint,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
-                        text = "⚡ FETCH",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            color = Color.Black,
+                        text = title,
+                        style = MaterialTheme.typography.titleSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 9.sp,
-                            letterSpacing = 0.8.sp
+                            color = Color.White,
+                            fontSize = 13.sp
+                        )
+                    )
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = Color(0xFFA1A1AA),
+                            fontSize = 11.sp
                         )
                     )
                 }
             }
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                tint = Color(0xFF71717A),
+                modifier = Modifier.size(15.dp)
+            )
         }
     }
 }

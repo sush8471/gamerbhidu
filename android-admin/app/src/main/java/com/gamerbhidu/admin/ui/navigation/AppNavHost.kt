@@ -3,6 +3,7 @@ package com.gamerbhidu.admin.ui.navigation
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -130,6 +131,18 @@ fun AppNavHost(navController: NavHostController) {
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStack?.destination?.route
 
+    val bottomBarScreens = remember {
+        setOf(
+            Screen.Dashboard.route,
+            Screen.GamesList.route,
+            Screen.Orders.route,
+            Screen.SocialProofs.route,
+            Screen.HomepageSections.route,
+            Screen.Combos.route
+        )
+    }
+    val showBottomBar = currentRoute in bottomBarScreens
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -144,6 +157,22 @@ fun AppNavHost(navController: NavHostController) {
     ) {
         // ── Main Scaffold ────────────────────────────────────────────────────
         Scaffold(
+            bottomBar = {
+                if (showBottomBar) {
+                    AdminBottomBar(
+                        currentRoute = currentRoute,
+                        onNavigate = { targetRoute ->
+                            if (currentRoute != targetRoute) {
+                                navController.navigate(targetRoute) {
+                                    popUpTo(Screen.Dashboard.route) { inclusive = false }
+                                    launchSingleTop = true
+                                }
+                            }
+                        },
+                        onOpenDrawer = { drawerOpen = true }
+                    )
+                }
+            },
             snackbarHost = {
                 SnackbarHost(snackbarHostState) { data ->
                     Snackbar(
@@ -565,6 +594,95 @@ fun EpicSideDrawer(
                     )
                 )
             }
+        }
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// MODERN OBSIDIAN BOTTOM NAVIGATION BAR
+// ═════════════════════════════════════════════════════════════════════════════
+
+@Composable
+private fun AdminBottomBar(
+    currentRoute: String?,
+    onNavigate: (String) -> Unit,
+    onOpenDrawer: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding(),
+        color = Color(0xFF0D0D0D),
+        border = BorderStroke(1.dp, Color(0xFF1F1F1F))
+    ) {
+        NavigationBar(
+            containerColor = Color(0xFF0D0D0D),
+            contentColor = Color.White,
+            tonalElevation = 0.dp,
+            modifier = Modifier.height(62.dp)
+        ) {
+            val items = listOf(
+                Triple("Dashboard", Screen.Dashboard.route, Icons.Outlined.Home to Icons.Filled.Home),
+                Triple("Catalog", Screen.GamesList.route, Icons.Outlined.SportsEsports to Icons.Filled.SportsEsports),
+                Triple("Orders", Screen.Orders.route, Icons.Outlined.ShoppingCart to Icons.Filled.ShoppingCart),
+                Triple("Proofs", Screen.SocialProofs.route, Icons.Outlined.Verified to Icons.Filled.Verified),
+            )
+
+            items.forEach { (label, route, icons) ->
+                val selected = currentRoute == route
+                NavigationBarItem(
+                    selected = selected,
+                    onClick = { onNavigate(route) },
+                    icon = {
+                        Icon(
+                            imageVector = if (selected) icons.second else icons.first,
+                            contentDescription = label,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    },
+                    label = {
+                        Text(
+                            text = label,
+                            fontSize = 10.sp,
+                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color.White,
+                        selectedTextColor = Color.White,
+                        unselectedIconColor = Color(0xFF71717A),
+                        unselectedTextColor = Color(0xFF71717A),
+                        indicatorColor = Color.White.copy(alpha = 0.12f)
+                    )
+                )
+            }
+
+            // "More" tab to open side drawer
+            NavigationBarItem(
+                selected = false,
+                onClick = onOpenDrawer,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Menu,
+                        contentDescription = "More",
+                        modifier = Modifier.size(20.dp)
+                    )
+                },
+                label = {
+                    Text(
+                        text = "More",
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Color.White,
+                    selectedTextColor = Color.White,
+                    unselectedIconColor = Color(0xFF71717A),
+                    unselectedTextColor = Color(0xFF71717A),
+                    indicatorColor = Color.Transparent
+                )
+            )
         }
     }
 }

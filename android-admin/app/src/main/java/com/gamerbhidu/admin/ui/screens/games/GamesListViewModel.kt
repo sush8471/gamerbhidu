@@ -23,6 +23,8 @@ data class GamesListUiState(
     val searchQuery: String = "",
     val selectedVisibility: String = "all",     // "all" | "visible" | "hidden"
     val selectedStatus: String = "all",         // "all" | "released" | "upcoming"
+    val selectedGenre: String = "All",          // "All" | "Action" | "RPG" etc.
+    val viewMode: String = "grid",              // "grid" | "table"
 
     // Per-item action state
     val togglingVisibilityId: String? = null,
@@ -31,7 +33,17 @@ data class GamesListUiState(
 
     // Internal pagination cursor
     val currentPage: Int = 0
-)
+) {
+    val displayedGames: List<Game>
+        get() {
+            if (selectedGenre.equals("All", ignoreCase = true) || selectedGenre.isBlank()) {
+                return games
+            }
+            return games.filter { game ->
+                game.genre.any { it.equals(selectedGenre, ignoreCase = true) }
+            }
+        }
+}
 
 class GamesListViewModel : ViewModel() {
 
@@ -54,6 +66,14 @@ class GamesListViewModel : ViewModel() {
         val state = _uiState.value
         if (state.isLoadingMore || state.hasReachedEnd || state.isLoading) return
         fetchPage(page = state.currentPage + 1, append = true)
+    }
+
+    fun setViewMode(mode: String) {
+        _uiState.update { it.copy(viewMode = mode) }
+    }
+
+    fun onGenreSelected(genre: String) {
+        _uiState.update { it.copy(selectedGenre = genre) }
     }
 
     fun onSearchChange(query: String) {
