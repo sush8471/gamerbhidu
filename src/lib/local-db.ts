@@ -334,82 +334,86 @@ export function formatComboDiscountBadge(sumTotal: number, discounted: number): 
  * Get all visible combos ordered by display_order, with their associated games
  */
 export async function getCombos() {
-    const { data: comboData, error } = await supabase
-        .from('combos')
-        .select('*')
-        .eq('visible', true)
-        .order('display_order', { ascending: true });
+    try {
+        const { data: comboData, error } = await supabase
+            .from('combos')
+            .select('*')
+            .eq('visible', true)
+            .order('display_order', { ascending: true });
 
-    if (error) {
-        return { data: [], error: error.message };
-    }
-
-    if (!comboData || comboData.length === 0) {
-        return { data: [], error: null };
-    }
-
-    const comboIds = comboData.map((c: any) => c.id);
-
-    // Fetch combo_games with joined game data in a single query to avoid data loss.
-    // Use .range() to explicitly bypass Supabase's default 1000-row limit.
-    const allComboGames: any[] = [];
-    const PAGE_SIZE = 1000;
-    let offset = 0;
-    let hasMore = true;
-
-    while (hasMore) {
-        const { data: pageData, error: cgError } = await supabase
-            .from('combo_games')
-            .select(`
-                id,
-                combo_id,
-                game_id,
-                display_order,
-                game:games(id, title, slug, selling_price, original_price, image_url, steam_app_id, visible)
-            `)
-            .in('combo_id', comboIds)
-            .order('display_order', { ascending: true })
-            .range(offset, offset + PAGE_SIZE - 1);
-
-        if (cgError) {
-            return { data: [], error: cgError.message };
+        if (error) {
+            return { data: [], error: error.message };
         }
 
-        if (pageData && pageData.length > 0) {
-            allComboGames.push(...pageData);
-            offset += PAGE_SIZE;
-            hasMore = pageData.length === PAGE_SIZE;
-        } else {
-            hasMore = false;
+        if (!comboData || comboData.length === 0) {
+            return { data: [], error: null };
         }
+
+        const comboIds = comboData.map((c: any) => c.id);
+
+        // Fetch combo_games with joined game data in a single query to avoid data loss.
+        // Use .range() to explicitly bypass Supabase's default 1000-row limit.
+        const allComboGames: any[] = [];
+        const PAGE_SIZE = 1000;
+        let offset = 0;
+        let hasMore = true;
+
+        while (hasMore) {
+            const { data: pageData, error: cgError } = await supabase
+                .from('combo_games')
+                .select(`
+                    id,
+                    combo_id,
+                    game_id,
+                    display_order,
+                    game:games(id, title, slug, selling_price, original_price, image_url, steam_app_id, visible)
+                `)
+                .in('combo_id', comboIds)
+                .order('display_order', { ascending: true })
+                .range(offset, offset + PAGE_SIZE - 1);
+
+            if (cgError) {
+                return { data: [], error: cgError.message };
+            }
+
+            if (pageData && pageData.length > 0) {
+                allComboGames.push(...pageData);
+                offset += PAGE_SIZE;
+                hasMore = pageData.length === PAGE_SIZE;
+            } else {
+                hasMore = false;
+            }
+        }
+
+        const now = Date.now();
+
+        const gamesByCombo = new Map<string, ComboGame[]>();
+        for (const cg of allComboGames) {
+            const game = cg.game;
+            if (!game) continue;
+            const entry: ComboGame = {
+                id: cg.id,
+                combo_id: cg.combo_id,
+                game_id: cg.game_id,
+                display_order: cg.display_order,
+                game: game,
+            };
+            const list = gamesByCombo.get(cg.combo_id) || [];
+            list.push(entry);
+            gamesByCombo.set(cg.combo_id, list);
+        }
+
+        const combos: Combo[] = comboData
+            .filter((combo: any) => !combo.deal_expires_at || parseDateTimeUtc(combo.deal_expires_at) > now)
+            .map((combo: any) => ({
+                ...combo,
+                games: gamesByCombo.get(combo.id) || [],
+            }));
+
+        return { data: combos, error: null };
+    } catch (err: any) {
+        return { data: [], error: err?.message || "Failed to load combos" };
     }
-
-    const now = Date.now();
-
-    const gamesByCombo = new Map<string, ComboGame[]>();
-    for (const cg of allComboGames) {
-        const game = cg.game;
-        if (!game) continue;
-        const entry: ComboGame = {
-            id: cg.id,
-            combo_id: cg.combo_id,
-            game_id: cg.game_id,
-            display_order: cg.display_order,
-            game: game,
-        };
-        const list = gamesByCombo.get(cg.combo_id) || [];
-        list.push(entry);
-        gamesByCombo.set(cg.combo_id, list);
-    }
-
-    const combos: Combo[] = comboData
-        .filter((combo: any) => !combo.deal_expires_at || parseDateTimeUtc(combo.deal_expires_at) > now)
-        .map((combo: any) => ({
-            ...combo,
-            games: gamesByCombo.get(combo.id) || [],
-        }));
-
-    return { data: combos, error: null };
 }
 
 /**

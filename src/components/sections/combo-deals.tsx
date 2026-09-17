@@ -106,7 +106,7 @@ export default function ComboDealSection() {
     try {
       const { data, error: fetchError } = await getCombos();
       if (fetchError) {
-        console.error("Failed to load combos:", fetchError);
+        console.warn("Notice: Failed to load combos:", fetchError);
         setCombos([]);
         setError(fetchError);
         return;
@@ -119,7 +119,7 @@ export default function ComboDealSection() {
         setError("No combos found");
       }
     } catch (err: any) {
-      console.error("Failed to load combos:", err);
+      console.warn("Notice: Failed to load combos:", err);
       setCombos([]);
       setError(err?.message || "Failed to load combos");
     } finally {
