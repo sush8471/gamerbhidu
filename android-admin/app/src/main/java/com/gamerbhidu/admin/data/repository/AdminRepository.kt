@@ -367,7 +367,10 @@ object AdminRepository {
     suspend fun fetchSteamDetails(appId: String): SteamAppData? {
         val url = "https://store.steampowered.com/api/appdetails?appids=$appId&cc=in&l=english"
         val response: JsonObject = ktorClient.get(url).body()
-        val appData = response[appId]?.jsonObject ?: return null
+        // Steam sometimes returns a redirected/canonical app ID as the key,
+        // which may differ from the requested appId (e.g. requested 2698940,
+        // got 4922030). Fall back to the first entry in the response.
+        val appData = (response[appId] ?: response.values.firstOrNull())?.jsonObject ?: return null
         val json = GamerBhiduAdminApp.json
         return try {
             json.decodeFromJsonElement(SteamAppResponse.serializer(), appData).data
