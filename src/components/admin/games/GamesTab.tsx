@@ -156,7 +156,10 @@ export default function GamesTab() {
       const res = await fetch(`/api/steam?appId=${appId}`);
       if (!res.ok) throw new Error("Failed to fetch from Steam Store API.");
       const json = await res.json();
-      const result = json[appId];
+      // Steam sometimes returns a redirected/canonical app ID as the key,
+      // which differs from the requested appId. Use Object.values() to grab
+      // the first result regardless of the actual key in the response.
+      const result = (Object.values(json)[0] as any);
       if (!result?.success || !result.data) throw new Error("No data found for this Steam App ID.");
       const s = result.data;
       const title = s.name || "";

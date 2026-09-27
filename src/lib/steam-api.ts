@@ -99,7 +99,7 @@ export async function getSteamGameDetails(
       return null;
     }
 
-    const result = json[appId.toString()];
+    const result = json[appId.toString()] ?? (Object.values(json)[0] as any);
 
     if (!result || !result.success || !result.data) {
       console.error(`Steam API returned no data for App ID ${appId}`);
